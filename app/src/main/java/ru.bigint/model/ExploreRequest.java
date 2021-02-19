@@ -1,4 +1,4 @@
-package ru.bigint.emulator.model;
+package ru.bigint.model;
 
 public class ExploreRequest {
     private int posX;
