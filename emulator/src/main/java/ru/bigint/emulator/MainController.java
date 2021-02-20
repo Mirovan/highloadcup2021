@@ -4,15 +4,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import ru.bigint.emulator.model.BalanceResponse;
-import ru.bigint.emulator.model.ExploreRequest;
-import ru.bigint.emulator.model.ExploreResponse;
+import ru.bigint.emulator.model.*;
 
 @RestController
 public class MainController {
 
     @GetMapping("/health-check")
-    public void getHealthCheck() {
+    public HealthCheckResponse getHealthCheck() {
+        return new HealthCheckResponse(new Object() );
     }
 
 
@@ -26,12 +25,14 @@ public class MainController {
 
 
     @GetMapping("/licences")
-    public void getLicences() {
+    public LicencesResponse getLicences() {
+        return new LicencesResponse(1, 2, 3);
     }
 
 
     @PostMapping("/licences")
-    public void postLicences() {
+    public LicencesResponse postLicences(@RequestBody int[] array) {
+        return new LicencesResponse(1, 2, 3);
     }
 
 
@@ -45,12 +46,14 @@ public class MainController {
 
 
     @PostMapping("/dig")
-    public void postDig() {
+    public String[] postDig(@RequestBody DigRequest digRequest) {
+        return new String[]{"string"};
     }
 
 
     @PostMapping("/cash")
-    public void postCash() {
+    public int[] postCash(@RequestBody String string) {
+        return new int[]{0};
     }
 
 }
