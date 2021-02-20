@@ -10,7 +10,7 @@ public class Main {
     //private final String schema = System.getProperty("Schema");
 
 //    private final static String address = "localhost";
-    private final static String port = "8080";
+    private final static String port = "8000";
     private final static String schema = "http";
 
     private final static int areaSize = 3500;
@@ -29,6 +29,7 @@ public class Main {
         } else {
             URI = schema + "://" + address + ":" + port;
         }
+        Logger.log("URI: " + URI);
 
         RequestEndpoint.healthCheck(URI);
 
