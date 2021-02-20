@@ -1,6 +1,8 @@
 package ru.bigint.model;
 
-public class BalanceResponse {
+import java.util.Arrays;
+
+public class Balance {
     private int balance;
     private int[] wallet;
 
@@ -18,5 +20,13 @@ public class BalanceResponse {
 
     public void setWallet(int[] wallet) {
         this.wallet = wallet;
+    }
+
+    @Override
+    public String toString() {
+        return "Balance{" +
+                "balance=" + balance +
+                ", wallet=" + Arrays.toString(wallet) +
+                '}';
     }
 }

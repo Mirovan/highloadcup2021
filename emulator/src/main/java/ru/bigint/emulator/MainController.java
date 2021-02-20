@@ -9,6 +9,12 @@ import ru.bigint.emulator.model.*;
 @RestController
 public class MainController {
 
+    final AreaData areaData;
+
+    public MainController(AreaData areaData) {
+        this.areaData = areaData;
+    }
+
     @GetMapping("/health-check")
     public HealthCheckResponse getHealthCheck() {
         return new HealthCheckResponse(new Object() );
@@ -26,13 +32,13 @@ public class MainController {
 
     @GetMapping("/licences")
     public LicencesResponse getLicences() {
-        return new LicencesResponse(1, 2, 3);
+        return new LicencesResponse(1, 3, 0);
     }
 
 
     @PostMapping("/licences")
-    public LicencesResponse postLicences(@RequestBody int[] array) {
-        return new LicencesResponse(1, 2, 3);
+    public LicencesResponse postLicences(@RequestBody int[] money) {
+        return new LicencesResponse(1, 3, 0);
     }
 
 
@@ -40,19 +46,31 @@ public class MainController {
     public ExploreResponse postExplore(@RequestBody ExploreRequest exploreRequest) {
         ExploreResponse exploreResponse = new ExploreResponse();
         exploreResponse.setArea(exploreRequest);
-        exploreResponse.setAmount(123);
+        int amount = 0;
+        for (int i=0; i<areaData.getDepth(); i++) {
+            if (areaData.getArea()[exploreRequest.getPosX()][exploreRequest.getPosY()][i] != null) {
+                amount++;
+            }
+        }
+        exploreResponse.setAmount(amount);
         return exploreResponse;
     }
 
 
     @PostMapping("/dig")
     public String[] postDig(@RequestBody DigRequest digRequest) {
-        return new String[]{"string"};
+        int x = digRequest.getPosX();
+        int y = digRequest.getPosY();
+        int depth = digRequest.getDepth();
+        return new String[]{areaData.getArea()[x][y][depth]};
     }
 
 
     @PostMapping("/cash")
-    public int[] postCash(@RequestBody String string) {
+    public int[] postCash(@RequestBody String treasure) {
+        if (treasure.equals("s1")) return new int[]{1};
+        if (treasure.equals("s2")) return new int[]{2};
+        if (treasure.equals("s3")) return new int[]{3};
         return new int[]{0};
     }
 

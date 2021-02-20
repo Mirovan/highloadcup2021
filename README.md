@@ -1,0 +1,1 @@
+Highoad cup 2021 - https://cups.mail.ru/ru/contests/goldrush

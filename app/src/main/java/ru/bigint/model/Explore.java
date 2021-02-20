@@ -1,6 +1,6 @@
 package ru.bigint.model;
 
-public class ExploreResponse {
+public class Explore {
     private ExploreRequest area;
     private int amount;
 
@@ -18,5 +18,13 @@ public class ExploreResponse {
 
     public void setAmount(int amount) {
         this.amount = amount;
+    }
+
+    @Override
+    public String toString() {
+        return "Explore{" +
+                "area=" + area +
+                ", amount=" + amount +
+                '}';
     }
 }
