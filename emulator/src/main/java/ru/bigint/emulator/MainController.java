@@ -1,5 +1,6 @@
 package ru.bigint.emulator;
 
+import com.fasterxml.jackson.databind.node.TextNode;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -62,15 +63,15 @@ public class MainController {
         int x = digRequest.getPosX();
         int y = digRequest.getPosY();
         int depth = digRequest.getDepth();
-        return new String[]{areaData.getArea()[x][y][depth]};
+        return new String[]{areaData.getArea()[x][y][depth-1]};
     }
 
 
     @PostMapping("/cash")
-    public int[] postCash(@RequestBody String treasure) {
-        if (treasure.equals("s1")) return new int[]{1};
-        if (treasure.equals("s2")) return new int[]{2};
-        if (treasure.equals("s3")) return new int[]{3};
+    public int[] postCash(@RequestBody TextNode treasure) {
+        if (treasure.asText().equals("s1")) return new int[]{1};
+        if (treasure.asText().equals("s2")) return new int[]{2};
+        if (treasure.asText().equals("s3")) return new int[]{3};
         return new int[]{0};
     }
 

@@ -4,6 +4,9 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
+/**
+ * Генерация карты для эмулятора Сервера
+ * */
 @Component
 public class AreaData {
 
@@ -14,7 +17,7 @@ public class AreaData {
         return depth;
     }
 
-    private String[][][] area = new String[size][size][10];
+    private String[][][] area = new String[size][size][depth];
 
     public String[][][] getArea() {
         return area;

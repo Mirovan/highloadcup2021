@@ -6,6 +6,8 @@ import ru.bigint.model.Explore;
 import ru.bigint.model.License;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class RequestEndpoint {
 
@@ -37,7 +39,16 @@ public class RequestEndpoint {
         String body = Request.doPost(uri + "/dig", digRequest);
         MapperUtils<String[]> exploreMapper = new MapperUtils<>(String[].class);
         String[] dig = exploreMapper.stringToObject(body);
-        Logger.log(dig);
+        Logger.log( Arrays.stream(dig).collect(Collectors.joining(", ")) );
         return dig;
     }
+
+    public static int[] cash(String uri, String treasure) throws IOException, InterruptedException {
+        String body = Request.doPost(uri + "/cash", treasure);
+        MapperUtils<int[]> exploreMapper = new MapperUtils<>(int[].class);
+        int[] money = exploreMapper.stringToObject(body);
+        Logger.log( Arrays.stream(money).mapToObj(item -> ((Integer) item).toString()).collect(Collectors.joining(", ")) );
+        return money;
+    }
+
 }
