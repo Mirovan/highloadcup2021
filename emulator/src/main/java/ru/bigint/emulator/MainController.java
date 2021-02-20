@@ -18,7 +18,7 @@ public class MainController {
 
     @GetMapping("/health-check")
     public HealthCheckResponse getHealthCheck() {
-        return new HealthCheckResponse(new Object() );
+        return new HealthCheckResponse( "" );
     }
 
 

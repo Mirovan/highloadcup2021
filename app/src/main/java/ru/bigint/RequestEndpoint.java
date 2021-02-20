@@ -48,11 +48,13 @@ public class RequestEndpoint {
         return money;
     }
 
-    public static HealthCheck healthCheck(String uri) throws IOException, InterruptedException {
+    public static String healthCheck(String uri) throws IOException, InterruptedException {
         String body = Request.doGet(uri + "/health-check");
-        MapperUtils<HealthCheck> mapper = new MapperUtils<>(HealthCheck.class);
-        HealthCheck healthCheck = mapper.stringToObject(body);
-        Logger.log(healthCheck);
-        return healthCheck;
+//        MapperUtils<HealthCheck> mapper = new MapperUtils<>(HealthCheck.class);
+//        HealthCheck healthCheck = mapper.stringToObject(body);
+//        Logger.log(healthCheck);
+//        return healthCheck;
+        Logger.log(body);
+        return body;
     }
 }

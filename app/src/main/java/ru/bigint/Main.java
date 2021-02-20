@@ -23,12 +23,10 @@ public class Main {
     private void runGame() throws IOException, InterruptedException {
         int resMoney = 0;
 
-        String URI;
-        if ( "Windows 10".equals(System.getProperty("os.name")) ) {
-            URI = "http://localhost:8080";
-        } else {
-            URI = schema + "://" + address + ":" + port;
-        }
+        Logger.log("OS: " + System.getProperty("os.name"));
+//        String URI = "http://localhost:8080";
+        String URI = "http://192.168.1.176:8080";
+//        String URI = schema + "://" + address + ":" + port;
         Logger.log("URI: " + URI);
 
         RequestEndpoint.healthCheck(URI);

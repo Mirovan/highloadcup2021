@@ -1,12 +1,12 @@
 package ru.bigint.emulator.model;
 
 public class HealthCheckResponse {
-    private Object additionalProp1;
+    private String additionalProp1;
 
     public HealthCheckResponse() {
     }
 
-    public HealthCheckResponse(Object additionalProp1) {
+    public HealthCheckResponse(String additionalProp1) {
         this.additionalProp1 = additionalProp1;
     }
 
@@ -14,7 +14,7 @@ public class HealthCheckResponse {
         return additionalProp1;
     }
 
-    public void setAdditionalProp1(Object additionalProp1) {
+    public void setAdditionalProp1(String additionalProp1) {
         this.additionalProp1 = additionalProp1;
     }
 }
