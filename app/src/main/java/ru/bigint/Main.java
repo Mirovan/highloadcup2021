@@ -5,11 +5,11 @@ import ru.bigint.model.*;
 import java.io.IOException;
 
 public class Main {
-//    private final String address = System.getProperty("ADDRESS");
+    private final String address = System.getProperty("ADDRESS");
     //private final String port = System.getProperty("Port");
     //private final String schema = System.getProperty("Schema");
 
-    private final static String address = "localhost";
+//    private final static String address = "localhost";
     private final static String port = "8080";
     private final static String schema = "http";
 
@@ -18,19 +18,20 @@ public class Main {
     public static void main(String[] args) throws IOException, InterruptedException {
         Main main = new Main();
         main.runGame();
-
-//        String get = Request.doGet(URI + "/balance");
-
-        //ExploreRequest exploreRequest = new ExploreRequest(1, 2, 3, 4);
-        //String post = Request.doPost(URI + "/explore", exploreRequest);
-        //System.out.println(post);
-
-        //System.out.println("Hello");
     }
 
     private void runGame() throws IOException, InterruptedException {
         int resMoney = 0;
-        String URI = schema + "://" + address + ":" + port;
+
+        String URI;
+        if ( "Windows 10".equals(System.getProperty("os.name")) ) {
+            URI = "http://localhost:8080";
+        } else {
+            URI = schema + "://" + address + ":" + port;
+        }
+
+        RequestEndpoint.healthCheck(URI);
+
         Client client = new Client();
 
         for (int i = 0; i < areaSize; i++) {
@@ -63,7 +64,6 @@ public class Main {
                         //изменяем число попыток раскопок и текущую глубину
                         client.getLicense().setDigUsed(client.getLicense().getDigUsed() + 1);
                         depth++;
-
                         //Изменяем число сокровищ для координаты x,y
                         treasureCount -= treasures.length;
 

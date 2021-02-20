@@ -1,9 +1,6 @@
 package ru.bigint;
 
-import ru.bigint.model.DigRequest;
-import ru.bigint.model.ExploreRequest;
-import ru.bigint.model.Explore;
-import ru.bigint.model.License;
+import ru.bigint.model.*;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -45,10 +42,17 @@ public class RequestEndpoint {
 
     public static int[] cash(String uri, String treasure) throws IOException, InterruptedException {
         String body = Request.doPost(uri + "/cash", treasure);
-        MapperUtils<int[]> exploreMapper = new MapperUtils<>(int[].class);
-        int[] money = exploreMapper.stringToObject(body);
+        MapperUtils<int[]> mapper = new MapperUtils<>(int[].class);
+        int[] money = mapper.stringToObject(body);
         Logger.log( Arrays.stream(money).mapToObj(item -> ((Integer) item).toString()).collect(Collectors.joining(", ")) );
         return money;
     }
 
+    public static HealthCheck healthCheck(String uri) throws IOException, InterruptedException {
+        String body = Request.doGet(uri + "/health-check");
+        MapperUtils<HealthCheck> mapper = new MapperUtils<>(HealthCheck.class);
+        HealthCheck healthCheck = mapper.stringToObject(body);
+        Logger.log(healthCheck);
+        return healthCheck;
+    }
 }
