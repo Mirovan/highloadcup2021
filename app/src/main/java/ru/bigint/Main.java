@@ -17,6 +17,10 @@ public class Main {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         Main main = new Main();
+
+        Logger.log("--- Running App ---");
+        Thread.sleep(5000);
+        Logger.log("--- Play Game ---");
         main.runGame();
     }
 
@@ -25,11 +29,11 @@ public class Main {
 
         Logger.log("OS: " + System.getProperty("os.name"));
 //        String URI = "http://localhost:8080";
-        String URI = "http://192.168.1.176:8080";
-//        String URI = schema + "://" + address + ":" + port;
+//        String URI = "http://192.168.1.176:8080";
+        String URI = schema + "://" + address + ":" + port;
         Logger.log("URI: " + URI);
 
-        RequestEndpoint.healthCheck(URI);
+//        RequestEndpoint.healthCheck(URI);
 
         Client client = new Client();
 
