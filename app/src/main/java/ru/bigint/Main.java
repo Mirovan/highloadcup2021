@@ -24,7 +24,7 @@ public class Main {
     private final static int areaSize = 200;
     private final static int maxDepth = 10;
 
-    private final static int threadsCount = 3;
+    private final static int threadsCount = 5;
 
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -116,18 +116,18 @@ public class Main {
         //коллекция для хранения сокровищ. ключ - число сокровищ, значения - список координат
         Map<Integer, List<Point>> treasureMap = new TreeMap<>();
 
-        //Опрашиваем всю карту и получаем сет из клеток с максимальным числом сокровищ
+        //Опрашиваем всю карту в заданных границах и получаем мапу
         for (int x = 1; x < areaSize; x++) {
             int y = 1;
             while (y < areaSize) {
                 //Делаем threadsCount-число асинхронных запросов на запрос /explore
                 List<ExploreRequest> requestList = new ArrayList<>();
                 for (int k = 0; k < threadsCount && y < areaSize; k++) {
+                    //### Explore ###
                     ExploreRequest exploreRequest = new ExploreRequest(x, y, 1, 1);
                     requestList.add(exploreRequest);
                     y++;
                 }
-
 
                 //Получаем результаты асинхронных запросов
                 List<CompletableFuture<String>> cfReponseList = Request.concurrentCalls(URI+"/explore", requestList);
@@ -145,7 +145,7 @@ public class Main {
                         Explore explore = mapper.convertToObject(responseBody);
 
                         //Если сокровища в точке есть
-                        if (explore != null) {
+                        if (explore != null && explore.getAmount() != 0) {
                             int treasureCount = explore.getAmount();
 
                             //обновляем список с координатами сокровищ
