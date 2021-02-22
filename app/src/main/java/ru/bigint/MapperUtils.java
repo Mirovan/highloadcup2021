@@ -28,13 +28,13 @@ public class MapperUtils<T> {
                 if (obj instanceof String[]) {
                     String[] arr = (String[]) obj;
                     String strObj = Arrays.stream(arr).collect(Collectors.joining());
-                    Logger.log("Converted object: " + strObj);
+//                    Logger.log("Converted object: " + strObj);
                 } else if (obj instanceof int[]) {
                     int[] arr = (int[]) obj;
                     String strObj = Arrays.stream(arr).mapToObj(item -> ((Integer) item).toString()).collect(Collectors.joining(", "));
-                    Logger.log("Converted object: " + strObj);
+//                    Logger.log("Converted object: " + strObj);
                 } else {
-                    Logger.log("Converted object: " + obj);
+//                    Logger.log("Converted object: " + obj);
                 }
             } else {
                 Logger.log("Converted object is null");
