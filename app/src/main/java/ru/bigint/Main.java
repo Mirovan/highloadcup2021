@@ -28,27 +28,24 @@ public class Main {
 
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        Logger.log("--- Running App ---");
+//        Logger.log("--- Running App ---");
 
         long startTime = System.currentTimeMillis();
 
         Main main = new Main();
-
-//        Thread.sleep(5000);
         main.runGame();
 
-        Logger.log("Time: " + (System.currentTimeMillis() - startTime));
-//        System.out.println("Time: " + (System.currentTimeMillis() - startTime));
+//        Logger.log("Time: " + (System.currentTimeMillis() - startTime));
     }
 
     private void runGame() throws IOException, InterruptedException {
         long time = System.currentTimeMillis();
-        Logger.log("--- Play Game ---");
+//        Logger.log("--- Play Game ---");
 
         int resMoney = 0;
 
-        Logger.log("OS: " + System.getProperty("os.name"));
-        Logger.log("URI: " + URI);
+//        Logger.log("OS: " + System.getProperty("os.name"));
+//        Logger.log("URI: " + URI);
 
 //        RequestEndpoint.healthCheck(URI);
 
@@ -61,8 +58,6 @@ public class Main {
         for (int x = 1; x < areaSize; x++) {
             int y = 1;
             while (y < areaSize) {
-                int tempY = y;
-
                 //Делаем threadsCount-число асинхронных запросов на запрос /explore
                 List<ExploreRequest> requestList = new ArrayList<>();
                 for (int k = 0; k < threadsCount && y < areaSize; k++) {
