@@ -24,7 +24,7 @@ public class Main {
     private final static int areaSize = 200;
     private final static int maxDepth = 10;
 
-    private final static int threadsCount = 5;
+    private final static int threadsCount = 10;
 
 
     public static void main(String[] args) throws IOException, InterruptedException {
