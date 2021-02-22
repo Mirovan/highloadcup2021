@@ -24,7 +24,7 @@ public class Main {
     private final static int areaSize = 500;
     private final static int maxDepth = 10;
 
-    private final static int threadsCount = 6;
+    private final static int threadsCount = 3;
 
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -172,6 +172,9 @@ public class Main {
         }
         Logger.log("Treasures count: " + strTreasuresCount);
         Logger.log("Time for get treasure map: " + (System.currentTimeMillis() - time));
+
+        System.out.println("Treasures count: " + strTreasuresCount);
+        System.out.println("Time for get treasure map: " + (System.currentTimeMillis() - time));
 
 
         return treasureMap;
