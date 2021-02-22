@@ -54,14 +54,15 @@ public class Main {
         Map<Integer, List<Point>> treasureMap = getTreasureMap();
 
         List<Integer> treasureAmountList = new ArrayList<>(treasureMap.keySet());
-        for (int treasureCount = treasureAmountList.size()-1; treasureCount >= 0; treasureCount++) {
-            List<Point> points = treasureMap.get(treasureCount);
+        for (int pointTreasure = treasureAmountList.size()-1; pointTreasure >= 0; pointTreasure--) {
+            List<Point> points = treasureMap.get(pointTreasure);
             for (Point point: points) {
                 Logger.log("--- New Point ---");
                 Logger.log("x = " + point.getX() + "; y = " + point.getY());
 
                 //Пока есть сокровища и глубина позволяет - копать
                 int depth = 1;
+                int treasureCount = pointTreasure;
                 while (treasureCount > 0 && depth <= maxDepth) {
                     //Проверка - если нет лицензии на раскопки или нельзя копать - то надо получить лицензию
                     if (client.getLicense() == null
