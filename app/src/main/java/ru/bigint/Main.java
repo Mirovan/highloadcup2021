@@ -54,37 +54,40 @@ public class Main {
                 ExploreRequest exploreRequest = new ExploreRequest(x, y, 1, 1);
                 Explore explore = RequestEndpoint.explore(URI, exploreRequest);
 
-                int treasureCount = explore.getAmount();
-                //Пока есть сокровища и глубина позволяет - копать
-                int depth = 1;
-                while (treasureCount > 0 && depth <= maxDepth) {
-                    //Проверка - если нет лицензии на раскопки или нельзя копать - то надо получить лицензию
-                    if (client.getLicense() == null
-                            || client.getLicense().getDigUsed() >= client.getLicense().getDigAllowed()) {
-                        License license = RequestEndpoint.postLicense(URI, new int[]{});
-                        client.setLicense(license);
-                    }
+                if (explore != null) {
+                    int treasureCount = explore.getAmount();
+                    //Пока есть сокровища и глубина позволяет - копать
+                    int depth = 1;
+                    while (treasureCount > 0 && depth <= maxDepth) {
+                        //Проверка - если нет лицензии на раскопки или нельзя копать - то надо получить лицензию
+                        if (client.getLicense() == null
+                                || client.getLicense().getDigUsed() >= client.getLicense().getDigAllowed()) {
+                            License license = RequestEndpoint.postLicense(URI, new int[]{});
+                            client.setLicense(license);
+                        }
 
-                    //Если можно копать
-                    if (client.getLicense() != null && client.getLicense().getDigUsed() < client.getLicense().getDigAllowed()) {
-                        //копаем - и находим список сокровищ на уровне
-                        DigRequest digRequest = new DigRequest(client.getLicense().getId(), x, y, depth);
-                        String[] treasures = RequestEndpoint.dig(URI, digRequest);
+                        //Если можно копать
+                        if (client.getLicense() != null && client.getLicense().getDigUsed() < client.getLicense().getDigAllowed()) {
+                            //копаем - и находим список сокровищ на уровне
+                            DigRequest digRequest = new DigRequest(client.getLicense().getId(), x, y, depth);
+                            String[] treasures = RequestEndpoint.dig(URI, digRequest);
 
-                        //изменяем число попыток раскопок и текущую глубину
-                        client.getLicense().setDigUsed(client.getLicense().getDigUsed() + 1);
-                        depth++;
-                        //Изменяем число сокровищ для координаты x,y
-                        if (treasures != null) treasureCount -= treasures.length;
+                            //изменяем число попыток раскопок и текущую глубину
+                            client.getLicense().setDigUsed(client.getLicense().getDigUsed() + 1);
+                            depth++;
+                            //Изменяем число сокровищ для координаты x,y
+                            if (treasures != null) treasureCount -= treasures.length;
 
-                        //Меняем сокровища на золото
-                        for (String treasure : treasures) {
-                            int[] money = RequestEndpoint.cash(URI, treasure);
-                            resMoney += money[0];
+                            //Меняем сокровища на золото
+                            for (String treasure : treasures) {
+                                int[] money = RequestEndpoint.cash(URI, treasure);
+                                if (money != null && money.length > 0) {
+                                    resMoney += money[0];
+                                }
+                            }
                         }
                     }
                 }
-
 
             }
         }
