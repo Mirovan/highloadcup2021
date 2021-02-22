@@ -21,7 +21,7 @@ public class Main {
     private final static String schema = "http";
     private final static String URI = schema + "://" + address + ":" + port;
 
-    private final static int areaSize = 500;
+    private final static int areaSize = 200;
     private final static int maxDepth = 10;
 
     private final static int threadsCount = 3;
@@ -168,7 +168,7 @@ public class Main {
 
         String strTreasuresCount = "";
         for (Integer k : treasureMap.keySet()) {
-            strTreasuresCount += k + ", ";
+            strTreasuresCount += k + "(count=" + treasureMap.get(k).size() + "), ";
         }
         Logger.log("Treasures count: " + strTreasuresCount);
         Logger.log("Time for get treasure map: " + (System.currentTimeMillis() - time));
