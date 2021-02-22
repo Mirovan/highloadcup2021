@@ -21,10 +21,10 @@ public class Main {
     private final static String schema = "http";
     private final static String URI = schema + "://" + address + ":" + port;
 
-    private final static int areaSize = 350;
+    private final static int areaSize = 500;
     private final static int maxDepth = 10;
 
-    private final static int threadsCount = 2;
+    private final static int threadsCount = 20;
 
 
     public static void main(String[] args) throws IOException, InterruptedException {
