@@ -75,14 +75,17 @@ public class Main {
                             //изменяем число попыток раскопок и текущую глубину
                             client.getLicense().setDigUsed(client.getLicense().getDigUsed() + 1);
                             depth++;
-                            //Изменяем число сокровищ для координаты x,y
-                            if (treasures != null) treasureCount -= treasures.length;
 
-                            //Меняем сокровища на золото
-                            for (String treasure : treasures) {
-                                int[] money = RequestEndpoint.cash(URI, treasure);
-                                if (money != null && money.length > 0) {
-                                    resMoney += money[0];
+                            if (treasures != null) {
+                                //Изменяем число сокровищ для координаты x,y
+                                treasureCount -= treasures.length;
+
+                                //Меняем сокровища на золото
+                                for (String treasure : treasures) {
+                                    int[] money = RequestEndpoint.cash(URI, treasure);
+                                    if (money != null && money.length > 0) {
+                                        resMoney += money[0];
+                                    }
                                 }
                             }
                         }
