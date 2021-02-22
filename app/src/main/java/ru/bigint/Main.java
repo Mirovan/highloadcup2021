@@ -41,15 +41,69 @@ public class Main {
     private void runGame() throws IOException, InterruptedException {
         long time = System.currentTimeMillis();
 //        Logger.log("--- Play Game ---");
-
-        int resMoney = 0;
-
 //        Logger.log("OS: " + System.getProperty("os.name"));
 //        Logger.log("URI: " + URI);
+
+        int resMoney = 0;
 
 //        RequestEndpoint.healthCheck(URI);
 
         Client client = new Client();
+
+        //коллекция для хранения сокровищ. ключ - число сокровищ, значения - список координат
+        Map<Integer, List<Point>> treasureMap = getTreasureMap();
+
+        List<Integer> treasureAmountList = new ArrayList<>(treasureMap.keySet());
+        for (int treasureCount = treasureAmountList.size()-1; treasureCount >= 0; treasureCount++) {
+            List<Point> points = treasureMap.get(treasureCount);
+            for (Point point: points) {
+                Logger.log("--- New Point ---");
+                Logger.log("x = " + point.getX() + "; y = " + point.getY());
+
+                //Пока есть сокровища и глубина позволяет - копать
+                int depth = 1;
+                while (treasureCount > 0 && depth <= maxDepth) {
+                    //Проверка - если нет лицензии на раскопки или нельзя копать - то надо получить лицензию
+                    if (client.getLicense() == null
+                            || client.getLicense().getDigUsed() >= client.getLicense().getDigAllowed()) {
+                        License license = RequestEndpoint.postLicense(URI, new int[]{});
+                        client.setLicense(license);
+                    }
+
+                    //Если можно копать
+                    if (client.getLicense() != null && client.getLicense().getDigUsed() < client.getLicense().getDigAllowed()) {
+                        //копаем - и находим список сокровищ на уровне
+                        DigRequest digRequest = new DigRequest(client.getLicense().getId(), point.getX(), point.getY(), depth);
+                        String[] treasures = RequestEndpoint.dig(URI, digRequest);
+
+                        //изменяем число попыток раскопок и текущую глубину
+                        client.getLicense().setDigUsed(client.getLicense().getDigUsed() + 1);
+                        depth++;
+
+                        if (treasures != null) {
+                            //Изменяем число сокровищ для координаты x,y
+                            treasureCount -= treasures.length;
+
+                            //Меняем сокровища на золото
+                            for (String treasure : treasures) {
+                                int[] money = RequestEndpoint.cash(URI, treasure);
+                                if (money != null && money.length > 0) {
+                                    resMoney += money[0];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        Logger.log("=================================");
+        Logger.log("Result : " + resMoney);
+    }
+
+
+    private Map<Integer, List<Point>> getTreasureMap() {
+        long time = System.currentTimeMillis();
 
         //коллекция для хранения сокровищ. ключ - число сокровищ, значения - список координат
         Map<Integer, List<Point>> treasureMap = new TreeMap<>();
@@ -97,67 +151,22 @@ public class Main {
                             treasureMap.put(treasureCount, pointList);
                         }
 
-                    } catch (ExecutionException e) {
+                    } catch (ExecutionException | InterruptedException e) {
                         Logger.log(e.getMessage());
                     }
                 }
-
             }
         }
-
 
         String strTreasuresCount = "";
         for (Integer k : treasureMap.keySet()) {
             strTreasuresCount += k + ", ";
         }
-        System.out.println("Treasures count: " + strTreasuresCount);
-        System.out.println("Time for get treasure map: " + (System.currentTimeMillis() - time));
+        Logger.log("Treasures count: " + strTreasuresCount);
+        Logger.log("Time for get treasure map: " + (System.currentTimeMillis() - time));
 
 
-        List<Integer> treasureAmountList = new ArrayList<>(treasureMap.keySet());
-        for (int treasureCount = treasureAmountList.size()-1; treasureCount >= 0; treasureCount++) {
-            List<Point> points = treasureMap.get(treasureCount);
-            for (Point point: points) {
-                //Пока есть сокровища и глубина позволяет - копать
-                int depth = 1;
-                while (treasureCount > 0 && depth <= maxDepth) {
-                    //Проверка - если нет лицензии на раскопки или нельзя копать - то надо получить лицензию
-                    if (client.getLicense() == null
-                            || client.getLicense().getDigUsed() >= client.getLicense().getDigAllowed()) {
-                        License license = RequestEndpoint.postLicense(URI, new int[]{});
-                        client.setLicense(license);
-                    }
-
-                    //Если можно копать
-                    if (client.getLicense() != null && client.getLicense().getDigUsed() < client.getLicense().getDigAllowed()) {
-                        //копаем - и находим список сокровищ на уровне
-                        DigRequest digRequest = new DigRequest(client.getLicense().getId(), point.getX(), point.getY(), depth);
-                        String[] treasures = RequestEndpoint.dig(URI, digRequest);
-
-                        //изменяем число попыток раскопок и текущую глубину
-                        client.getLicense().setDigUsed(client.getLicense().getDigUsed() + 1);
-                        depth++;
-
-                        if (treasures != null) {
-                            //Изменяем число сокровищ для координаты x,y
-                            treasureCount -= treasures.length;
-
-                            //Меняем сокровища на золото
-                            for (String treasure : treasures) {
-                                int[] money = RequestEndpoint.cash(URI, treasure);
-                                if (money != null && money.length > 0) {
-                                    resMoney += money[0];
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-
-        Logger.log("=================================");
-        Logger.log("Result : " + resMoney);
+        return treasureMap;
     }
 
 }
