@@ -73,7 +73,7 @@ public class Request {
                             try {
                                 requestBody = objectMapper.writeValueAsString(item);
                             } catch (JsonProcessingException e) {
-                                Logger.log(e.getMessage());
+//                                Logger.log(e.getMessage());
                             }
 
                             HttpRequest request =
@@ -86,7 +86,7 @@ public class Request {
 
                             CompletableFuture<String> res = httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                                     .thenApply(response -> {
-                                        Logger.log("Response code: " + response.statusCode());
+//                                        Logger.log("Response code: " + response.statusCode());
                                         return response;
                                     })
                                     .thenApply(HttpResponse::body);

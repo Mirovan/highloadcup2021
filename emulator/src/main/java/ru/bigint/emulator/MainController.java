@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.bigint.emulator.model.*;
 
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController
 public class MainController {
