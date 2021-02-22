@@ -10,8 +10,8 @@ import javax.annotation.PostConstruct;
 @Component
 public class AreaData {
 
-    private final int size = 3500;
-    private final int depth = 10;
+    private final int size = 5;
+    private final int depth = 4;
 
     public int getDepth() {
         return depth;

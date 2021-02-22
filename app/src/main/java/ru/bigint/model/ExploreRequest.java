@@ -47,4 +47,14 @@ public class ExploreRequest {
     public void setSizeY(int sizeY) {
         this.sizeY = sizeY;
     }
+
+    @Override
+    public String toString() {
+        return "ExploreRequest{" +
+                "posX=" + posX +
+                ", posY=" + posY +
+                ", sizeX=" + sizeX +
+                ", sizeY=" + sizeY +
+                '}';
+    }
 }

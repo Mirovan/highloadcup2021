@@ -1,20 +1,39 @@
 package ru.bigint.emulator;
 
 import com.fasterxml.jackson.databind.node.TextNode;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.bigint.emulator.model.*;
+
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController
 public class MainController {
 
     final AreaData areaData;
+//    private static AtomicInteger queryNum = new AtomicInteger(0);
+    volatile int queryNum;
 
     public MainController(AreaData areaData) {
         this.areaData = areaData;
     }
+
+    @GetMapping("/ping/{id}")
+    public String ping(@PathVariable int id) throws InterruptedException {
+//        queryNum.getAndIncrement();
+        queryNum++;
+        Random rnd = new Random();
+        int k = rnd.nextInt(2);
+        if (k == 1) {
+            System.out.println("sleep (" + k + "); res=" + queryNum + "; id=" + id);
+            Thread.sleep(1000);
+        } else {
+            System.out.println("work (" + k + "); res=" + queryNum + "; id=" + id);
+        }
+
+        return "queryNum=" + queryNum + "; id=" + id;
+    }
+
 
     @GetMapping("/health-check")
     public HealthCheckResponse getHealthCheck() {
@@ -31,13 +50,13 @@ public class MainController {
     }
 
 
-    @GetMapping("/licences")
+    @GetMapping("/licenses")
     public LicencesResponse getLicences() {
         return new LicencesResponse(1, 3, 0);
     }
 
 
-    @PostMapping("/licences")
+    @PostMapping("/licenses")
     public LicencesResponse postLicences(@RequestBody int[] money) {
         return new LicencesResponse(1, 3, 0);
     }

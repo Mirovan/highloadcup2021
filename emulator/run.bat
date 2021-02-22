@@ -1,0 +1,1 @@
+java -Dserver.port=8000 -jar target\emulator-0.0.1-SNAPSHOT.jar
