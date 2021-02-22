@@ -24,7 +24,7 @@ public class Main {
     private final static int areaSize = 500;
     private final static int maxDepth = 10;
 
-    private final static int threadsCount = 20;
+    private final static int threadsCount = 12;
 
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -67,6 +67,7 @@ public class Main {
                     //Проверка - если нет лицензии на раскопки или нельзя копать - то надо получить лицензию
                     if (client.getLicense() == null
                             || client.getLicense().getDigUsed() >= client.getLicense().getDigAllowed()) {
+                        //### LICENSE ###
                         License license = RequestEndpoint.postLicense(URI, new int[]{});
                         client.setLicense(license);
                     }
@@ -75,6 +76,7 @@ public class Main {
                     if (client.getLicense() != null && client.getLicense().getDigUsed() < client.getLicense().getDigAllowed()) {
                         //копаем - и находим список сокровищ на уровне
                         DigRequest digRequest = new DigRequest(client.getLicense().getId(), point.getX(), point.getY(), depth);
+                        //### DIG ###
                         String[] treasures = RequestEndpoint.dig(URI, digRequest);
 
                         //изменяем число попыток раскопок и текущую глубину
@@ -87,6 +89,7 @@ public class Main {
 
                             //Меняем сокровища на золото
                             for (String treasure : treasures) {
+                                //### CASH ###
                                 int[] money = RequestEndpoint.cash(URI, treasure);
                                 if (money != null && money.length > 0) {
                                     resMoney += money[0];
@@ -103,6 +106,10 @@ public class Main {
     }
 
 
+    /**
+     * Возвращает карту сокровищ.
+     * ключ - число сокровищ, значения - список координат в которых хранится суммарное число сокровищ
+     * */
     private Map<Integer, List<Point>> getTreasureMap() {
         long time = System.currentTimeMillis();
 
