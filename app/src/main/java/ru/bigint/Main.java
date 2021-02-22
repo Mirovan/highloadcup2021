@@ -10,18 +10,20 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class Main {
-    private final static String address = System.getenv("ADDRESS");
+    private static String address = "localhost";
+    static {
+        if (System.getenv("ADDRESS") != null) {
+            address = System.getenv("ADDRESS");
+        }
+    }
     private final static String port = "8000";
     private final static String schema = "http";
     private final static String URI = schema + "://" + address + ":" + port;
 
-//  private final static String URI = "http://localhost:8080";
-//  private final static String URI = "http://192.168.1.176:8080";
-
     private final static int areaSize = 3500;
     private final static int maxDepth = 10;
 
-    private final static int threadsCount = 5;
+    private final static int threadsCount = 2;
 
 
     public static void main(String[] args) throws IOException, InterruptedException {
