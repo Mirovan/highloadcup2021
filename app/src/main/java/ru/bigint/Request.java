@@ -67,7 +67,7 @@ public class Request {
             }
 
             retry++;
-            if (response != null && response.statusCode() != 200) break;
+            if (response != null && response.statusCode() == 200) break;
         } while (retry < retryCount);
 
         return responseBody;
