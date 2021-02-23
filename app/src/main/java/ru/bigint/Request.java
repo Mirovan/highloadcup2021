@@ -17,8 +17,10 @@ import java.util.stream.Collectors;
 
 public class Request {
 
+    private static int retryCount = 5;
+
     private static HttpClient httpClient = HttpClient.newBuilder()
-            .version(HttpClient.Version.HTTP_2)
+//            .version(HttpClient.Version.HTTP_2)
 //            .connectTimeout(Duration.ofSeconds(10))
             .build();
 
@@ -42,26 +44,30 @@ public class Request {
                 HttpRequest.newBuilder()
                         .uri(URI.create(url))
                         .header("Content-Type", "application/json; charset=UTF-8")
-//                        .timeout(Duration.ofSeconds(2))
+                        .timeout(Duration.ofSeconds(1))
                         .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                         .build();
 
-        CompletableFuture<String> cf = httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(response -> {
-                    Logger.log("Response code: " + response.statusCode());
-                    return response;
-                })
-                .thenApply(HttpResponse::body);
+        HttpResponse<String> response = null;
+        String responseBody = null;
+        int retry = 0;
+        do {
+            CompletableFuture<HttpResponse<String>> cf =
+                    httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString());
 
-        String res = null;
-        try {
-            res = cf.get();
-            Logger.log("Response: " + res);
-        } catch (ExecutionException e) {
-            Logger.log(e.getMessage());
-        }
+            try {
+                response = cf.get();
+                responseBody = response.body();
+                Logger.log("Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
+//                Logger.log("Response body: " + response.body());
+            } catch (ExecutionException e) {
+//                Logger.log(e.getMessage());
+            }
 
-        return res;
+            retry++;
+        } while (retry < retryCount && response.statusCode() != 200);
+
+        return responseBody;
     }
 
 

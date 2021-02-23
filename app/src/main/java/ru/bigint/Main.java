@@ -21,7 +21,7 @@ public class Main {
     private final static String schema = "http";
     private final static String URI = schema + "://" + address + ":" + port;
 
-    private final static int areaSize = 300;
+    private final static int areaSize = 250;
     private final static int maxDepth = 10;
 
     private final static int threadsCount = 5;
@@ -160,7 +160,7 @@ public class Main {
                         }
 
                     } catch (ExecutionException | InterruptedException e) {
-                        Logger.log(e.getMessage());
+//                        Logger.log(e.getMessage());
                     }
                 }
             }
