@@ -18,16 +18,16 @@ import java.util.stream.Collectors;
 public class Request {
 
     private static String SERVER_ADDRESS = "localhost";
+
     static {
         if (System.getenv("ADDRESS") != null) {
             SERVER_ADDRESS = System.getenv("ADDRESS");
         }
     }
+
     private final static String SERVER_PORT = "8000";
     private final static String SERVER_SCHEMA = "http";
     private final static String SERVER_URI = SERVER_SCHEMA + "://" + SERVER_ADDRESS + ":" + SERVER_PORT;
-
-    private static int retryCount = 5;
 
     private static HttpClient httpClient = HttpClient.newBuilder()
 //            .version(HttpClient.Version.HTTP_2)
@@ -48,10 +48,8 @@ public class Request {
     }
 
 
-    public static String doPost(RequestEnum requestEnum, Object requestObject) throws IOException, InterruptedException {
+    public static HttpResponse<String> doPost(RequestEnum requestEnum, Object requestObject) throws IOException, InterruptedException {
         String url = SERVER_URI + requestEnum.getRequest();
-
-        Logger.log(requestEnum, requestObject);
 
         ObjectMapper objectMapper = new ObjectMapper();
         String requestBody = objectMapper.writeValueAsString(requestObject);
@@ -65,28 +63,18 @@ public class Request {
                         .build();
 
         HttpResponse<String> response = null;
-        String responseBody = null;
-        int retry = 1;
-        do {
-//            CompletableFuture<HttpResponse<String>> cf =
-//                    httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString());
-            CompletableFuture<HttpResponse<String>> cf =
-                    httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+        CompletableFuture<HttpResponse<String>> cf =
+                httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString());
 
-            try {
-                response = cf.get();
-                responseBody = response.body();
-                Logger.log(requestEnum, "URL: " + requestEnum.getRequest() + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
+        try {
+            response = cf.get();
 //                Logger.log("Response body: " + response.body());
-            } catch (ExecutionException e) {
+        } catch (ExecutionException e) {
 //                Logger.log(e.getMessage());
-            }
+        }
 
-            retry++;
-            if (response != null && response.statusCode() == 200) break;
-        } while (retry < retryCount);
 
-        return responseBody;
+        return response;
     }
 
 

@@ -3,6 +3,7 @@ package ru.bigint;
 import ru.bigint.model.*;
 
 import java.io.IOException;
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,45 +16,104 @@ public class RequestEndpoint {
 
     private final static int threadsCount = 4;
 
+    private static int retryCount = 5;
+
     public static Explore explore(ExploreRequest exploreRequest) throws IOException, InterruptedException {
 //        Logger.log("-- Explore --");
-        String body = Request.doPost(RequestEnum.EXPLORE, exploreRequest);
-        MapperUtils<Explore> mapper = new MapperUtils<>(Explore.class);
-        Explore explore = mapper.convertToObject(body);
-        return explore;
+//        String body = Request.doPost(RequestEnum.EXPLORE, exploreRequest);
+//        MapperUtils<Explore> mapper = new MapperUtils<>(Explore.class);
+//        Explore explore = mapper.convertToObject(body);
+//        return explore;
+        return null;
     }
 
-    public static License postLicense(int[] money) throws IOException, InterruptedException {
+
+    public static License postLicense(int[] licenseRequest) throws IOException, InterruptedException {
 //        Logger.log("-- Licence post --");
-        String body = Request.doPost(RequestEnum.LICENSES, money);
-        MapperUtils<License> mapper = new MapperUtils<>(License.class);
-        License license = mapper.convertToObject(body);
+        Logger.log(RequestEnum.LICENSES, licenseRequest);
+
+        HttpResponse<String> response = null;
+        int retry = 1;
+        do {
+            response = Request.doPost(RequestEnum.LICENSES, licenseRequest);
+            Logger.log(RequestEnum.LICENSES, "URL: " + RequestEnum.LICENSES + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
+
+            retry++;
+            if (response.statusCode() == 200) {
+                break;
+            }
+        } while (retry < retryCount);
+
+        License license = null;
+        if (response.statusCode() == 200) {
+            MapperUtils<License> mapper = new MapperUtils<>(License.class);
+            license = mapper.convertToObject(response.body());
+        }
+
         return license;
     }
+
 
     public static License license() throws IOException, InterruptedException {
 //        Logger.log("-- Licence post --");
-        String body = Request.doGet(RequestEnum.LICENSES);
-        MapperUtils<License> mapper = new MapperUtils<>(License.class);
-        License license = mapper.convertToObject(body);
-        return license;
+//        String body = Request.doGet(RequestEnum.LICENSES);
+//        MapperUtils<License> mapper = new MapperUtils<>(License.class);
+//        License license = mapper.convertToObject(body);
+//        return license;
+        return null;
     }
+
 
     public static String[] dig(DigRequest digRequest) throws IOException, InterruptedException {
 //        Logger.log("-- Dig --");
-        String body = Request.doPost(RequestEnum.DIG, digRequest);
-        MapperUtils<String[]> mapper = new MapperUtils<>(String[].class);
-        String[] dig = mapper.convertToObject(body);
+        Logger.log(RequestEnum.DIG, digRequest);
+
+        HttpResponse<String> response;
+        int retry = 1;
+        do {
+            response = Request.doPost(RequestEnum.DIG, digRequest);
+            Logger.log(RequestEnum.DIG, "URL: " + RequestEnum.DIG + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
+
+            retry++;
+            if (response.statusCode() == 200 || response.statusCode() == 404) {
+                break;
+            }
+        } while (retry < retryCount);
+
+        String[] dig = null;
+        if (response.statusCode() == 200) {
+            MapperUtils<String[]> mapper = new MapperUtils<>(String[].class);
+            dig = mapper.convertToObject(response.body());
+        }
         return dig;
     }
 
+
     public static int[] cash(String treasure) throws IOException, InterruptedException {
 //        Logger.log("-- Cash --");
-        String body = Request.doPost(RequestEnum.CASH, treasure);
-        MapperUtils<int[]> mapper = new MapperUtils<>(int[].class);
-        int[] money = mapper.convertToObject(body);
+        Logger.log(RequestEnum.CASH, treasure);
+
+        HttpResponse<String> response;
+        int retry = 1;
+        do {
+            response = Request.doPost(RequestEnum.CASH, treasure);
+            Logger.log(RequestEnum.CASH, "URL: " + RequestEnum.CASH + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
+
+            retry++;
+            if (response.statusCode() == 200) {
+                break;
+            }
+        } while (retry < retryCount);
+
+        int[] money = null;
+        if (response.statusCode() == 200) {
+            MapperUtils<int[]> mapper = new MapperUtils<>(int[].class);
+            money = mapper.convertToObject(response.body());
+        }
+
         return money;
     }
+
 
     public static String healthCheck() throws IOException, InterruptedException {
         String body = Request.doGet(RequestEnum.HEALTH_CHECK);
