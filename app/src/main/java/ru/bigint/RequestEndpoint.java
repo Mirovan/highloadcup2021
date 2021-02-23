@@ -16,7 +16,7 @@ public class RequestEndpoint {
 
     private final static int threadsCount = 5;
 
-    private static int retryCount = 5;
+    private static int retryCount = 15;
 
     public static Explore explore(ExploreRequest exploreRequest) throws IOException, InterruptedException {
 //        Logger.log("-- Explore --");
