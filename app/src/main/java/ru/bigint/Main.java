@@ -55,7 +55,7 @@ public class Main {
                         Balance balance = Actions.balance();
 
                         //### LICENSE ###
-                        License license = Actions.getLicense(new int[]{});
+                        License license = Actions.license(new int[]{});
                         client.setLicense(license);
                         Logger.log(RequestAction.ALL, license);
                     }

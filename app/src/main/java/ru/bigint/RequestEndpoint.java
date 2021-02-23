@@ -45,7 +45,7 @@ public class RequestEndpoint {
             }
 
             retry++;
-            if (response.statusCode() == 200) {
+            if (response != null && response.statusCode() == 200) {
                 break;
             }
         } while (retry < retryCount);
@@ -86,7 +86,7 @@ public class RequestEndpoint {
             }
 
             retry++;
-            if (response.statusCode() == 200 || response.statusCode() == 404) {
+            if (response != null && (response.statusCode() == 200 || response.statusCode() == 404)) {
                 break;
             }
         } while (retry < retryCount);
@@ -118,7 +118,7 @@ public class RequestEndpoint {
             }
 
             retry++;
-            if (response.statusCode() == 200) {
+            if (response != null && response.statusCode() == 200) {
                 break;
             }
         } while (retry < retryCount);
@@ -156,7 +156,7 @@ public class RequestEndpoint {
             }
 
             retry++;
-            if (response.statusCode() == 200) {
+            if (response != null && response.statusCode() == 200) {
                 break;
             }
         } while (retry < retryCount);

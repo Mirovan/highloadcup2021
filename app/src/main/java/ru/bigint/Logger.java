@@ -1,7 +1,7 @@
 package ru.bigint;
 
 public class Logger {
-    private static RequestAction[] LOGGER_LEVEL = {RequestAction.LICENSES, RequestAction.BALANCE};
+    private static RequestAction[] LOGGER_LEVEL = {RequestAction.LICENSES, RequestAction.BALANCE, RequestAction.CASH};
 
     public static void log(RequestAction requestAction, Object msg) {
         for (RequestAction item: LOGGER_LEVEL) {

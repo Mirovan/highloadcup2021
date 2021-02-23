@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public class Actions {
 
-    public static License getLicense(int[] arr) throws IOException, InterruptedException {
+    public static License license(int[] arr) throws IOException, InterruptedException {
         return RequestEndpoint.postLicense(arr);
     }
 
