@@ -197,6 +197,8 @@ public class RequestEndpoint {
      * Возвращает карту сокровищ в один поток
      * */
     public static Map<Integer, List<Point>> getTreasureMapOneThread() throws IOException, InterruptedException {
+        long time = System.currentTimeMillis();
+
         Map<Integer, List<Point>> treasureMap = new TreeMap<>();
 
         for (int x = 1; x < areaSize; x++) {
@@ -220,6 +222,14 @@ public class RequestEndpoint {
                 }
             }
         }
+
+        String strTreasuresCount = "";
+        for (Integer k : treasureMap.keySet()) {
+            strTreasuresCount += k + "(count=" + treasureMap.get(k).size() + "), ";
+        }
+        Logger.log("Treasures count: " + strTreasuresCount);
+        Logger.log("Time for get treasure map: " + (System.currentTimeMillis() - time));
+
         return treasureMap;
     }
 
