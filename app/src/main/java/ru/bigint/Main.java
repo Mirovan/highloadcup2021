@@ -34,7 +34,7 @@ public class Main {
         Client client = new Client();
 
         //коллекция для хранения сокровищ. ключ - число сокровищ, значения - список координат
-        Map<Integer, List<Point>> treasureMap = RequestEndpoint.getTreasureMapOneThread();
+        Map<Integer, List<Point>> treasureMap = RequestEndpoint.getTreasureMap();
 
         List<Integer> treasureAmountList = new ArrayList<>(treasureMap.keySet());
         for (int pointTreasureCount = treasureAmountList.size()-1; pointTreasureCount >= 0; pointTreasureCount--) {
