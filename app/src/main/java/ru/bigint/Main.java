@@ -6,9 +6,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 public class Main {
 
@@ -57,7 +54,7 @@ public class Main {
                         //### LICENSE ###
                         License license = Actions.getLicense(new int[]{});
                         client.setLicense(license);
-                        Logger.log(RequestEnum.ALL, license);
+                        Logger.log(RequestAction.ALL, license);
                     }
 
                     //Если можно копать

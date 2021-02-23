@@ -30,13 +30,18 @@ public class RequestEndpoint {
 
     public static License postLicense(int[] licenseRequest) throws IOException, InterruptedException {
 //        Logger.log("-- Licence post --");
-        Logger.log(RequestEnum.LICENSES, licenseRequest);
+        RequestAction requestAction = RequestAction.LICENSES;
+        Logger.log(requestAction, licenseRequest);
 
         HttpResponse<String> response = null;
         int retry = 1;
         do {
-            response = Request.doPost(RequestEnum.LICENSES, licenseRequest);
-            Logger.log(RequestEnum.LICENSES, "URL: " + RequestEnum.LICENSES + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
+            response = Request.doPost(requestAction, licenseRequest);
+            if (response != null) {
+                Logger.log(requestAction, "URL: " + requestAction + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
+            } else {
+                Logger.log(requestAction, "URL: " + requestAction + "; Retry: " + retry + "; Response = null: " + response);
+            }
 
             retry++;
             if (response.statusCode() == 200) {
@@ -66,13 +71,18 @@ public class RequestEndpoint {
 
     public static String[] dig(DigRequest digRequest) throws IOException, InterruptedException {
 //        Logger.log("-- Dig --");
-        Logger.log(RequestEnum.DIG, digRequest);
+        RequestAction requestAction = RequestAction.DIG;
+        Logger.log(requestAction, digRequest);
 
         HttpResponse<String> response;
         int retry = 1;
         do {
-            response = Request.doPost(RequestEnum.DIG, digRequest);
-            Logger.log(RequestEnum.DIG, "URL: " + RequestEnum.DIG + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
+            response = Request.doPost(requestAction, digRequest);
+            if (response != null) {
+                Logger.log(requestAction, "URL: " + requestAction + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
+            } else {
+                Logger.log(requestAction, "URL: " + requestAction + "; Retry: " + retry + "; Response = null: " + response);
+            }
 
             retry++;
             if (response.statusCode() == 200 || response.statusCode() == 404) {
@@ -93,13 +103,18 @@ public class RequestEndpoint {
 
     public static int[] cash(String treasure) throws IOException, InterruptedException {
 //        Logger.log("-- Cash --");
-        Logger.log(RequestEnum.CASH, treasure);
+        RequestAction requestAction = RequestAction.DIG;
+        Logger.log(requestAction, treasure);
 
         HttpResponse<String> response;
         int retry = 1;
         do {
-            response = Request.doPost(RequestEnum.CASH, treasure);
-            Logger.log(RequestEnum.CASH, "URL: " + RequestEnum.CASH + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
+            response = Request.doPost(requestAction, treasure);
+            if (response != null) {
+                Logger.log(requestAction, "URL: " + requestAction + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
+            } else {
+                Logger.log(requestAction, "URL: " + requestAction + "; Retry: " + retry + "; Response = null: " + response);
+            }
 
             retry++;
             if (response.statusCode() == 200) {
@@ -118,7 +133,7 @@ public class RequestEndpoint {
 
 
     public static String healthCheck() throws IOException, InterruptedException {
-        String body = Request.doGet(RequestEnum.HEALTH_CHECK);
+        String body = Request.doGet(RequestAction.HEALTH_CHECK);
 //        Logger.log(body);
         return body;
     }
@@ -148,7 +163,7 @@ public class RequestEndpoint {
                 }
 
                 //Получаем результаты асинхронных запросов
-                List<CompletableFuture<String>> cfReponseList = Request.concurrentCalls(RequestEnum.EXPLORE, requestList);
+                List<CompletableFuture<String>> cfReponseList = Request.concurrentCalls(RequestAction.EXPLORE, requestList);
                 for (int i = 0; i < cfReponseList.size(); i++) {
                     CompletableFuture<String> response = cfReponseList.get(i);
                     String responseBody = null;

@@ -35,8 +35,8 @@ public class Request {
             .build();
 
 
-    public static String doGet(RequestEnum requestEnum) throws IOException, InterruptedException {
-        String url = SERVER_URI + requestEnum.getRequest();
+    public static String doGet(RequestAction requestAction) throws IOException, InterruptedException {
+        String url = SERVER_URI + requestAction.getRequest();
 
         HttpRequest request =
                 HttpRequest.newBuilder()
@@ -48,8 +48,8 @@ public class Request {
     }
 
 
-    public static HttpResponse<String> doPost(RequestEnum requestEnum, Object requestObject) throws IOException, InterruptedException {
-        String url = SERVER_URI + requestEnum.getRequest();
+    public static HttpResponse<String> doPost(RequestAction requestAction, Object requestObject) throws IOException, InterruptedException {
+        String url = SERVER_URI + requestAction.getRequest();
 
         ObjectMapper objectMapper = new ObjectMapper();
         String requestBody = objectMapper.writeValueAsString(requestObject);
@@ -78,8 +78,8 @@ public class Request {
     }
 
 
-    public static List<CompletableFuture<String>> concurrentCalls(RequestEnum requestEnum, final List<ExploreRequest> requestList) {
-        String url = SERVER_URI + requestEnum.getRequest();
+    public static List<CompletableFuture<String>> concurrentCalls(RequestAction requestAction, final List<ExploreRequest> requestList) {
+        String url = SERVER_URI + requestAction.getRequest();
 
         return requestList.stream()
                 .map(item -> {
