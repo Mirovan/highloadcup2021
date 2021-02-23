@@ -48,11 +48,13 @@ public class Request {
     }
 
 
-    public static String doPost(RequestEnum requestEnum, Object body) throws IOException, InterruptedException {
+    public static String doPost(RequestEnum requestEnum, Object requestObject) throws IOException, InterruptedException {
         String url = SERVER_URI + requestEnum.getRequest();
 
+        Logger.log(requestEnum, requestObject);
+
         ObjectMapper objectMapper = new ObjectMapper();
-        String requestBody = objectMapper.writeValueAsString(body);
+        String requestBody = objectMapper.writeValueAsString(requestObject);
 
         HttpRequest request =
                 HttpRequest.newBuilder()

@@ -57,6 +57,7 @@ public class Main {
                         //### LICENSE ###
                         License license = Actions.getLicense(new int[]{});
                         client.setLicense(license);
+                        Logger.log(RequestEnum.ALL, license);
                     }
 
                     //Если можно копать

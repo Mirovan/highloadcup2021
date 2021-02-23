@@ -12,7 +12,6 @@ public class Actions {
     public static String[] dig(Client client, Point point, int depth) throws IOException, InterruptedException {
         DigRequest digRequest = new DigRequest(client.getLicense().getId(), point.getX(), point.getY(), depth);
         String[] treasures = RequestEndpoint.dig(digRequest);
-
         return treasures;
     }
 

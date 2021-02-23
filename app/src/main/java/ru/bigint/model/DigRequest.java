@@ -47,4 +47,14 @@ public class DigRequest {
     public void setDepth(int depth) {
         this.depth = depth;
     }
+
+    @Override
+    public String toString() {
+        return "DigRequest{" +
+                "licenseID=" + licenseID +
+                ", posX=" + posX +
+                ", posY=" + posY +
+                ", depth=" + depth +
+                '}';
+    }
 }
