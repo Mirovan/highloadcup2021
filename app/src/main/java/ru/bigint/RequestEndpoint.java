@@ -20,11 +20,33 @@ public class RequestEndpoint {
 
     public static Explore explore(ExploreRequest exploreRequest) throws IOException, InterruptedException {
 //        Logger.log("-- Explore --");
-//        String body = Request.doPost(RequestEnum.EXPLORE, exploreRequest);
-//        MapperUtils<Explore> mapper = new MapperUtils<>(Explore.class);
-//        Explore explore = mapper.convertToObject(body);
-//        return explore;
-        return null;
+        RequestAction requestAction = RequestAction.EXPLORE;
+        Logger.log(requestAction, ">>> Request to: " + requestAction + "; Object = " + exploreRequest);
+
+
+        HttpResponse<String> response;
+        int retry = 1;
+        do {
+            response = Request.doPost(requestAction, exploreRequest);
+            if (response != null) {
+                Logger.log(requestAction, "<<< Response: " + requestAction + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
+            } else {
+                Logger.log(requestAction, "<<< Response: " + requestAction + "; Retry: " + retry + "; Response = null: " + response);
+            }
+
+            retry++;
+            if (response != null && response.statusCode() == 200) {
+                break;
+            }
+        } while (retry < retryCount);
+
+        Explore explore = null;
+        if (response != null && response.statusCode() == 200) {
+            MapperUtils<Explore> mapper = new MapperUtils<>(Explore.class);
+            explore = mapper.convertToObject(response.body());
+        }
+
+        return explore;
     }
 
 
@@ -172,6 +194,37 @@ public class RequestEndpoint {
 
 
     /**
+     * Возвращает карту сокровищ в один поток
+     * */
+    public static Map<Integer, List<Point>> getTreasureMapOneThread() throws IOException, InterruptedException {
+        Map<Integer, List<Point>> treasureMap = new TreeMap<>();
+
+        for (int x = 1; x < areaSize; x++) {
+            for (int y = 1; y < areaSize; y++) {
+                ExploreRequest exploreRequest = new ExploreRequest(x, y, 1, 1);
+                Explore explore = Actions.explore(exploreRequest);
+
+                //Если сокровища в точке есть
+                if (explore != null && explore.getAmount() != 0) {
+                    int treasureCount = explore.getAmount();
+
+                    //обновляем список с координатами сокровищ
+                    List<Point> pointList = null;
+                    if ( treasureMap.containsKey(treasureCount) ) {
+                        pointList = treasureMap.get(treasureCount);
+                    } else {
+                        pointList = new ArrayList<>();
+                    }
+                    pointList.add(new Point(explore.getArea().getPosX(), explore.getArea().getPosY()));
+                    treasureMap.put(treasureCount, pointList);
+                }
+            }
+        }
+        return treasureMap;
+    }
+
+
+    /**
      * Возвращает карту сокровищ.
      * ключ - число сокровищ, значения - список координат в которых хранится суммарное число сокровищ
      * */
@@ -235,8 +288,8 @@ public class RequestEndpoint {
         for (Integer k : treasureMap.keySet()) {
             strTreasuresCount += k + "(count=" + treasureMap.get(k).size() + "), ";
         }
-//        Logger.log("Treasures count: " + strTreasuresCount);
-//        Logger.log("Time for get treasure map: " + (System.currentTimeMillis() - time));
+        Logger.log("Treasures count: " + strTreasuresCount);
+        Logger.log("Time for get treasure map: " + (System.currentTimeMillis() - time));
 
 //        System.out.println("Treasures count: " + strTreasuresCount);
 //        System.out.println("Time for get treasure map: " + (System.currentTimeMillis() - time));

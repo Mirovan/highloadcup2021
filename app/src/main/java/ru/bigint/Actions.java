@@ -27,4 +27,8 @@ public class Actions {
         return RequestEndpoint.balance();
     }
 
+
+    public static Explore explore(ExploreRequest exploreRequest) throws IOException, InterruptedException {
+        return RequestEndpoint.explore(exploreRequest);
+    }
 }

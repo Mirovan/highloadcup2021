@@ -23,7 +23,6 @@ public class Main {
     }
 
     private void runGame() throws IOException, InterruptedException {
-        long time = System.currentTimeMillis();
 //        Logger.log("--- Play Game ---");
 //        Logger.log("OS: " + System.getProperty("os.name"));
 //        Logger.log("URI: " + URI);
@@ -35,14 +34,14 @@ public class Main {
         Client client = new Client();
 
         //коллекция для хранения сокровищ. ключ - число сокровищ, значения - список координат
-        Map<Integer, List<Point>> treasureMap = RequestEndpoint.getTreasureMap();
+        Map<Integer, List<Point>> treasureMap = RequestEndpoint.getTreasureMapOneThread();
 
         List<Integer> treasureAmountList = new ArrayList<>(treasureMap.keySet());
         for (int pointTreasureCount = treasureAmountList.size()-1; pointTreasureCount >= 0; pointTreasureCount--) {
             List<Point> points = treasureMap.get(pointTreasureCount);
             for (Point point: points) {
 //                Logger.log(RequestEnum.ALL, "--- New Point ---");
-                Logger.log("x = " + point.getX() + "; y = " + point.getY());
+//                Logger.log("x = " + point.getX() + "; y = " + point.getY());
 
                 //Пока есть сокровища и глубина позволяет - копать
                 int depth = 1;
