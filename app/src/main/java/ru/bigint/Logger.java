@@ -12,9 +12,7 @@ public class Logger {
     }
 
     public static void log(Object msg) {
-        if (LOGGER_LEVEL.equals(RequestAction.ALL)) {
-            System.out.println(msg);
-        }
+        System.out.println(msg);
     }
 
 }
