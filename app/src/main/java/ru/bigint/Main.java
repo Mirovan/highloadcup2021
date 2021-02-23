@@ -38,14 +38,14 @@ public class Main {
         Client client = new Client();
 
         //коллекция для хранения сокровищ. ключ - число сокровищ, значения - список координат
-        Map<Integer, List<Point>> treasureMap = Actions.getTreasureMap();
+        Map<Integer, List<Point>> treasureMap = RequestEndpoint.getTreasureMap();
 
         List<Integer> treasureAmountList = new ArrayList<>(treasureMap.keySet());
         for (int pointTreasureCount = treasureAmountList.size()-1; pointTreasureCount >= 0; pointTreasureCount--) {
             List<Point> points = treasureMap.get(pointTreasureCount);
             for (Point point: points) {
-                Logger.log("--- New Point ---");
-                Logger.log("x = " + point.getX() + "; y = " + point.getY());
+//                Logger.log(RequestEnum.ALL, "--- New Point ---");
+                Logger.log(RequestEnum.DIG, "x = " + point.getX() + "; y = " + point.getY());
 
                 //Пока есть сокровища и глубина позволяет - копать
                 int depth = 1;
@@ -62,13 +62,14 @@ public class Main {
                     //Если можно копать
                     if (client.getLicense() != null && client.getLicense().getDigUsed() < client.getLicense().getDigAllowed()) {
                         //копаем - и находим список сокровищ на уровне
+                        //### DIG ###
                         String[] treasures = Actions.dig(client, point, depth);
 
-                        //изменяем число попыток раскопок и текущую глубину
-                        client.getLicense().setDigUsed(client.getLicense().getDigUsed() + 1);
-                        depth++;
-
                         if (treasures != null) {
+                            //изменяем число попыток раскопок и текущую глубину
+                            client.getLicense().setDigUsed(client.getLicense().getDigUsed() + 1);
+                            depth++;
+
                             //Изменяем число сокровищ для координаты x,y
                             currentTreasureCount -= treasures.length;
 
@@ -86,8 +87,8 @@ public class Main {
             }
         }
 
-        Logger.log("=================================");
-        Logger.log("Result : " + resMoney);
+//        Logger.log("=================================");
+//        Logger.log("Result : " + resMoney);
     }
 
 }

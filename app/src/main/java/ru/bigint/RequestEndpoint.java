@@ -1,57 +1,137 @@
 package ru.bigint;
 
-import ru.bigint.model.DigRequest;
-import ru.bigint.model.Explore;
-import ru.bigint.model.ExploreRequest;
-import ru.bigint.model.License;
+import ru.bigint.model.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public class RequestEndpoint {
+    private final static int areaSize = 250;
 
-    public static Explore explore(String uri, ExploreRequest exploreRequest) throws IOException, InterruptedException {
+    private final static int threadsCount = 4;
+
+    public static Explore explore(ExploreRequest exploreRequest) throws IOException, InterruptedException {
 //        Logger.log("-- Explore --");
-        String body = Request.doPost(uri + "/explore", exploreRequest);
+        String body = Request.doPost(RequestEnum.EXPLORE, exploreRequest);
         MapperUtils<Explore> mapper = new MapperUtils<>(Explore.class);
         Explore explore = mapper.convertToObject(body);
         return explore;
     }
 
-    public static License postLicense(String uri, int[] money) throws IOException, InterruptedException {
+    public static License postLicense(int[] money) throws IOException, InterruptedException {
 //        Logger.log("-- Licence post --");
-        String body = Request.doPost(uri + "/licenses", money);
+        String body = Request.doPost(RequestEnum.LICENSES, money);
         MapperUtils<License> mapper = new MapperUtils<>(License.class);
         License license = mapper.convertToObject(body);
         return license;
     }
 
-    public static License license(String uri) throws IOException, InterruptedException {
+    public static License license() throws IOException, InterruptedException {
 //        Logger.log("-- Licence post --");
-        String body = Request.doGet(uri + "/licenses");
+        String body = Request.doGet(RequestEnum.LICENSES);
         MapperUtils<License> mapper = new MapperUtils<>(License.class);
         License license = mapper.convertToObject(body);
         return license;
     }
 
-    public static String[] dig(String uri, DigRequest digRequest) throws IOException, InterruptedException {
+    public static String[] dig(DigRequest digRequest) throws IOException, InterruptedException {
 //        Logger.log("-- Dig --");
-        String body = Request.doPost(uri + "/dig", digRequest);
+        String body = Request.doPost(RequestEnum.DIG, digRequest);
         MapperUtils<String[]> mapper = new MapperUtils<>(String[].class);
         String[] dig = mapper.convertToObject(body);
         return dig;
     }
 
-    public static int[] cash(String uri, String treasure) throws IOException, InterruptedException {
+    public static int[] cash(String treasure) throws IOException, InterruptedException {
 //        Logger.log("-- Cash --");
-        String body = Request.doPost(uri + "/cash", treasure);
+        String body = Request.doPost(RequestEnum.CASH, treasure);
         MapperUtils<int[]> mapper = new MapperUtils<>(int[].class);
         int[] money = mapper.convertToObject(body);
         return money;
     }
 
-    public static String healthCheck(String uri) throws IOException, InterruptedException {
-        String body = Request.doGet(uri + "/health-check");
+    public static String healthCheck() throws IOException, InterruptedException {
+        String body = Request.doGet(RequestEnum.HEALTH_CHECK);
 //        Logger.log(body);
         return body;
+    }
+
+
+    /**
+     * Возвращает карту сокровищ.
+     * ключ - число сокровищ, значения - список координат в которых хранится суммарное число сокровищ
+     * */
+    public static Map<Integer, List<Point>> getTreasureMap() {
+        long time = System.currentTimeMillis();
+
+        //коллекция для хранения сокровищ. ключ - число сокровищ, значения - список координат
+        Map<Integer, List<Point>> treasureMap = new TreeMap<>();
+
+        //Опрашиваем всю карту в заданных границах и получаем мапу
+        for (int x = 1; x < areaSize; x++) {
+            int y = 1;
+            while (y < areaSize) {
+                //Делаем threadsCount-число асинхронных запросов на запрос /explore
+                List<ExploreRequest> requestList = new ArrayList<>();
+                for (int k = 0; k < threadsCount && y < areaSize; k++) {
+                    //### Explore ###
+                    ExploreRequest exploreRequest = new ExploreRequest(x, y, 1, 1);
+                    requestList.add(exploreRequest);
+                    y++;
+                }
+
+                //Получаем результаты асинхронных запросов
+                List<CompletableFuture<String>> cfReponseList = Request.concurrentCalls(RequestEnum.EXPLORE, requestList);
+                for (int i = 0; i < cfReponseList.size(); i++) {
+                    CompletableFuture<String> response = cfReponseList.get(i);
+                    String responseBody = null;
+                    try {
+//                        Logger.log("--- Next point ---");
+//                        Logger.log("x = " + x + "; y = " + (tempY+i));
+
+                        responseBody = response.get();
+//                        Logger.log("Response: " + responseBody);
+
+                        MapperUtils<Explore> mapper = new MapperUtils<>(Explore.class);
+                        Explore explore = mapper.convertToObject(responseBody);
+
+                        //Если сокровища в точке есть
+                        if (explore != null && explore.getAmount() != 0) {
+                            int treasureCount = explore.getAmount();
+
+                            //обновляем список с координатами сокровищ
+                            List<Point> pointList = null;
+                            if ( treasureMap.containsKey(treasureCount) ) {
+                                pointList = treasureMap.get(treasureCount);
+                            } else {
+                                pointList = new ArrayList<>();
+                            }
+                            pointList.add(new Point(explore.getArea().getPosX(), explore.getArea().getPosY()));
+                            treasureMap.put(treasureCount, pointList);
+                        }
+
+                    } catch (ExecutionException | InterruptedException e) {
+//                        Logger.log(e.getMessage());
+                    }
+                }
+            }
+        }
+
+        String strTreasuresCount = "";
+        for (Integer k : treasureMap.keySet()) {
+            strTreasuresCount += k + "(count=" + treasureMap.get(k).size() + "), ";
+        }
+//        Logger.log("Treasures count: " + strTreasuresCount);
+//        Logger.log("Time for get treasure map: " + (System.currentTimeMillis() - time));
+
+//        System.out.println("Treasures count: " + strTreasuresCount);
+//        System.out.println("Time for get treasure map: " + (System.currentTimeMillis() - time));
+
+        return treasureMap;
     }
 }

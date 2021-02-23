@@ -17,6 +17,16 @@ import java.util.stream.Collectors;
 
 public class Request {
 
+    private static String SERVER_ADDRESS = "localhost";
+    static {
+        if (System.getenv("ADDRESS") != null) {
+            SERVER_ADDRESS = System.getenv("ADDRESS");
+        }
+    }
+    private final static String SERVER_PORT = "8000";
+    private final static String SERVER_SCHEMA = "http";
+    private final static String SERVER_URI = SERVER_SCHEMA + "://" + SERVER_ADDRESS + ":" + SERVER_PORT;
+
     private static int retryCount = 5;
 
     private static HttpClient httpClient = HttpClient.newBuilder()
@@ -25,7 +35,9 @@ public class Request {
             .build();
 
 
-    public static String doGet(String url) throws IOException, InterruptedException {
+    public static String doGet(RequestEnum requestEnum) throws IOException, InterruptedException {
+        String url = SERVER_URI + requestEnum.getRequest();
+
         HttpRequest request =
                 HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -36,7 +48,9 @@ public class Request {
     }
 
 
-    public static String doPost(String url, Object body) throws IOException, InterruptedException {
+    public static String doPost(RequestEnum requestEnum, Object body) throws IOException, InterruptedException {
+        String url = SERVER_URI + requestEnum.getRequest();
+
         ObjectMapper objectMapper = new ObjectMapper();
         String requestBody = objectMapper.writeValueAsString(body);
 
@@ -60,7 +74,7 @@ public class Request {
             try {
                 response = cf.get();
                 responseBody = response.body();
-                Logger.log("URL: " + url + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
+                Logger.log(requestEnum, "URL: " + requestEnum.getRequest() + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
 //                Logger.log("Response body: " + response.body());
             } catch (ExecutionException e) {
 //                Logger.log(e.getMessage());
@@ -74,7 +88,9 @@ public class Request {
     }
 
 
-    public static List<CompletableFuture<String>> concurrentCalls(final String url, final List<ExploreRequest> requestList) {
+    public static List<CompletableFuture<String>> concurrentCalls(RequestEnum requestEnum, final List<ExploreRequest> requestList) {
+        String url = SERVER_URI + requestEnum.getRequest();
+
         return requestList.stream()
                 .map(item -> {
                             ObjectMapper objectMapper = new ObjectMapper();
