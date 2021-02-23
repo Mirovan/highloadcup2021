@@ -31,16 +31,17 @@ public class RequestEndpoint {
     public static License postLicense(int[] licenseRequest) throws IOException, InterruptedException {
 //        Logger.log("-- Licence post --");
         RequestAction requestAction = RequestAction.LICENSES;
-        Logger.log(requestAction, licenseRequest);
+        Logger.log(requestAction, ">>> Request to: " + requestAction + "; Object = " + licenseRequest);
+
 
         HttpResponse<String> response = null;
         int retry = 1;
         do {
             response = Request.doPost(requestAction, licenseRequest);
             if (response != null) {
-                Logger.log(requestAction, "URL: " + requestAction + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
+                Logger.log(requestAction, "<<< Response: " + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
             } else {
-                Logger.log(requestAction, "URL: " + requestAction + "; Retry: " + retry + "; Response = null: " + response);
+                Logger.log(requestAction, "<<< Response: " + requestAction + "; Retry: " + retry + "; Response = null: " + response);
             }
 
             retry++;
@@ -72,16 +73,16 @@ public class RequestEndpoint {
     public static String[] dig(DigRequest digRequest) throws IOException, InterruptedException {
 //        Logger.log("-- Dig --");
         RequestAction requestAction = RequestAction.DIG;
-        Logger.log(requestAction, digRequest);
+        Logger.log(requestAction, ">>> Request to: " + requestAction + "; Object = " + digRequest);
 
         HttpResponse<String> response;
         int retry = 1;
         do {
             response = Request.doPost(requestAction, digRequest);
             if (response != null) {
-                Logger.log(requestAction, "URL: " + requestAction + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
+                Logger.log(requestAction, "<<< Response: " + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
             } else {
-                Logger.log(requestAction, "URL: " + requestAction + "; Retry: " + retry + "; Response = null: " + response);
+                Logger.log(requestAction, "<<< Response: " + requestAction + "; Retry: " + retry + "; Response = null: " + response);
             }
 
             retry++;
@@ -103,17 +104,17 @@ public class RequestEndpoint {
 
     public static int[] cash(String treasure) throws IOException, InterruptedException {
 //        Logger.log("-- Cash --");
-        RequestAction requestAction = RequestAction.DIG;
-        Logger.log(requestAction, treasure);
+        RequestAction requestAction = RequestAction.CASH;
+        Logger.log(requestAction, ">>> Request to: " + requestAction + "; Object = " + treasure);
 
         HttpResponse<String> response;
         int retry = 1;
         do {
             response = Request.doPost(requestAction, treasure);
             if (response != null) {
-                Logger.log(requestAction, "URL: " + requestAction + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
+                Logger.log(requestAction, "<<< Response: " + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
             } else {
-                Logger.log(requestAction, "URL: " + requestAction + "; Retry: " + retry + "; Response = null: " + response);
+                Logger.log(requestAction, "<<< Response: " + requestAction + "; Retry: " + retry + "; Response = null: " + response);
             }
 
             retry++;
