@@ -45,7 +45,7 @@ public class Main {
             List<Point> points = treasureMap.get(pointTreasureCount);
             for (Point point: points) {
 //                Logger.log(RequestEnum.ALL, "--- New Point ---");
-                Logger.log(RequestEnum.DIG, "x = " + point.getX() + "; y = " + point.getY());
+                Logger.log("x = " + point.getX() + "; y = " + point.getY());
 
                 //Пока есть сокровища и глубина позволяет - копать
                 int depth = 1;
