@@ -51,8 +51,6 @@ public class Main {
                     //Проверка - если нет лицензии на раскопки или нельзя копать - то надо получить лицензию
                     if (client.getLicense() == null
                             || client.getLicense().getDigUsed() >= client.getLicense().getDigAllowed()) {
-                        //### BALANCE ###
-                        Balance balance = Actions.balance();
 
                         //### LICENSE ###
                         License license = Actions.license(new int[]{});
