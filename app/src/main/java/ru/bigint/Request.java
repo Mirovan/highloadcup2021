@@ -50,8 +50,10 @@ public class Request {
 
         HttpResponse<String> response = null;
         String responseBody = null;
-        int retry = 0;
+        int retry = 1;
         do {
+//            CompletableFuture<HttpResponse<String>> cf =
+//                    httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString());
             CompletableFuture<HttpResponse<String>> cf =
                     httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString());
 
@@ -65,7 +67,8 @@ public class Request {
             }
 
             retry++;
-        } while (retry < retryCount && response.statusCode() != 200);
+            if (response != null && response.statusCode() != 200) break;
+        } while (retry < retryCount);
 
         return responseBody;
     }
