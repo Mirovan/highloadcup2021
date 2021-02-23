@@ -51,7 +51,7 @@ public class RequestEndpoint {
         } while (retry < retryCount);
 
         License license = null;
-        if (response.statusCode() == 200) {
+        if (response != null && response.statusCode() == 200) {
             MapperUtils<License> mapper = new MapperUtils<>(License.class);
             license = mapper.convertToObject(response.body());
         }
@@ -92,7 +92,7 @@ public class RequestEndpoint {
         } while (retry < retryCount);
 
         String[] dig;
-        if (response.statusCode() == 200) {
+        if (response != null && response.statusCode() == 200) {
             MapperUtils<String[]> mapper = new MapperUtils<>(String[].class);
             dig = mapper.convertToObject(response.body());
         } else {
@@ -124,7 +124,7 @@ public class RequestEndpoint {
         } while (retry < retryCount);
 
         int[] money = null;
-        if (response.statusCode() == 200) {
+        if (response != null && response.statusCode() == 200) {
             MapperUtils<int[]> mapper = new MapperUtils<>(int[].class);
             money = mapper.convertToObject(response.body());
         }
@@ -162,7 +162,7 @@ public class RequestEndpoint {
         } while (retry < retryCount);
 
         Balance balance = null;
-        if (response.statusCode() == 200) {
+        if (response != null && response.statusCode() == 200) {
             MapperUtils<Balance> mapper = new MapperUtils<>(Balance.class);
             balance = mapper.convertToObject(response.body());
         }
