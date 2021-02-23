@@ -51,6 +51,9 @@ public class Main {
                     //Проверка - если нет лицензии на раскопки или нельзя копать - то надо получить лицензию
                     if (client.getLicense() == null
                             || client.getLicense().getDigUsed() >= client.getLicense().getDigAllowed()) {
+                        //### BALANCE ###
+                        Balance balance = Actions.balance();
+
                         //### LICENSE ###
                         License license = Actions.getLicense(new int[]{});
                         client.setLicense(license);
@@ -76,7 +79,9 @@ public class Main {
                                 //### CASH ###
                                 int[] money = Actions.cash(treasure);
                                 if (money != null && money.length > 0) {
-                                    resMoney += money[0];
+                                    for (int moneyItem: money) {
+                                        resMoney += moneyItem;
+                                    }
                                 }
                             }
                         }

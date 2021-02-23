@@ -7,7 +7,8 @@ public enum RequestAction {
     EXPLORE("/explore"),
     LICENSES("/licenses"),
     DIG("/dig"),
-    CASH("/cash");
+    CASH("/cash"),
+    BALANCE("/balance");
 
     private String request;
 

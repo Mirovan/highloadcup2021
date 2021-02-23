@@ -34,12 +34,12 @@ public class RequestEndpoint {
         Logger.log(requestAction, ">>> Request to: " + requestAction + "; Object = " + licenseRequest);
 
 
-        HttpResponse<String> response = null;
+        HttpResponse<String> response;
         int retry = 1;
         do {
             response = Request.doPost(requestAction, licenseRequest);
             if (response != null) {
-                Logger.log(requestAction, "<<< Response: " + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
+                Logger.log(requestAction, "<<< Response: " + requestAction + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
             } else {
                 Logger.log(requestAction, "<<< Response: " + requestAction + "; Retry: " + retry + "; Response = null: " + response);
             }
@@ -80,7 +80,7 @@ public class RequestEndpoint {
         do {
             response = Request.doPost(requestAction, digRequest);
             if (response != null) {
-                Logger.log(requestAction, "<<< Response: " + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
+                Logger.log(requestAction, "<<< Response: " + requestAction + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
             } else {
                 Logger.log(requestAction, "<<< Response: " + requestAction + "; Retry: " + retry + "; Response = null: " + response);
             }
@@ -112,7 +112,7 @@ public class RequestEndpoint {
         do {
             response = Request.doPost(requestAction, treasure);
             if (response != null) {
-                Logger.log(requestAction, "<<< Response: " + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
+                Logger.log(requestAction, "<<< Response: " + requestAction + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
             } else {
                 Logger.log(requestAction, "<<< Response: " + requestAction + "; Retry: " + retry + "; Response = null: " + response);
             }
@@ -134,9 +134,40 @@ public class RequestEndpoint {
 
 
     public static String healthCheck() throws IOException, InterruptedException {
-        String body = Request.doGet(RequestAction.HEALTH_CHECK);
+//        String body = Request.doGet(RequestAction.HEALTH_CHECK);
 //        Logger.log(body);
-        return body;
+//        return body;
+        return null;
+    }
+
+
+    public static Balance balance() throws IOException, InterruptedException {
+        RequestAction requestAction = RequestAction.BALANCE;
+        Logger.log(requestAction, ">>> Request to: " + requestAction);
+
+        HttpResponse<String> response;
+        int retry = 1;
+        do {
+            response = Request.doGet(requestAction);
+            if (response != null) {
+                Logger.log(requestAction, "<<< Response: " + requestAction + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
+            } else {
+                Logger.log(requestAction, "<<< Response: " + requestAction + "; Retry: " + retry + "; Response = null: " + response);
+            }
+
+            retry++;
+            if (response.statusCode() == 200) {
+                break;
+            }
+        } while (retry < retryCount);
+
+        Balance balance = null;
+        if (response.statusCode() == 200) {
+            MapperUtils<Balance> mapper = new MapperUtils<>(Balance.class);
+            balance = mapper.convertToObject(response.body());
+        }
+
+        return balance;
     }
 
 
@@ -212,4 +243,5 @@ public class RequestEndpoint {
 
         return treasureMap;
     }
+
 }

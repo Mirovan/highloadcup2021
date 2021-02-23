@@ -35,7 +35,7 @@ public class Request {
             .build();
 
 
-    public static String doGet(RequestAction requestAction) throws IOException, InterruptedException {
+    public static HttpResponse<String> doGet(RequestAction requestAction) throws IOException, InterruptedException {
         String url = SERVER_URI + requestAction.getRequest();
 
         HttpRequest request =
@@ -44,7 +44,7 @@ public class Request {
 //                        .timeout(Duration.ofSeconds(2))
                         .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        return response.body();
+        return response;
     }
 
 
