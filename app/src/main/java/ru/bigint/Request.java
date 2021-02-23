@@ -60,7 +60,7 @@ public class Request {
             try {
                 response = cf.get();
                 responseBody = response.body();
-                Logger.log("Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
+                Logger.log("URL: " + url + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
 //                Logger.log("Response body: " + response.body());
             } catch (ExecutionException e) {
 //                Logger.log(e.getMessage());
