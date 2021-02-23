@@ -37,10 +37,10 @@ public class MapperUtils<T> {
 //                    Logger.log("Converted object: " + obj);
                 }
             } else {
-                Logger.log("Converted object is null");
+//                Logger.log("Converted object is null");
             }
         } catch (Exception e) {
-            Logger.log("JSON convert to Object error: " + e.getMessage());
+//            Logger.log("JSON convert to Object error: " + e.getMessage());
         }
         return obj;
     }
