@@ -80,10 +80,12 @@ public class RequestEndpoint {
             }
         } while (retry < retryCount);
 
-        String[] dig = null;
+        String[] dig;
         if (response.statusCode() == 200) {
             MapperUtils<String[]> mapper = new MapperUtils<>(String[].class);
             dig = mapper.convertToObject(response.body());
+        } else {
+            dig = new String[0];
         }
         return dig;
     }
