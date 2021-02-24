@@ -15,19 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-public class Request {
-
-    private static String SERVER_ADDRESS = "localhost";
-
-    static {
-        if (System.getenv("ADDRESS") != null) {
-            SERVER_ADDRESS = System.getenv("ADDRESS");
-        }
-    }
-
-    private final static String SERVER_PORT = "8000";
-    private final static String SERVER_SCHEMA = "http";
-    private final static String SERVER_URI = SERVER_SCHEMA + "://" + SERVER_ADDRESS + ":" + SERVER_PORT;
+public class ClientRequest {
 
     private static HttpClient httpClient = HttpClient.newBuilder()
 //            .version(HttpClient.Version.HTTP_2)
@@ -35,8 +23,8 @@ public class Request {
             .build();
 
 
-    public static HttpResponse<String> doGet(RequestAction requestAction) throws IOException, InterruptedException {
-        String url = SERVER_URI + requestAction.getRequest();
+    public static HttpResponse<String> doGet(ActionEnum actionEnum) throws IOException, InterruptedException {
+        String url = Constant.SERVER_URI + actionEnum.getRequest();
 
         HttpRequest request =
                 HttpRequest.newBuilder()
@@ -48,8 +36,8 @@ public class Request {
     }
 
 
-    public static HttpResponse<String> doPost(RequestAction requestAction, Object requestObject) throws IOException, InterruptedException {
-        String url = SERVER_URI + requestAction.getRequest();
+    public static HttpResponse<String> doPost(ActionEnum actionEnum, Object requestObject) throws IOException, InterruptedException {
+        String url = Constant.SERVER_URI + actionEnum.getRequest();
 
         ObjectMapper objectMapper = new ObjectMapper();
         String requestBody = objectMapper.writeValueAsString(requestObject);
@@ -78,8 +66,8 @@ public class Request {
     }
 
 
-    public static List<CompletableFuture<String>> concurrentCalls(RequestAction requestAction, final List<ExploreRequest> requestList) {
-        String url = SERVER_URI + requestAction.getRequest();
+    public static List<CompletableFuture<String>> concurrentPost(ActionEnum actionEnum, final List<ExploreRequest> requestList) {
+        String url = Constant.SERVER_URI + actionEnum.getRequest();
 
         return requestList.stream()
                 .map(item -> {

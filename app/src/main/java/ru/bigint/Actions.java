@@ -3,32 +3,38 @@ package ru.bigint;
 import ru.bigint.model.*;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 public class Actions {
 
     public static License license(int[] arr) throws IOException, InterruptedException {
-        return RequestEndpoint.postLicense(arr);
+        return ActionRequest.license(arr);
     }
 
 
     public static String[] dig(Client client, Point point, int depth) throws IOException, InterruptedException {
         DigRequest digRequest = new DigRequest(client.getLicense().getId(), point.getX(), point.getY(), depth);
-        String[] treasures = RequestEndpoint.dig(digRequest);
+        String[] treasures = ActionRequest.dig(digRequest);
         return treasures;
     }
 
 
     public static int[] cash(String treasure) throws IOException, InterruptedException {
-        return RequestEndpoint.cash(treasure);
+        return ActionRequest.cash(treasure);
     }
 
 
     public static Balance balance() throws IOException, InterruptedException {
-        return RequestEndpoint.balance();
+        return ActionRequest.balance();
     }
 
 
     public static Explore explore(ExploreRequest exploreRequest) throws IOException, InterruptedException {
-        return RequestEndpoint.explore(exploreRequest);
+        return ActionRequest.explore(exploreRequest);
+    }
+
+    public static Map<Integer, List<Point>> getExplore() {
+        return ActionMultiRequest.getTreasureMap();
     }
 }

@@ -1,11 +1,11 @@
 package ru.bigint;
 
 public class Logger {
-    private static RequestAction[] LOGGER_LEVEL = {};
+    private static ActionEnum[] LOGGER_LEVEL = {ActionEnum.LICENSES};
 
-    public static void log(RequestAction requestAction, Object msg) {
-        for (RequestAction item: LOGGER_LEVEL) {
-            if (item.equals(requestAction) || item.equals(RequestAction.ALL)) {
+    public static void log(ActionEnum actionEnum, Object msg) {
+        for (ActionEnum item: LOGGER_LEVEL) {
+            if (item.equals(actionEnum) || item.equals(ActionEnum.ALL)) {
                 System.out.println(msg);
             }
         }

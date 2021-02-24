@@ -1,6 +1,6 @@
 package ru.bigint;
 
-public enum RequestAction {
+public enum ActionEnum {
 
     ALL("/"),
     HEALTH_CHECK("/health-check"),
@@ -12,7 +12,7 @@ public enum RequestAction {
 
     private String request;
 
-    RequestAction(String request) {
+    ActionEnum(String request) {
         this.request = request;
     }
 

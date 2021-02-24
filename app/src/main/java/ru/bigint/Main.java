@@ -34,7 +34,7 @@ public class Main {
         Client client = new Client();
 
         //коллекция для хранения сокровищ. ключ - число сокровищ, значения - список координат
-        Map<Integer, List<Point>> treasureMap = RequestEndpoint.getTreasureMap();
+        Map<Integer, List<Point>> treasureMap = Actions.getExplore();
 
         List<Integer> treasureAmountList = new ArrayList<>(treasureMap.keySet());
         for (int pointTreasureCount = treasureAmountList.size()-1; pointTreasureCount >= 0; pointTreasureCount--) {
@@ -54,7 +54,7 @@ public class Main {
                         //### LICENSE ###
                         License license = Actions.license(new int[]{});
                         client.setLicense(license);
-                        Logger.log(RequestAction.ALL, license);
+                        Logger.log(ActionEnum.ALL, license);
                     }
 
                     //Если можно копать
