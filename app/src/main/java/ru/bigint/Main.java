@@ -34,7 +34,7 @@ public class Main {
         Client client = new Client();
 
         //коллекция для хранения сокровищ. ключ - число сокровищ, значения - список координат
-        Map<Integer, List<Point>> treasureMap = Actions.getExplore();
+        Map<Integer, List<Point>> treasureMap = Action.getExplore();
 
         List<Integer> treasureAmountList = new ArrayList<>(treasureMap.keySet());
         for (int pointTreasureCount = treasureAmountList.size()-1; pointTreasureCount >= 0; pointTreasureCount--) {
@@ -47,41 +47,34 @@ public class Main {
                 int depth = 1;
                 int currentTreasureCount = pointTreasureCount;
                 while (currentTreasureCount > 0 && depth <= maxDepth) {
-                    //Проверка - если нет лицензии на раскопки или нельзя копать - то надо получить лицензию
-                    if (client.getLicense() == null
-                            || client.getLicense().getDigUsed() >= client.getLicense().getDigAllowed()) {
+                    //Проверка - если нет лицензий - то надо получить лицензии многопоточно
+                    if (client.getLicenses() == null || client.getLicenses().size() == 0) {
 
                         //### LICENSE ###
-                        License license = Actions.license(new int[]{});
-                        client.setLicense(license);
-                        Logger.log(ActionEnum.ALL, license);
+                        List<License> licenses = Action.getLicenses(new int[]{});
+                        client.setLicenses(licenses);
                     }
 
-                    //Если можно копать
-                    if (client.getLicense() != null && client.getLicense().getDigUsed() < client.getLicense().getDigAllowed()) {
-                        //копаем - и находим список сокровищ на уровне
-                        //### DIG ###
-                        String[] treasures = Actions.dig(client, point, depth);
+                    if (client.getLicenses() != null) {
+                        List<License> updateLicenses = new ArrayList<>();
+                        for (License license: client.getLicenses()) {
+                            //Если число попыток копания этой лицензии не исчерпано
+                            if (license.getDigUsed() < license.getDigAllowed()) {
+                                int treasureCount = dig(license, point, depth);
 
-                        if (treasures != null) {
-                            //изменяем число попыток раскопок и текущую глубину
-                            client.getLicense().setDigUsed(client.getLicense().getDigUsed() + 1);
-                            depth++;
+                                //Изменяем число сокровищ для координаты x,y
+                                currentTreasureCount -= treasureCount;
 
-                            //Изменяем число сокровищ для координаты x,y
-                            currentTreasureCount -= treasures.length;
+                                //изменяем число попыток раскопок и текущую глубину
+                                license.setDigUsed(license.getDigUsed() + 1);
 
-                            //Меняем сокровища на золото
-                            for (String treasure : treasures) {
-                                //### CASH ###
-                                int[] money = Actions.cash(treasure);
-                                if (money != null && money.length > 0) {
-                                    for (int moneyItem: money) {
-                                        resMoney += moneyItem;
-                                    }
+                                //добавляем во временный массив обновленных лицензий
+                                if (license.getDigUsed() < license.getDigAllowed()) {
+                                    updateLicenses.add(license);
                                 }
                             }
                         }
+                        client.setLicenses(updateLicenses);
                     }
                 }
             }
@@ -89,6 +82,28 @@ public class Main {
 
 //        Logger.log("=================================");
 //        Logger.log("Result : " + resMoney);
+    }
+
+
+    private int dig(License license, Point point, int depth) throws IOException, InterruptedException {
+        //копаем - и находим список сокровищ на уровне
+        //### DIG ###
+        String[] treasures = Action.dig(license, point, depth);
+
+        if (treasures != null) {
+            //Меняем сокровища на золото
+            for (String treasure : treasures) {
+                //### CASH ###
+                int[] money = Action.cash(treasure);
+//                if (money != null && money.length > 0) {
+//                    for (int moneyItem: money) {
+//                        resMoney += moneyItem;
+//                    }
+//                }
+            }
+        }
+
+        return treasures.length;
     }
 
 }

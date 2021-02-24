@@ -6,15 +6,15 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-public class Actions {
+public class Action {
 
     public static License license(int[] arr) throws IOException, InterruptedException {
         return ActionRequest.license(arr);
     }
 
 
-    public static String[] dig(Client client, Point point, int depth) throws IOException, InterruptedException {
-        DigRequest digRequest = new DigRequest(client.getLicense().getId(), point.getX(), point.getY(), depth);
+    public static String[] dig(License license, Point point, int depth) throws IOException, InterruptedException {
+        DigRequest digRequest = new DigRequest(license.getId(), point.getX(), point.getY(), depth);
         String[] treasures = ActionRequest.dig(digRequest);
         return treasures;
     }
@@ -36,5 +36,9 @@ public class Actions {
 
     public static Map<Integer, List<Point>> getExplore() {
         return ActionMultiRequest.getTreasureMap();
+    }
+
+    public static List<License> getLicenses(int[] arr) {
+        return ActionMultiRequest.getLicenses(arr);
     }
 }

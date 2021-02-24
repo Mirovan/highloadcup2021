@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-public class ClientRequest {
+public class ClientRequest<T> {
 
     private static HttpClient httpClient = HttpClient.newBuilder()
 //            .version(HttpClient.Version.HTTP_2)
@@ -23,7 +23,7 @@ public class ClientRequest {
             .build();
 
 
-    public static HttpResponse<String> doGet(ActionEnum actionEnum) throws IOException, InterruptedException {
+    public HttpResponse<String> doGet(ActionEnum actionEnum) throws IOException, InterruptedException {
         String url = Constant.SERVER_URI + actionEnum.getRequest();
 
         HttpRequest request =
@@ -66,7 +66,7 @@ public class ClientRequest {
     }
 
 
-    public static List<CompletableFuture<String>> concurrentPost(ActionEnum actionEnum, final List<ExploreRequest> requestList) {
+    public List<CompletableFuture<String>> concurrentPost(ActionEnum actionEnum, final List<T> requestList) {
         String url = Constant.SERVER_URI + actionEnum.getRequest();
 
         return requestList.stream()

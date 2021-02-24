@@ -1,20 +1,34 @@
 package ru.bigint.model;
 
-public class Client {
-    private License license;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
-    public License getLicense() {
-        return license;
+public class Client {
+    private List<License> licenses;
+
+    public Client() {
     }
 
-    public void setLicense(License license) {
-        this.license = license;
+    public Client(List<License> licenses) {
+        this.licenses = licenses;
+    }
+
+    public List<License> getLicenses() {
+        return licenses;
+    }
+
+    public void setLicenses(List<License> licenses) {
+        this.licenses = licenses;
     }
 
     @Override
     public String toString() {
+        String licenses = this.licenses.stream()
+                .map(License::toString)
+                .collect(Collectors.joining(", "));
         return "Client{" +
-                "license=" + license +
+                "license=" + licenses +
                 '}';
     }
 }

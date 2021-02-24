@@ -3,11 +3,7 @@ package ru.bigint;
 import ru.bigint.model.*;
 
 import java.io.IOException;
-import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -15,7 +11,7 @@ public class ActionMultiRequest {
 
     /**
      * Возвращает карту сокровищ в один поток
-     * */
+     */
     public static Map<Integer, List<Point>> getTreasureMapOneThread() throws IOException, InterruptedException {
         long time = System.currentTimeMillis();
 
@@ -24,7 +20,7 @@ public class ActionMultiRequest {
         for (int x = 1; x < Constant.areaSize; x++) {
             for (int y = 1; y < Constant.areaSize; y++) {
                 ExploreRequest exploreRequest = new ExploreRequest(x, y, 1, 1);
-                Explore explore = Actions.explore(exploreRequest);
+                Explore explore = Action.explore(exploreRequest);
 
                 //Если сокровища в точке есть
                 if (explore != null && explore.getAmount() != 0) {
@@ -32,7 +28,7 @@ public class ActionMultiRequest {
 
                     //обновляем список с координатами сокровищ
                     List<Point> pointList = null;
-                    if ( treasureMap.containsKey(treasureCount) ) {
+                    if (treasureMap.containsKey(treasureCount)) {
                         pointList = treasureMap.get(treasureCount);
                     } else {
                         pointList = new ArrayList<>();
@@ -57,9 +53,11 @@ public class ActionMultiRequest {
     /**
      * Возвращает карту сокровищ.
      * ключ - число сокровищ, значения - список координат в которых хранится суммарное число сокровищ
-     * */
+     */
     public static Map<Integer, List<Point>> getTreasureMap() {
         long time = System.currentTimeMillis();
+
+        MapperUtils<Explore> mapper = new MapperUtils<>(Explore.class);
 
         //коллекция для хранения сокровищ. ключ - число сокровищ, значения - список координат
         Map<Integer, List<Point>> treasureMap = new TreeMap<>();
@@ -78,7 +76,8 @@ public class ActionMultiRequest {
                 }
 
                 //Получаем результаты асинхронных запросов
-                List<CompletableFuture<String>> cfReponseList = ClientRequest.concurrentPost(ActionEnum.EXPLORE, requestList);
+                ClientRequest<ExploreRequest> clientRequest = new ClientRequest();
+                List<CompletableFuture<String>> cfReponseList = clientRequest.concurrentPost(ActionEnum.EXPLORE, requestList);
                 for (int i = 0; i < cfReponseList.size(); i++) {
                     CompletableFuture<String> response = cfReponseList.get(i);
                     String responseBody = null;
@@ -89,7 +88,6 @@ public class ActionMultiRequest {
                         responseBody = response.get();
 //                        Logger.log("Response: " + responseBody);
 
-                        MapperUtils<Explore> mapper = new MapperUtils<>(Explore.class);
                         Explore explore = mapper.convertToObject(responseBody);
 
                         //Если сокровища в точке есть
@@ -98,7 +96,7 @@ public class ActionMultiRequest {
 
                             //обновляем список с координатами сокровищ
                             List<Point> pointList = null;
-                            if ( treasureMap.containsKey(treasureCount) ) {
+                            if (treasureMap.containsKey(treasureCount)) {
                                 pointList = treasureMap.get(treasureCount);
                             } else {
                                 pointList = new ArrayList<>();
@@ -125,6 +123,46 @@ public class ActionMultiRequest {
 //        System.out.println("Time for get treasure map: " + (System.currentTimeMillis() - time));
 
         return treasureMap;
+    }
+
+
+    /**
+     * Возвращает список лицензий
+     */
+    public static List<License> getLicenses(int[] arr) {
+
+        //Делаем threadsCount-число асинхронных запросов на запрос /explore
+        List<int[]> requestList = new ArrayList<>();
+        for (int i = 0; i < Constant.threadsCount; i++) {
+            requestList.add(arr);
+        }
+
+        MapperUtils<License> mapper = new MapperUtils<>(License.class);
+
+        List<License> licenses = new ArrayList<>();
+
+        //Получаем результаты асинхронных запросов
+        ClientRequest<int[]> clientRequest = new ClientRequest();
+        List<CompletableFuture<String>> cfReponseList = clientRequest.concurrentPost(ActionEnum.LICENSES, requestList);
+        for (int i = 0; i < cfReponseList.size(); i++) {
+            CompletableFuture<String> response = cfReponseList.get(i);
+            String responseBody;
+            try {
+                responseBody = response.get();
+//                        Logger.log("Response: " + responseBody);
+
+                License license = mapper.convertToObject(responseBody);
+
+                //Если сокровища в точке есть
+                if (license != null) {
+                    licenses.add(license);
+                }
+            } catch (ExecutionException | InterruptedException e) {
+//                        Logger.log(e.getMessage());
+            }
+        }
+
+        return licenses;
     }
 
 }

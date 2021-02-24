@@ -165,7 +165,8 @@ public class ActionRequest {
         HttpResponse<String> response;
         int retry = 1;
         do {
-            response = ClientRequest.doGet(actionEnum);
+            ClientRequest clientRequest = new ClientRequest();
+            response = clientRequest.doGet(actionEnum);
             if (response != null) {
                 Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
             } else {
