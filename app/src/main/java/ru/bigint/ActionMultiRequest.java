@@ -65,7 +65,7 @@ public class ActionMultiRequest<T, U> {
      * ключ - число сокровищ, значения - список координат в которых хранится суммарное число сокровищ
      */
     public List<U> getTreasureMap(int startX, int startY) {
-        ActionEnum actionEnum = ActionEnum.LICENSES;
+        ActionEnum actionEnum = ActionEnum.EXPLORE;
 
         //Делаем threadsCount-число асинхронных запросов на запрос /explore
         List<T> requestList = new ArrayList<>();
