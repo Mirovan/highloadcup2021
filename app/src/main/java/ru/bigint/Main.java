@@ -37,44 +37,47 @@ public class Main {
         Map<Integer, List<Point>> treasureMap = Action.getExplore();
 
         List<Integer> treasureAmountList = new ArrayList<>(treasureMap.keySet());
-        for (int pointTreasureCount = treasureAmountList.size()-1; pointTreasureCount >= 0; pointTreasureCount--) {
+        for (int pointTreasureCount = treasureAmountList.size()-1; pointTreasureCount > 0; pointTreasureCount--) {
             List<Point> points = treasureMap.get(pointTreasureCount);
-            for (Point point: points) {
+            if (points != null) {
+
+                for (Point point : points) {
 //                Logger.log(RequestEnum.ALL, "--- New Point ---");
 //                Logger.log("x = " + point.getX() + "; y = " + point.getY());
 
-                //Пока есть сокровища и глубина позволяет - копать
-                int depth = 1;
-                int currentTreasureCount = pointTreasureCount;
-                while (currentTreasureCount > 0 && depth <= maxDepth) {
-                    //Проверка - если нет лицензий - то надо получить лицензии многопоточно
-                    if (client.getLicenses() == null || client.getLicenses().size() == 0) {
+                    //Пока есть сокровища и глубина позволяет - копать
+                    int depth = 1;
+                    int currentTreasureCount = pointTreasureCount;
+                    while (currentTreasureCount > 0 && depth <= maxDepth) {
+                        //Проверка - если нет лицензий - то надо получить лицензии многопоточно
+                        if (client.getLicenses() == null || client.getLicenses().size() == 0) {
 
-                        //### LICENSE ###
-                        List<License> licenses = Action.getLicenses(new int[]{});
-                        client.setLicenses(licenses);
-                    }
+                            //### LICENSE ###
+                            List<License> licenses = Action.getLicenses(new int[]{});
+                            client.setLicenses(licenses);
+                        }
 
-                    if (client.getLicenses() != null) {
-                        List<License> updateLicenses = new ArrayList<>();
-                        for (License license: client.getLicenses()) {
-                            //Если число попыток копания этой лицензии не исчерпано
-                            if (license.getDigUsed() < license.getDigAllowed()) {
-                                int treasureCount = dig(license, point, depth);
-
-                                //Изменяем число сокровищ для координаты x,y
-                                currentTreasureCount -= treasureCount;
-
-                                //изменяем число попыток раскопок и текущую глубину
-                                license.setDigUsed(license.getDigUsed() + 1);
-
-                                //добавляем во временный массив обновленных лицензий
+                        if (client.getLicenses() != null) {
+                            List<License> updateLicenses = new ArrayList<>();
+                            for (License license : client.getLicenses()) {
+                                //Если число попыток копания этой лицензии не исчерпано
                                 if (license.getDigUsed() < license.getDigAllowed()) {
-                                    updateLicenses.add(license);
+                                    int treasureCount = dig(license, point, depth);
+
+                                    //Изменяем число сокровищ для координаты x,y
+                                    currentTreasureCount -= treasureCount;
+
+                                    //изменяем число попыток раскопок и текущую глубину
+                                    license.setDigUsed(license.getDigUsed() + 1);
+
+                                    //добавляем во временный массив обновленных лицензий
+                                    if (license.getDigUsed() < license.getDigAllowed()) {
+                                        updateLicenses.add(license);
+                                    }
                                 }
                             }
+                            client.setLicenses(updateLicenses);
                         }
-                        client.setLicenses(updateLicenses);
                     }
                 }
             }
