@@ -66,7 +66,7 @@ public class ClientRequest<T> {
     }
 
 
-    public List<CompletableFuture<String>> concurrentPost(ActionEnum actionEnum, final List<T> requestList) {
+    public List<CompletableFuture<HttpResponse<String>>> concurrentPost(ActionEnum actionEnum, final List<T> requestList) {
         String url = Constant.SERVER_URI + actionEnum.getRequest();
 
         return requestList.stream()
@@ -87,12 +87,8 @@ public class ClientRequest<T> {
                                             .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                                             .build();
 
-                            CompletableFuture<String> res = httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                                    .thenApply(response -> {
-//                                        Logger.log("Response code: " + response.statusCode());
-                                        return response;
-                                    })
-                                    .thenApply(HttpResponse::body);
+                            CompletableFuture<HttpResponse<String>> res =
+                                    httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString());
                             return res;
                         }
                 )

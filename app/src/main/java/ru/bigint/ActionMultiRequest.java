@@ -3,11 +3,21 @@ package ru.bigint;
 import ru.bigint.model.*;
 
 import java.io.IOException;
+import java.net.http.HttpResponse;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-public class ActionMultiRequest {
+public class ActionMultiRequest<T, U> {
+
+    private Class<T> requestClassType;
+    private Class<U> responseClassType;
+
+    public ActionMultiRequest(Class<T> requestClassType, Class<U> responseClassType) {
+        this.requestClassType = requestClassType;
+        this.responseClassType = responseClassType;
+    }
+
 
     /**
      * Возвращает карту сокровищ в один поток
@@ -54,7 +64,24 @@ public class ActionMultiRequest {
      * Возвращает карту сокровищ.
      * ключ - число сокровищ, значения - список координат в которых хранится суммарное число сокровищ
      */
-    public static Map<Integer, List<Point>> getTreasureMap() {
+    public List<U> getTreasureMap(int startX, int startY) {
+        ActionEnum actionEnum = ActionEnum.LICENSES;
+
+        //Делаем threadsCount-число асинхронных запросов на запрос /explore
+        List<T> requestList = new ArrayList<>();
+        for (int i = 0; i < Constant.threadsCount; i++) {
+            //### Explore ###
+            ExploreRequest exploreRequest = new ExploreRequest(startX, startY + i, 1, 1);
+            requestList.add((T) exploreRequest);
+        }
+
+        List<U> exploreList = asyncResponseResult(requestList, actionEnum);
+        return exploreList;
+
+/*
+
+
+
         long time = System.currentTimeMillis();
 
         MapperUtils<Explore> mapper = new MapperUtils<>(Explore.class);
@@ -77,9 +104,9 @@ public class ActionMultiRequest {
 
                 //Получаем результаты асинхронных запросов
                 ClientRequest<ExploreRequest> clientRequest = new ClientRequest();
-                List<CompletableFuture<String>> cfReponseList = clientRequest.concurrentPost(ActionEnum.EXPLORE, requestList);
+                List<CompletableFuture<HttpResponse<String>>> cfReponseList = clientRequest.concurrentPost(ActionEnum.EXPLORE, requestList);
                 for (int i = 0; i < cfReponseList.size(); i++) {
-                    CompletableFuture<String> response = cfReponseList.get(i);
+                    CompletableFuture<HttpResponse<String>> response = cfReponseList.get(i);
                     String responseBody = null;
                     try {
 //                        Logger.log("--- Next point ---");
@@ -123,46 +150,63 @@ public class ActionMultiRequest {
 //        System.out.println("Time for get treasure map: " + (System.currentTimeMillis() - time));
 
         return treasureMap;
+
+ */
     }
 
 
     /**
      * Возвращает список лицензий
      */
-    public static List<License> getLicenses(int[] arr) {
+    public List<U> getLicenses(T arr) {
+        ActionEnum actionEnum = ActionEnum.LICENSES;
 
         //Делаем threadsCount-число асинхронных запросов на запрос /explore
-        List<int[]> requestList = new ArrayList<>();
+        List<T> requestList = new ArrayList<>();
         for (int i = 0; i < Constant.threadsCount; i++) {
             requestList.add(arr);
         }
 
-        MapperUtils<License> mapper = new MapperUtils<>(License.class);
+        List<U> licenses = asyncResponseResult(requestList, actionEnum);
 
-        List<License> licenses = new ArrayList<>();
+        return licenses;
+    }
+
+
+    /**
+     * Возвращает список с результатом асинхронных запросов
+     * */
+    public List<U> asyncResponseResult(List<T> requestList, ActionEnum actionEnum) {
+        MapperUtils<U> mapper = new MapperUtils<>(responseClassType);
+
+        List<U> resultList = new ArrayList<>();
 
         //Получаем результаты асинхронных запросов
-        ClientRequest<int[]> clientRequest = new ClientRequest();
-        List<CompletableFuture<String>> cfReponseList = clientRequest.concurrentPost(ActionEnum.LICENSES, requestList);
+        ClientRequest<T> clientRequest = new ClientRequest();
+
+        List<CompletableFuture<HttpResponse<String>>> cfReponseList = clientRequest.concurrentPost(actionEnum, requestList);
         for (int i = 0; i < cfReponseList.size(); i++) {
-            CompletableFuture<String> response = cfReponseList.get(i);
-            String responseBody;
+            CompletableFuture<HttpResponse<String>> cf = cfReponseList.get(i);
             try {
-                responseBody = response.get();
-//                        Logger.log("Response: " + responseBody);
+                U resultObject = null;
+                HttpResponse<String> response = cf.get();
+                if (response != null) {
+                    resultObject = mapper.convertToObject(response.body());
+                    Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
+                } else {
+                    Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null: " + response);
+                }
 
-                License license = mapper.convertToObject(responseBody);
-
-                //Если сокровища в точке есть
-                if (license != null) {
-                    licenses.add(license);
+                //Если объект не пустой
+                if (resultObject != null) {
+                    resultList.add(resultObject);
                 }
             } catch (ExecutionException | InterruptedException e) {
 //                        Logger.log(e.getMessage());
             }
         }
 
-        return licenses;
+        return resultList;
     }
 
 }
