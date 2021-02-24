@@ -76,7 +76,7 @@ public class Action {
         Logger.log(ActionEnum.EXPLORE, "Treasures count: " + strTreasuresCount);
         Logger.log(ActionEnum.EXPLORE, "Time for get treasure map: " + (System.currentTimeMillis() - time));
 
-        return null;
+        return treasureMap;
     }
 
 
