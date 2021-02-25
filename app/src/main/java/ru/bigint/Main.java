@@ -64,11 +64,11 @@ public class Main {
                                 if (license.getDigUsed() < license.getDigAllowed()) {
                                     String[] treasures = dig(license, point, depth);
 
-                                    //Изменяем число сокровищ для координаты x,y
-                                    currentTreasureCount -= treasures.length;
-
                                     if (treasures != null) {
+                                        //Изменяем число сокровищ для координаты x,y
+                                        currentTreasureCount -= treasures.length;
                                         depth++;
+
                                         //Меняем сокровища на золото
                                         for (String treasure : treasures) {
                                             //### CASH ###
