@@ -66,25 +66,26 @@ public class Main {
                                 if (license.getDigUsed() < license.getDigAllowed()) {
                                     String[] treasures = dig(license, point, point.getDepth());
 
+                                    //Если удалось копать
                                     if (treasures != null) {
                                         //Изменяем число сокровищ для координаты x,y
                                         currentTreasureCount -= treasures.length;
                                         //Обновляем глубину раскопок для точки
                                         point.setDepth(point.getDepth() + 1);
 
+                                        //изменяем число попыток раскопок и текущую глубину
+                                        license.setDigUsed(license.getDigUsed() + 1);
+
+                                        //добавляем во временный массив обновленных лицензий
+                                        if (license.getDigUsed() < license.getDigAllowed()) {
+                                            updateLicenses.add(license);
+                                        }
+
                                         //Меняем сокровища на золото
                                         for (String treasure : treasures) {
                                             //### CASH ###
                                             int[] money = Action.cash(treasure);
                                         }
-                                    }
-
-                                    //изменяем число попыток раскопок и текущую глубину
-                                    license.setDigUsed(license.getDigUsed() + 1);
-
-                                    //добавляем во временный массив обновленных лицензий
-                                    if (license.getDigUsed() < license.getDigAllowed()) {
-                                        updateLicenses.add(license);
                                     }
                                 }
                             }
