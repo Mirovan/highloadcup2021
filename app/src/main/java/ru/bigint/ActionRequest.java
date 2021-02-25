@@ -113,7 +113,7 @@ public class ActionRequest {
             MapperUtils<String[]> mapper = new MapperUtils<>(String[].class);
             dig = mapper.convertToObject(response.body());
         } else {
-            dig = new String[0];
+            dig = null;
         }
         return dig;
     }

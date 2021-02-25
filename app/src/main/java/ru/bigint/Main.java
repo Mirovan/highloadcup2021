@@ -62,10 +62,19 @@ public class Main {
                             for (License license : client.getLicenses()) {
                                 //Если число попыток копания этой лицензии не исчерпано
                                 if (license.getDigUsed() < license.getDigAllowed()) {
-                                    int treasureCount = dig(license, point, depth);
+                                    String[] treasures = dig(license, point, depth);
 
                                     //Изменяем число сокровищ для координаты x,y
-                                    currentTreasureCount -= treasureCount;
+                                    currentTreasureCount -= treasures.length;
+
+                                    if (treasures != null) {
+                                        depth++;
+                                        //Меняем сокровища на золото
+                                        for (String treasure : treasures) {
+                                            //### CASH ###
+                                            int[] money = Action.cash(treasure);
+                                        }
+                                    }
 
                                     //изменяем число попыток раскопок и текущую глубину
                                     license.setDigUsed(license.getDigUsed() + 1);
@@ -88,11 +97,12 @@ public class Main {
     }
 
 
-    private int dig(License license, Point point, int depth) throws IOException, InterruptedException {
+    private String[] dig(License license, Point point, int depth) throws IOException, InterruptedException {
         //копаем - и находим список сокровищ на уровне
         //### DIG ###
         String[] treasures = Action.dig(license, point, depth);
 
+        /*
         if (treasures != null) {
             //Меняем сокровища на золото
             for (String treasure : treasures) {
@@ -105,8 +115,9 @@ public class Main {
 //                }
             }
         }
+        */
 
-        return treasures.length;
+        return treasures;
     }
 
 }
