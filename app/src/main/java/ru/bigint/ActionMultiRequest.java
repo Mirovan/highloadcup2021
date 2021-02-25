@@ -77,81 +77,6 @@ public class ActionMultiRequest<T, U> {
 
         List<U> exploreList = asyncResponseResult(requestList, actionEnum);
         return exploreList;
-
-/*
-
-
-
-        long time = System.currentTimeMillis();
-
-        MapperUtils<Explore> mapper = new MapperUtils<>(Explore.class);
-
-        //коллекция для хранения сокровищ. ключ - число сокровищ, значения - список координат
-        Map<Integer, List<Point>> treasureMap = new TreeMap<>();
-
-        //Опрашиваем всю карту в заданных границах и получаем мапу
-        for (int x = 1; x < Constant.areaSize; x++) {
-            int y = 1;
-            while (y < Constant.areaSize) {
-                //Делаем threadsCount-число асинхронных запросов на запрос /explore
-                List<ExploreRequest> requestList = new ArrayList<>();
-                for (int k = 0; k < Constant.threadsCount && y < Constant.areaSize; k++) {
-                    //### Explore ###
-                    ExploreRequest exploreRequest = new ExploreRequest(x, y, 1, 1);
-                    requestList.add(exploreRequest);
-                    y++;
-                }
-
-                //Получаем результаты асинхронных запросов
-                ClientRequest<ExploreRequest> clientRequest = new ClientRequest();
-                List<CompletableFuture<HttpResponse<String>>> cfReponseList = clientRequest.concurrentPost(ActionEnum.EXPLORE, requestList);
-                for (int i = 0; i < cfReponseList.size(); i++) {
-                    CompletableFuture<HttpResponse<String>> response = cfReponseList.get(i);
-                    String responseBody = null;
-                    try {
-//                        Logger.log("--- Next point ---");
-//                        Logger.log("x = " + x + "; y = " + (tempY+i));
-
-                        responseBody = response.get();
-//                        Logger.log("Response: " + responseBody);
-
-                        Explore explore = mapper.convertToObject(responseBody);
-
-                        //Если сокровища в точке есть
-                        if (explore != null && explore.getAmount() != 0) {
-                            int treasureCount = explore.getAmount();
-
-                            //обновляем список с координатами сокровищ
-                            List<Point> pointList = null;
-                            if (treasureMap.containsKey(treasureCount)) {
-                                pointList = treasureMap.get(treasureCount);
-                            } else {
-                                pointList = new ArrayList<>();
-                            }
-                            pointList.add(new Point(explore.getArea().getPosX(), explore.getArea().getPosY()));
-                            treasureMap.put(treasureCount, pointList);
-                        }
-
-                    } catch (ExecutionException | InterruptedException e) {
-//                        Logger.log(e.getMessage());
-                    }
-                }
-            }
-        }
-
-        String strTreasuresCount = "";
-        for (Integer k : treasureMap.keySet()) {
-            strTreasuresCount += k + "(count=" + treasureMap.get(k).size() + "), ";
-        }
-        Logger.log("Treasures count: " + strTreasuresCount);
-        Logger.log("Time for get treasure map: " + (System.currentTimeMillis() - time));
-
-//        System.out.println("Treasures count: " + strTreasuresCount);
-//        System.out.println("Time for get treasure map: " + (System.currentTimeMillis() - time));
-
-        return treasureMap;
-
- */
     }
 
 
@@ -163,7 +88,7 @@ public class ActionMultiRequest<T, U> {
 
         //Делаем threadsCount-число асинхронных запросов на запрос /explore
         List<T> requestList = new ArrayList<>();
-        for (int i = 0; i < Constant.threadsCount; i++) {
+        for (int i = 0; i < Constant.threadsCountLicenses; i++) {
             requestList.add(arr);
         }
 

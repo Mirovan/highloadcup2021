@@ -5,7 +5,9 @@ public class Constant {
     public final static int areaSize = 270;
 
     //Число потоков
-    public final static int threadsCount = 10;
+    public final static int threadsCount = 20;
+    //Число потоков для получения лицензий (по условию может быть только 10 активных лицензий)
+    public final static int threadsCountLicenses = 10;
 
     //Число попыток для повторных неуспешных запросов
     public static int retryCount = 5;
