@@ -4,10 +4,7 @@ import ru.bigint.model.*;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -48,7 +45,7 @@ public class ActionRequest {
     public static License license(int[] licenseRequest) throws IOException, InterruptedException {
 //        Logger.log("-- Licence post --");
         ActionEnum actionEnum = ActionEnum.LICENSES;
-        Logger.log(actionEnum, ">>> Request to: " + actionEnum + "; Object = " + licenseRequest);
+        Logger.log(actionEnum, ">>> Request to: " + actionEnum + "; Object = " + Arrays.toString(licenseRequest));
 
 
         HttpResponse<String> response;
@@ -62,7 +59,7 @@ public class ActionRequest {
             }
 
             retry++;
-            if (response != null && response.statusCode() == 200) {
+            if (response != null && response.statusCode() == 200 ) {
                 break;
             }
         } while (retry < Constant.retryCount);
@@ -103,7 +100,8 @@ public class ActionRequest {
             }
 
             retry++;
-            if (response != null && (response.statusCode() == 200 || response.statusCode() == 404)) {
+            if (response != null
+                    && (response.statusCode() == 200 || response.statusCode() == 404 || response.statusCode() == 403)) {
                 break;
             }
         } while (retry < Constant.retryCount);

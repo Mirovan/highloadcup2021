@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class Main {
 
-    private final static int maxDepth = 10;
+    private final static int maxDepth = 6;
 
     public static void main(String[] args) throws IOException, InterruptedException {
 //        Logger.log("--- Running App ---");
