@@ -99,6 +99,7 @@ public class Main {
 
 
     private String[] dig(License license, Point point, int depth) throws IOException, InterruptedException {
+        Logger.log("Use License: " + license);
         //копаем - и находим список сокровищ на уровне
         //### DIG ###
         String[] treasures = Action.dig(license, point, depth);
