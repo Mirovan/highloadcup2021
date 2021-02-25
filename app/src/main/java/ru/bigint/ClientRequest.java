@@ -2,7 +2,6 @@ package ru.bigint;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ru.bigint.model.ExploreRequest;
 
 import java.io.IOException;
 import java.net.URI;
