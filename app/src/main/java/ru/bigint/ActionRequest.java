@@ -108,12 +108,14 @@ public class ActionRequest {
             }
         } while (retry < Constant.retryCount);
 
-        String[] dig;
-        if (response != null && response.statusCode() == 200) {
-            MapperUtils<String[]> mapper = new MapperUtils<>(String[].class);
-            dig = mapper.convertToObject(response.body());
-        } else {
-            dig = null;
+        String[] dig = null;
+        if (response != null) {
+            if (response.statusCode() == 200) {
+                MapperUtils<String[]> mapper = new MapperUtils<>(String[].class);
+                dig = mapper.convertToObject(response.body());
+            } else if (response.statusCode() == 404) {
+                dig = new String[0];
+            }
         }
         return dig;
     }

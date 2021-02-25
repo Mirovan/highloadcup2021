@@ -43,7 +43,7 @@ public class ActionMultiRequest<T, U> {
                     } else {
                         pointList = new ArrayList<>();
                     }
-                    pointList.add(new Point(explore.getArea().getPosX(), explore.getArea().getPosY()));
+                    pointList.add(new Point(explore.getArea().getPosX(), explore.getArea().getPosY(), 1));
                     treasureMap.put(treasureCount, pointList);
                 }
             }
