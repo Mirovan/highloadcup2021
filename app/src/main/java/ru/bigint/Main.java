@@ -48,7 +48,7 @@ public class Main {
 
                     //Пока есть сокровища и глубина позволяет - копать
                     int currentTreasureCount = pointTreasureCount;
-                    while (currentTreasureCount > 0 && point.getDepth() <= maxDepth) {
+                    while (currentTreasureCount > 0 && point.getDepth() < maxDepth) {
                         //Проверка - если нет лицензий - то надо получить лицензии многопоточно
                         if (client.getLicenses() == null || client.getLicenses().size() == 0) {
 
