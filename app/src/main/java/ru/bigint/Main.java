@@ -37,6 +37,7 @@ public class Main {
         Map<Integer, List<Point>> treasureMap = Action.getExplore();
 
         List<Integer> treasureAmountList = new ArrayList<>(treasureMap.keySet());
+        //Копаем сначала в точках с максимальным содержанием сокровищ
         for (int pointTreasureCount = treasureAmountList.size()-1; pointTreasureCount > 0; pointTreasureCount--) {
             List<Point> points = treasureMap.get(pointTreasureCount);
             if (points != null) {
@@ -46,9 +47,8 @@ public class Main {
 //                Logger.log("x = " + point.getX() + "; y = " + point.getY());
 
                     //Пока есть сокровища и глубина позволяет - копать
-                    int depth = 1;
                     int currentTreasureCount = pointTreasureCount;
-                    while (currentTreasureCount > 0 && depth <= maxDepth) {
+                    while (currentTreasureCount > 0 && point.getDepth() <= maxDepth) {
                         //Проверка - если нет лицензий - то надо получить лицензии многопоточно
                         if (client.getLicenses() == null || client.getLicenses().size() == 0) {
 
@@ -62,12 +62,13 @@ public class Main {
                             for (License license : client.getLicenses()) {
                                 //Если число попыток копания этой лицензии не исчерпано
                                 if (license.getDigUsed() < license.getDigAllowed()) {
-                                    String[] treasures = dig(license, point, depth);
+                                    String[] treasures = dig(license, point, point.getDepth());
 
                                     if (treasures != null) {
                                         //Изменяем число сокровищ для координаты x,y
                                         currentTreasureCount -= treasures.length;
-                                        depth++;
+                                        //Обновляем глубину раскопок для точки
+                                        point.setDepth(point.getDepth() + 1);
 
                                         //Меняем сокровища на золото
                                         for (String treasure : treasures) {

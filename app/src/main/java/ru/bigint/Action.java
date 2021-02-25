@@ -62,7 +62,7 @@ public class Action {
                         } else {
                             pointList = new ArrayList<>();
                         }
-                        pointList.add(new Point(treasure.getArea().getPosX(), treasure.getArea().getPosY()));
+                        pointList.add(new Point(treasure.getArea().getPosX(), treasure.getArea().getPosY(), 1));
                         treasureMap.put(treasureCount, pointList);
                     }
                 }
