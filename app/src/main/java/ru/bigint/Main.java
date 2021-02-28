@@ -35,6 +35,14 @@ public class Main {
         Map<Integer, List<Point>> treasureMap = Action.getExplore();
 
         List<Integer> treasureAmountList = new ArrayList<>(treasureMap.keySet());
+        Collections.sort(treasureAmountList);
+
+        String strTres = "";
+        for (Integer k: treasureMap.keySet()) {
+            strTres += k + "->" + treasureMap.get(k);
+        }
+        Logger.log(strTres);
+
         //Копаем сначала в точках с максимальным содержанием сокровищ
         for (int pointTreasureCount = treasureAmountList.size()-1; pointTreasureCount > 0; pointTreasureCount--) {
             List<Point> points = treasureMap.get(pointTreasureCount);
