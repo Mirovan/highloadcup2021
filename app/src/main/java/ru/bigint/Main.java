@@ -45,18 +45,22 @@ public class Main {
 
         //Копаем сначала в точках с максимальным содержанием сокровищ
         for (Integer pointTreasureCount: treasureAmountList) {
+            //ToDo: for test
+            if (pointTreasureCount < 2) break;
+
             List<Point> points = treasureMap.get(pointTreasureCount);
             if (points != null) {
 
                 for (Point point : points) {
 //                Logger.log(RequestEnum.ALL, "--- New Point ---");
 //                Logger.log("x = " + point.getX() + "; y = " + point.getY());
-                    Logger.log("=== Treasure count: " + pointTreasureCount + "x = " + point.getX() + "; y = " + point.getY() + " ===");
+                    Logger.log("=== Treasure count: " + pointTreasureCount + "; x = " + point.getX() + "; y = " + point.getY() + " ===");
 
 
                     //Пока есть сокровища и глубина позволяет - копать
                     int foundTreasureCount = 0;
                     while (foundTreasureCount < pointTreasureCount && point.getDepth() < maxDepth) {
+                        Logger.log("foundTreasureCount = " + foundTreasureCount);
                         if (point.getDepth() >= 11) System.out.println("->>>>>>>>>>> ERROR - too much depth ");
 
                         //Проверка - если нет лицензий - то надо получить лицензии многопоточно
