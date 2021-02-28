@@ -81,6 +81,11 @@ public class MainController {
         int x = digRequest.getPosX();
         int y = digRequest.getPosY();
         int depth = digRequest.getDepth();
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return new String[]{areaData.getArea()[x][y][depth-1]};
     }
 

@@ -59,11 +59,18 @@ public class Main {
 
 
                 for (Point point : points) {
-                    CompletableFuture<String[]> cf = Action.digArea(point);
-                    String[] res = cf.get();
-                    String strObj = Arrays.stream(res).collect(Collectors.joining());
-                    System.out.println("Treasures: " + res);
+                    CompletableFuture<String[]> cf = Action.digArea(client, point);
+                    String[] treasures = cf.get();
+                    String strObj = Arrays.stream(treasures).collect(Collectors.joining());
+                    Logger.log(ActionEnum.DIG, "Treasures: " + strObj);
+
+                    //Меняем сокровища на золото
+                    for (String treasure : treasures) {
+                        //### CASH ###
+                        int[] money = Action.cash(treasure);
+                    }
                 }
+
 
 
 

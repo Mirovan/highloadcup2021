@@ -94,37 +94,14 @@ public class Action {
     }
 
 
-    public static CompletableFuture<String[]> digArea(Point point) throws ExecutionException, InterruptedException {
-//        ActionMultiRequest<int[], List> actionMultiRequest = new ActionMultiRequest<>(int[].class, List.class);
-//        actionMultiRequest.digArea(list);
-
-        HttpClient httpClient = HttpClient.newBuilder()
-                .build();
-
-        String exploreURL = Constant.SERVER_URI + ActionEnum.EXPLORE;
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        String requestBody = null;
-        try {
-            requestBody = objectMapper.writeValueAsString(point);
-        } catch (JsonProcessingException e) {
-//                                Logger.log(e.getMessage());
-        }
-
-        HttpRequest exploreRequest =
-                HttpRequest.newBuilder()
-                        .uri(URI.create(exploreURL))
-                        .header("Content-Type", "application/json; charset=UTF-8")
-                        .POST(HttpRequest.BodyPublishers.ofString(requestBody))
-                        .build();
-
-        MapperUtils<License> licenseMapperUtils = new MapperUtils<>(License.class);
+    public static CompletableFuture<String[]> digArea(Client client, Point point) throws ExecutionException, InterruptedException {
         MapperUtils<String[]> digMapperUtils = new MapperUtils<>(String[].class);
 
-        CompletableFuture<String[]> res = Async.getLicense(new int[]{})
-                .thenApply(HttpResponse::body)
-                .thenApply(licenseMapperUtils::convertToObject)
+        CompletableFuture<String[]> res = Async.getLicense(client, new int[]{})
                 .thenCompose(license -> {
+                    List<License> licenses = new ArrayList<>();
+                    licenses.add(license);
+                    client.setLicenses(licenses);
                     DigRequest digRequest = new DigRequest(license.getId(), point.getX(), point.getY(), point.getDepth());
                     return Async.dig(digRequest);
                 })
@@ -132,10 +109,6 @@ public class Action {
                 .thenApply(digMapperUtils::convertToObject);
 
         return res;
-
-//        for (Point point : list) {
-//        }
-
     }
 
 }

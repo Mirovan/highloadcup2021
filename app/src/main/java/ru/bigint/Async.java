@@ -2,6 +2,7 @@ package ru.bigint;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import ru.bigint.model.Client;
 import ru.bigint.model.DigRequest;
 import ru.bigint.model.License;
 import ru.bigint.model.Point;
@@ -15,9 +16,23 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class Async {
-    public static CompletableFuture<HttpResponse<String>> getLicense(int[] arr) throws ExecutionException, InterruptedException {
+
+    public static CompletableFuture<License> getLicense(Client client, int[] arr) throws ExecutionException, InterruptedException {
+        if (client != null && client.getLicenses() != null
+                && client.getLicenses().get(0).getDigUsed() < client.getLicenses().get(0).getDigAllowed()) {
+            return CompletableFuture.completedFuture(client.getLicenses().get(0));
+        } else {
+            MapperUtils<License> licenseMapperUtils = new MapperUtils<>(License.class);
+
+            return getNewLicense(client, arr)
+                    .thenApply(HttpResponse::body)
+                    .thenApply(licenseMapperUtils::convertToObject);
+        }
+    }
+
+    public static CompletableFuture<HttpResponse<String>> getNewLicense(Client client, int[] arr) throws ExecutionException, InterruptedException {
         ActionEnum actionEnum = ActionEnum.LICENSES;
-        String exploreURL = Constant.SERVER_URI + actionEnum;
+        String exploreURL = Constant.SERVER_URI + actionEnum.getRequest();
 
         ObjectMapper objectMapper = new ObjectMapper();
         String requestBody = null;
@@ -46,7 +61,7 @@ public class Async {
 
     public static CompletableFuture<HttpResponse<String>> dig(DigRequest digRequest) {
         ActionEnum actionEnum = ActionEnum.DIG;
-        String exploreURL = Constant.SERVER_URI + actionEnum;
+        String exploreURL = Constant.SERVER_URI + actionEnum.getRequest();
 
         ObjectMapper objectMapper = new ObjectMapper();
         String requestBody = null;
