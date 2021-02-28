@@ -22,7 +22,7 @@ public class Action {
     }
 
 
-    public static int[] cash(String treasure) throws IOException, InterruptedException {
+    public static Integer[] cash(String treasure) throws IOException, InterruptedException {
         return ActionRequest.cash(treasure);
     }
 
@@ -80,8 +80,17 @@ public class Action {
     }
 
 
-    public static List<License> getLicenses(int[] arr) {
-        ActionMultiRequest<int[], License> actionMultiRequest = new ActionMultiRequest<>(int[].class, License.class);
-        return actionMultiRequest.getLicenses(arr);
+    public static List<License> getLicenses(Client client) {
+        ActionMultiRequest<Integer[], License> actionMultiRequest = new ActionMultiRequest<>(Integer[].class, License.class);
+        List<Integer[]> requestList = new ArrayList<>();
+        for (int i = 0; i < Constant.threadsCountLicenses; i++) {
+            if (client.getMoney().size() > 0) {
+                requestList.add(new Integer[]{client.getMoney().get(0)});
+                client.getMoney().remove(0);
+            } else {
+                requestList.add(new Integer[]{});
+            }
+        }
+        return actionMultiRequest.getLicenses(requestList);
     }
 }

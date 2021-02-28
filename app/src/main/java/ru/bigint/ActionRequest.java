@@ -119,7 +119,7 @@ public class ActionRequest {
     }
 
 
-    public static int[] cash(String treasure) throws IOException, InterruptedException {
+    public static Integer[] cash(String treasure) throws IOException, InterruptedException {
 //        Logger.log("-- Cash --");
         ActionEnum actionEnum = ActionEnum.CASH;
         Logger.log(actionEnum, ">>> Request to: " + actionEnum + "; Object = " + treasure);
@@ -140,9 +140,9 @@ public class ActionRequest {
             }
         } while (retry < Constant.retryCount);
 
-        int[] money = null;
+        Integer[] money = null;
         if (response != null && response.statusCode() == 200) {
-            MapperUtils<int[]> mapper = new MapperUtils<>(int[].class);
+            MapperUtils<Integer[]> mapper = new MapperUtils<>(Integer[].class);
             money = mapper.convertToObject(response.body());
         }
 

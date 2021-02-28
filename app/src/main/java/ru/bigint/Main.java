@@ -4,6 +4,7 @@ import ru.bigint.model.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -55,7 +56,7 @@ public class Main {
                         if (client.getLicenses() == null || client.getLicenses().size() == 0) {
 
                             //### LICENSE ###
-                            List<License> licenses = Action.getLicenses(new int[]{});
+                            List<License> licenses = Action.getLicenses(client);
                             client.setLicenses(licenses);
                         }
 
@@ -84,7 +85,8 @@ public class Main {
                                         //Меняем сокровища на золото
                                         for (String treasure : treasures) {
                                             //### CASH ###
-                                            int[] money = Action.cash(treasure);
+                                            Integer[] money = Action.cash(treasure);
+                                            client.getMoney().addAll(Arrays.asList(money));
                                         }
                                     }
                                 }

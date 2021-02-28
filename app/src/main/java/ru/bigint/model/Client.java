@@ -2,16 +2,19 @@ package ru.bigint.model;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Client {
     private List<License> licenses;
+    private List<Integer> money;
 
     public Client() {
     }
 
-    public Client(List<License> licenses) {
+    public Client(List<License> licenses, List<Integer> money) {
         this.licenses = licenses;
+        this.money = money;
     }
 
     public List<License> getLicenses() {
@@ -22,13 +25,19 @@ public class Client {
         this.licenses = licenses;
     }
 
+    public List<Integer> getMoney() {
+        return money;
+    }
+
+    public void setMoney(List<Integer> money) {
+        this.money = money;
+    }
+
     @Override
     public String toString() {
-        String licenses = this.licenses.stream()
-                .map(License::toString)
-                .collect(Collectors.joining(", "));
         return "Client{" +
-                "license=" + licenses +
+                "licenses=" + licenses +
+                ", money=" + money +
                 '}';
     }
 }

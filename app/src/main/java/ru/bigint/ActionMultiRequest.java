@@ -83,13 +83,13 @@ public class ActionMultiRequest<T, U> {
     /**
      * Возвращает список лицензий
      */
-    public List<U> getLicenses(T arr) {
+    public List<U> getLicenses(List<T> list) {
         ActionEnum actionEnum = ActionEnum.LICENSES;
 
         //Делаем threadsCount-число асинхронных запросов на запрос /explore
         List<T> requestList = new ArrayList<>();
         for (int i = 0; i < Constant.threadsCountLicenses; i++) {
-            requestList.add(arr);
+            requestList.add(list.get(i));
         }
 
         List<U> licenses = asyncResponseResult(requestList, actionEnum);
