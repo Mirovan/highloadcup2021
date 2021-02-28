@@ -3,10 +3,7 @@ package ru.bigint;
 import ru.bigint.model.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Main {
 
@@ -86,6 +83,7 @@ public class Main {
                                         for (String treasure : treasures) {
                                             //### CASH ###
                                             Integer[] money = Action.cash(treasure);
+                                            if (client.getMoney() == null) client.setMoney(new LinkedList<>());
                                             client.getMoney().addAll(Arrays.asList(money));
                                         }
                                     }
