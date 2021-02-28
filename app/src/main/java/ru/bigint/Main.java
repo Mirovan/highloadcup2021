@@ -64,15 +64,17 @@ public class Main {
                         CompletableFuture<String[]> cf = Action.digArea(client, point);
                         String[] treasures = cf.get();
 
-                        treasuresCount -= treasures.length;
+                        if (treasures != null) {
+                            treasuresCount -= treasures.length;
 
-                        String strObj = Arrays.stream(treasures).collect(Collectors.joining());
-                        Logger.log(ActionEnum.DIG, "Treasures: " + strObj);
+                            String strObj = Arrays.stream(treasures).collect(Collectors.joining());
+                            Logger.log(ActionEnum.DIG, "Treasures: " + strObj);
 
-                        //Меняем сокровища на золото
-                        for (String treasure : treasures) {
-                            //### CASH ###
-                            int[] money = Action.cash(treasure);
+                            //Меняем сокровища на золото
+                            for (String treasure : treasures) {
+                                //### CASH ###
+                                int[] money = Action.cash(treasure);
+                            }
                         }
                     }
                 }
