@@ -32,6 +32,7 @@ public class Main {
 //        RequestEndpoint.healthCheck(URI);
 
         Client client = new Client();
+        client.setLicenses(new ArrayList<>());
 
         //коллекция для хранения сокровищ. ключ - число сокровищ, значения - список координат
         Map<Integer, List<Point>> treasureMap = Action.getExplore();
