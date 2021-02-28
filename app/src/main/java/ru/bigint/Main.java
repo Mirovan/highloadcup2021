@@ -3,10 +3,7 @@ package ru.bigint;
 import ru.bigint.model.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -56,18 +53,27 @@ public class Main {
 //                    treasures = Action.digArea(list);
 //                }
 
+                Queue<Point> queue = new LinkedList<>();
+                queue.addAll(points);
 
+                while ( !queue.isEmpty() ) {
+                    Point point = queue.poll();
 
-                for (Point point : points) {
-                    CompletableFuture<String[]> cf = Action.digArea(client, point);
-                    String[] treasures = cf.get();
-                    String strObj = Arrays.stream(treasures).collect(Collectors.joining());
-                    Logger.log(ActionEnum.DIG, "Treasures: " + strObj);
+                    int treasuresCount = 0;
+                    while (treasuresCount < pointTreasureCount) {
+                        CompletableFuture<String[]> cf = Action.digArea(client, point);
+                        String[] treasures = cf.get();
 
-                    //Меняем сокровища на золото
-                    for (String treasure : treasures) {
-                        //### CASH ###
-                        int[] money = Action.cash(treasure);
+                        treasuresCount -= treasures.length;
+
+                        String strObj = Arrays.stream(treasures).collect(Collectors.joining());
+                        Logger.log(ActionEnum.DIG, "Treasures: " + strObj);
+
+                        //Меняем сокровища на золото
+                        for (String treasure : treasures) {
+                            //### CASH ###
+                            int[] money = Action.cash(treasure);
+                        }
                     }
                 }
 

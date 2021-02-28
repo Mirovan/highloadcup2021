@@ -106,7 +106,10 @@ public class Action {
                     return Async.dig(digRequest);
                 })
                 .thenApply(HttpResponse::body)
-                .thenApply(digMapperUtils::convertToObject);
+                .thenApply(body -> {
+                    point.setDepth(point.getDepth() + 1);
+                    return digMapperUtils.convertToObject(body);
+                });
 
         return res;
     }
