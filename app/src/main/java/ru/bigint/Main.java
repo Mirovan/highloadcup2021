@@ -38,15 +38,15 @@ public class Main {
         Collections.sort(treasureAmountList, Comparator.reverseOrder());
 
         String strTres = "";
-        for (Integer k: treasureMap.keySet()) {
+        for (Integer k : treasureMap.keySet()) {
             strTres += k + "=>" + treasureMap.get(k).size() + "; ";
         }
         Logger.log(strTres);
 
         //Копаем сначала в точках с максимальным содержанием сокровищ
-        for (Integer pointTreasureCount: treasureAmountList) {
+        for (Integer pointTreasureCount : treasureAmountList) {
             //ToDo: for test
-            if (pointTreasureCount < 2) break;
+//            if (pointTreasureCount < 2) break;
 
             List<Point> points = treasureMap.get(pointTreasureCount);
             if (points != null) {
@@ -63,49 +63,23 @@ public class Main {
                         Logger.log("foundTreasureCount = " + foundTreasureCount);
                         if (point.getDepth() >= 11) System.out.println("->>>>>>>>>>> ERROR - too much depth ");
 
-                        //Проверка - если нет лицензий - то надо получить лицензии многопоточно
-                        if (client.getLicenses() == null || client.getLicenses().size() == 0) {
-                            //### LICENSE ###
-                            List<License> licenses = Action.getLicenses(client);
-                            client.setLicenses(licenses);
-                        }
+                        String[] treasures = dig(client, point);
 
-                        if (client.getLicenses() != null) {
-                            List<License> updateLicenses = new ArrayList<>();
-                            for (License license : client.getLicenses()) {
-                                //Если число попыток копания этой лицензии не исчерпано
-                                if (license.getDigUsed() < license.getDigAllowed()) {
-                                    String[] treasures = dig(license, point, point.getDepth());
+                        //Если удалось копать
+                        if (treasures != null) {
+                            //Изменяем текущее число сокровищ для координаты x,y
+                            foundTreasureCount += treasures.length;
 
-                                    //Если удалось копать
-                                    if (treasures != null) {
-                                        //Изменяем число сокровищ для координаты x,y
-                                        foundTreasureCount += treasures.length;
-
-                                        //Обновляем глубину раскопок для точки
-                                        point.setDepth(point.getDepth() + 1);
-
-                                        //изменяем число попыток раскопок и текущую глубину
-                                        license.setDigUsed(license.getDigUsed() + 1);
-
-                                        //добавляем во временный массив обновленных лицензий
-                                        if (license.getDigUsed() < license.getDigAllowed()) {
-                                            updateLicenses.add(license);
-                                        }
-
-                                        //Меняем сокровища на золото
-                                        for (String treasure : treasures) {
-                                            if (client.getMoney() == null) client.setMoney(new LinkedList<>());
-                                            //### CASH ###
-                                            Integer[] money = Action.cash(treasure);
-                                            if (money == null) money = new Integer[0];
-                                            client.getMoney().addAll(Arrays.asList(money));
-                                        }
-                                    }
-                                }
+                            //Меняем сокровища на золото
+                            for (String treasure : treasures) {
+                                if (client.getMoney() == null) client.setMoney(new LinkedList<>());
+                                //### CASH ###
+                                Integer[] money = Action.cash(treasure);
+                                if (money == null) money = new Integer[0];
+                                client.getMoney().addAll(Arrays.asList(money));
                             }
-                            client.setLicenses(updateLicenses);
                         }
+
                     }
                 }
             }
@@ -116,26 +90,50 @@ public class Main {
     }
 
 
-    private String[] dig(License license, Point point, int depth) throws IOException, InterruptedException {
-        Logger.log("Use License: " + license);
-        //копаем - и находим список сокровищ на уровне
-        //### DIG ###
-        String[] treasures = Action.dig(license, point, depth);
+    private String[] dig(Client client, Point point) throws IOException, InterruptedException {
+        //Проверка - если нет лицензий - то надо получить лицензии многопоточно
+        if (client.getLicenses() == null || client.getLicenses().size() == 0) {
+            //### LICENSE ###
+            List<License> licenses = Action.getLicenses(client);
+            client.setLicenses(licenses);
+        }
 
-        /*
-        if (treasures != null) {
-            //Меняем сокровища на золото
-            for (String treasure : treasures) {
-                //### CASH ###
-                int[] money = Action.cash(treasure);
-//                if (money != null && money.length > 0) {
-//                    for (int moneyItem: money) {
-//                        resMoney += moneyItem;
-//                    }
-//                }
+        //Выбираем лицензию
+        License license = null;
+        for (License item : client.getLicenses()) {
+            //Если число попыток копания этой лицензии не исчерпано
+            if (item.getDigUsed() < item.getDigAllowed()) {
+                license = item;
+                break;
             }
         }
-        */
+
+        String[] treasures = null;
+
+        if (license != null) {
+            Logger.log("Use License: " + license);
+            //копаем - и находим список сокровищ на уровне
+            //### DIG ###
+            treasures = Action.dig(license, point, point.getDepth());
+
+            //Копнуть удалось, т.е. если сокровища найдены или мы знаем что их нет - удаляем истекшие лицензии
+            if (treasures != null) {
+                //Обновляем глубину раскопок для точки
+                point.setDepth(point.getDepth() + 1);
+
+                //изменяем число попыток раскопок и текущую глубину
+                license.setDigUsed(license.getDigUsed() + 1);
+
+                List<License> updateLicenses = new ArrayList<>();
+                for (License item : client.getLicenses()) {
+                    //Если число попыток копания этой лицензии не исчерпано
+                    if (license.getDigUsed() < license.getDigAllowed()) {
+                        updateLicenses.add(item);
+                    }
+                }
+                client.setLicenses(updateLicenses);
+            }
+        }
 
         return treasures;
     }
