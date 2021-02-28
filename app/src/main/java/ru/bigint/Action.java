@@ -83,7 +83,7 @@ public class Action {
     public static List<License> getLicenses(Client client) {
         ActionMultiRequest<Integer[], License> actionMultiRequest = new ActionMultiRequest<>(Integer[].class, License.class);
         List<Integer[]> requestList = new ArrayList<>();
-        for (int i = 0; i < Constant.threadsCountLicenses; i++) {
+        for (int i = 0; i < Constant.threadsCountLicenses && client.getLicenses().size() < Constant.threadsCountLicenses; i++) {
             if (client != null && client.getMoney() != null && client.getMoney().size() > 0) {
                 requestList.add(new Integer[]{client.getMoney().get(0)});
                 client.getMoney().remove(0);
@@ -91,6 +91,7 @@ public class Action {
                 requestList.add(new Integer[]{});
             }
         }
+
         return actionMultiRequest.getLicenses(requestList);
     }
 }
