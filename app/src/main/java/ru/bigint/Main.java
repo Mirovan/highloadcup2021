@@ -35,7 +35,7 @@ public class Main {
         Map<Integer, List<Point>> treasureMap = Action.getExplore();
 
         List<Integer> treasureAmountList = new ArrayList<>(treasureMap.keySet());
-        Collections.sort(treasureAmountList);
+        Collections.sort(treasureAmountList, Comparator.reverseOrder());
 
         String strTres = "";
         for (Integer k: treasureMap.keySet()) {
@@ -44,14 +44,15 @@ public class Main {
         Logger.log(strTres);
 
         //Копаем сначала в точках с максимальным содержанием сокровищ
-        for (int pointTreasureCount = treasureAmountList.size(); pointTreasureCount > 0; pointTreasureCount--) {
+        for (Integer pointTreasureCount: treasureAmountList) {
             List<Point> points = treasureMap.get(pointTreasureCount);
-            System.out.println(" ========= Treasure count: " + pointTreasureCount + " ============ ");
             if (points != null) {
 
                 for (Point point : points) {
 //                Logger.log(RequestEnum.ALL, "--- New Point ---");
 //                Logger.log("x = " + point.getX() + "; y = " + point.getY());
+                    Logger.log("=== Treasure count: " + pointTreasureCount + "x = " + point.getX() + "; y = " + point.getY() + " ===");
+
 
                     //Пока есть сокровища и глубина позволяет - копать
                     int foundTreasureCount = 0;
