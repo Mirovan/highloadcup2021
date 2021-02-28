@@ -38,6 +38,7 @@ public class Main {
         //Копаем сначала в точках с максимальным содержанием сокровищ
         for (int pointTreasureCount = treasureAmountList.size()-1; pointTreasureCount > 0; pointTreasureCount--) {
             List<Point> points = treasureMap.get(pointTreasureCount);
+            System.out.println(" ========= Treasure count: " + pointTreasureCount + " ============ ");
             if (points != null) {
 
                 for (Point point : points) {
@@ -45,13 +46,12 @@ public class Main {
 //                Logger.log("x = " + point.getX() + "; y = " + point.getY());
 
                     //Пока есть сокровища и глубина позволяет - копать
-                    int currentTreasureCount = pointTreasureCount;
-                    while (currentTreasureCount > 0 && point.getDepth() < maxDepth) {
+                    int foundTreasureCount = 0;
+                    while (foundTreasureCount < pointTreasureCount && point.getDepth() < maxDepth) {
                         if (point.getDepth() >= 11) System.out.println("->>>>>>>>>>> ERROR - too much depth ");
 
                         //Проверка - если нет лицензий - то надо получить лицензии многопоточно
                         if (client.getLicenses() == null || client.getLicenses().size() == 0) {
-
                             //### LICENSE ###
                             List<License> licenses = Action.getLicenses(client);
                             client.setLicenses(licenses);
@@ -67,7 +67,8 @@ public class Main {
                                     //Если удалось копать
                                     if (treasures != null) {
                                         //Изменяем число сокровищ для координаты x,y
-                                        currentTreasureCount -= treasures.length;
+                                        foundTreasureCount += treasures.length;
+
                                         //Обновляем глубину раскопок для точки
                                         point.setDepth(point.getDepth() + 1);
 
