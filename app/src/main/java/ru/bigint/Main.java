@@ -1,6 +1,8 @@
 package ru.bigint;
 
-import ru.bigint.model.*;
+import ru.bigint.model.Client;
+import ru.bigint.model.License;
+import ru.bigint.model.Point;
 
 import java.io.IOException;
 import java.util.*;
