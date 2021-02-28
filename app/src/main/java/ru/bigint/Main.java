@@ -39,12 +39,12 @@ public class Main {
 
         String strTres = "";
         for (Integer k: treasureMap.keySet()) {
-            strTres += k + "->" + treasureMap.get(k);
+            strTres += k + "=>" + treasureMap.get(k).size() + "; ";
         }
         Logger.log(strTres);
 
         //Копаем сначала в точках с максимальным содержанием сокровищ
-        for (int pointTreasureCount = treasureAmountList.size()-1; pointTreasureCount > 0; pointTreasureCount--) {
+        for (int pointTreasureCount = treasureAmountList.size(); pointTreasureCount > 0; pointTreasureCount--) {
             List<Point> points = treasureMap.get(pointTreasureCount);
             System.out.println(" ========= Treasure count: " + pointTreasureCount + " ============ ");
             if (points != null) {
@@ -90,9 +90,10 @@ public class Main {
 
                                         //Меняем сокровища на золото
                                         for (String treasure : treasures) {
+                                            if (client.getMoney() == null) client.setMoney(new LinkedList<>());
                                             //### CASH ###
                                             Integer[] money = Action.cash(treasure);
-                                            if (client.getMoney() == null) client.setMoney(new LinkedList<>());
+                                            if (money == null) money = new Integer[0];
                                             client.getMoney().addAll(Arrays.asList(money));
                                         }
                                     }

@@ -20,17 +20,19 @@ public class MainController {
     @GetMapping("/ping/{id}")
     public String ping(@PathVariable int id) throws InterruptedException {
 //        queryNum.getAndIncrement();
-        queryNum++;
-        Random rnd = new Random();
-        int k = rnd.nextInt(2);
-        if (k == 1) {
-            System.out.println("sleep (" + k + "); res=" + queryNum + "; id=" + id);
-            Thread.sleep(1000);
-        } else {
-            System.out.println("work (" + k + "); res=" + queryNum + "; id=" + id);
-        }
+        synchronized (this) {
+            queryNum++;
+            Random rnd = new Random();
+            int k = rnd.nextInt(2);
+            if (k == 1) {
+                System.out.println("sleep (" + k + "); res=" + queryNum + "; id=" + id);
+                Thread.sleep(10);
+            } else {
+                System.out.println("work (" + k + "); res=" + queryNum + "; id=" + id);
+            }
 
-        return "queryNum=" + queryNum + "; id=" + id;
+            return "queryNum=" + queryNum + "; id=" + id;
+        }
     }
 
 
@@ -57,6 +59,12 @@ public class MainController {
 
     @PostMapping("/licenses")
     public LicencesResponse postLicences(@RequestBody int[] money) {
+        Random rnd = new Random();
+        try {
+            Thread.sleep(rnd.nextInt(200));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return new LicencesResponse(1, 3, 0);
     }
 
@@ -81,6 +89,12 @@ public class MainController {
         int x = digRequest.getPosX();
         int y = digRequest.getPosY();
         int depth = digRequest.getDepth();
+        Random rnd = new Random();
+        try {
+            Thread.sleep(rnd.nextInt(200));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return new String[]{areaData.getArea()[x][y][depth-1]};
     }
 
