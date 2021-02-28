@@ -84,7 +84,7 @@ public class Action {
         ActionMultiRequest<Integer[], License> actionMultiRequest = new ActionMultiRequest<>(Integer[].class, License.class);
         List<Integer[]> requestList = new ArrayList<>();
         for (int i = 0; i < Constant.threadsCountLicenses; i++) {
-            if (client.getMoney().size() > 0) {
+            if (client != null && client.getMoney() != null && client.getMoney().size() > 0) {
                 requestList.add(new Integer[]{client.getMoney().get(0)});
                 client.getMoney().remove(0);
             } else {
