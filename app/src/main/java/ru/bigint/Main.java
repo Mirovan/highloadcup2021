@@ -59,13 +59,13 @@ public class Main {
                 while ( !queue.isEmpty() ) {
                     Point point = queue.poll();
 
-                    int treasuresCount = 0;
-                    while (treasuresCount < pointTreasureCount) {
+                    int foundTreasuresCount = 0;
+                    while (foundTreasuresCount < pointTreasureCount) {
                         CompletableFuture<String[]> cf = Action.digArea(client, point);
                         String[] treasures = cf.get();
 
                         if (treasures != null) {
-                            treasuresCount -= treasures.length;
+                            foundTreasuresCount += treasures.length;
 
                             String strObj = Arrays.stream(treasures).collect(Collectors.joining());
                             Logger.log(ActionEnum.DIG, "Treasures: " + strObj);
