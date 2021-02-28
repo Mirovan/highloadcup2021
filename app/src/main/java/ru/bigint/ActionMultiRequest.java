@@ -86,7 +86,7 @@ public class ActionMultiRequest<T, U> {
     public List<U> getLicenses(T arr) {
         ActionEnum actionEnum = ActionEnum.LICENSES;
 
-        //Делаем threadsCount-число асинхронных запросов на запрос /explore
+        //Делаем threadsCount-число асинхронных запросов на запрос /licenses
         List<T> requestList = new ArrayList<>();
         for (int i = 0; i < Constant.threadsCountLicenses; i++) {
             requestList.add(arr);
@@ -96,6 +96,19 @@ public class ActionMultiRequest<T, U> {
 
         return licenses;
     }
+
+/*
+    public void digArea(List<T> list) {
+        ActionEnum actionEnum = ActionEnum.LICENSES;
+
+        //Делаем threadsCount-число асинхронных запросов на запрос /explore
+        List<T> requestList = new ArrayList<>();
+        for (int i = 0; i < Constant.threadsCountLicenses; i++) {
+            requestList.add(list);
+        }
+
+    }
+*/
 
 
     /**

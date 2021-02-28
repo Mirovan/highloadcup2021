@@ -1,12 +1,20 @@
 package ru.bigint;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import ru.bigint.model.*;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public class Action {
 
@@ -50,7 +58,7 @@ public class Action {
             for (int y = 1; y < Constant.areaSize; y = y + Constant.threadsCount) {
                 List<Explore> treasures = actionMultiRequest.getTreasureMap(x, y);
 
-                for (Explore treasure: treasures) {
+                for (Explore treasure : treasures) {
                     //Если сокровища в точке есть
                     if (treasure != null && treasure.getAmount() != 0) {
                         int treasureCount = treasure.getAmount();
@@ -84,4 +92,60 @@ public class Action {
         ActionMultiRequest<int[], License> actionMultiRequest = new ActionMultiRequest<>(int[].class, License.class);
         return actionMultiRequest.getLicenses(arr);
     }
+
+
+    public static CompletableFuture<String[]> digArea(Point point) throws ExecutionException, InterruptedException {
+//        ActionMultiRequest<int[], List> actionMultiRequest = new ActionMultiRequest<>(int[].class, List.class);
+//        actionMultiRequest.digArea(list);
+
+        HttpClient httpClient = HttpClient.newBuilder()
+                .build();
+
+        String exploreURL = Constant.SERVER_URI + ActionEnum.EXPLORE;
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestBody = null;
+        try {
+            requestBody = objectMapper.writeValueAsString(point);
+        } catch (JsonProcessingException e) {
+//                                Logger.log(e.getMessage());
+        }
+
+        HttpRequest exploreRequest =
+                HttpRequest.newBuilder()
+                        .uri(URI.create(exploreURL))
+                        .header("Content-Type", "application/json; charset=UTF-8")
+                        .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                        .build();
+
+        MapperUtils<License> licenseMapperUtils = new MapperUtils<>(License.class);
+        MapperUtils<String[]> digMapperUtils = new MapperUtils<>(String[].class);
+
+        CompletableFuture<String[]> res = Async.getLicense(new int[]{})
+                .thenApply(HttpResponse::body)
+                .thenApply(licenseMapperUtils::convertToObject)
+                .thenCompose(license -> {
+                    DigRequest digRequest = new DigRequest(license.getId(), point.getX(), point.getY(), point.getDepth());
+                    return Async.dig(digRequest);
+                })
+                .thenApply(HttpResponse::body)
+                .thenApply(digMapperUtils::convertToObject);
+
+        return res;
+
+//        for (Point point : list) {
+//        }
+
+    }
+
 }
+
+
+//    CompletableFuture result =
+//      getMovieList(showDetails.getShowTime().getDay())
+//            .thenCompose(movies -> selectMovie(movies))
+//            .thenCompose(movie ->
+//                  selectSeats(showDetails.getShowTime())
+//                      .thenApply(showDetails1 -> applyPromoCode(showDetails1,promoCode))
+//                      .thenCompose(showDetails2 -> getTicketPrice(showDetails2))
+//             );

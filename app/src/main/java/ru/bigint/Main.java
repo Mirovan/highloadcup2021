@@ -4,14 +4,18 @@ import ru.bigint.model.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 public class Main {
 
     private final static int maxDepth = 10;
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException, InterruptedException, ExecutionException {
 //        Logger.log("--- Running App ---");
 
         long startTime = System.currentTimeMillis();
@@ -22,7 +26,7 @@ public class Main {
 //        Logger.log("Time: " + (System.currentTimeMillis() - startTime));
     }
 
-    private void runGame() throws IOException, InterruptedException {
+    private void runGame() throws IOException, InterruptedException, ExecutionException {
 //        Logger.log("--- Play Game ---");
 //        Logger.log("OS: " + System.getProperty("os.name"));
 //        Logger.log("URI: " + URI);
@@ -38,10 +42,34 @@ public class Main {
 
         List<Integer> treasureAmountList = new ArrayList<>(treasureMap.keySet());
         //Копаем сначала в точках с максимальным содержанием сокровищ
-        for (int pointTreasureCount = treasureAmountList.size()-1; pointTreasureCount > 0; pointTreasureCount--) {
+        for (int pointTreasureCount = treasureAmountList.size() - 1; pointTreasureCount > 0; pointTreasureCount--) {
             List<Point> points = treasureMap.get(pointTreasureCount);
             if (points != null) {
 
+                //Делим список на части
+//                List<List<Point>> pointPartitions = new ArrayList<>();
+//                for (int i = 0; i < points.size(); i += Constant.threadsCount) {
+//                    pointPartitions.add(points.subList(i, Math.min(i + Constant.threadsCount, points.size())));
+//                }
+
+//                for (List<Point> list : pointPartitions) {
+//                    treasures = Action.digArea(list);
+//                }
+
+
+
+                for (Point point : points) {
+                    CompletableFuture<String[]> cf = Action.digArea(point);
+                    String[] res = cf.get();
+                    String strObj = Arrays.stream(res).collect(Collectors.joining());
+                    System.out.println("Treasures: " + res);
+                }
+
+
+
+                //----------------------------------------
+
+/*
                 for (Point point : points) {
 //                Logger.log(RequestEnum.ALL, "--- New Point ---");
 //                Logger.log("x = " + point.getX() + "; y = " + point.getY());
@@ -93,6 +121,7 @@ public class Main {
                         }
                     }
                 }
+*/
             }
         }
 
