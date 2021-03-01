@@ -75,8 +75,27 @@ public class ActionRequest {
 
     public static License[] license() {
 //        Logger.log("-- Licence post --");
-        HttpResponse<String> response = ClientRequest.doGet(ActionEnum.LICENSES);
+        ActionEnum actionEnum = ActionEnum.LICENSES;
+        Logger.log(actionEnum, ">>> Request to: " + actionEnum);
+
         MapperUtils<License[]> mapper = new MapperUtils<>(License[].class);
+        HttpResponse<String> response = null;
+
+        int retry = 1;
+        do {
+            response = ClientRequest.doGet(ActionEnum.LICENSES);
+            if (response != null) {
+                Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
+            } else {
+                Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Retry: " + retry + "; Response = null: " + response);
+            }
+
+            retry++;
+            if (response != null && response.statusCode() == 200) {
+                break;
+            }
+        } while (retry < Constant.retryCount);
+
         License[] licenses = null;
         if (response != null) {
             licenses = mapper.convertToObject(response.body());

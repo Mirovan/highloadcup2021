@@ -65,7 +65,7 @@ public class Main {
                     //Пока есть сокровища и глубина позволяет - копать
                     int foundTreasureCount = 0;
                     while (foundTreasureCount < pointTreasureCount && point.getDepth() < maxDepth) {
-                        Logger.log("foundTreasureCount = " + foundTreasureCount);
+//                        Logger.log("foundTreasureCount = " + foundTreasureCount);
                         if (point.getDepth() >= 11) System.out.println("->>>>>>>>>>> ERROR - too much depth ");
 
                         String[] treasures = dig(client, point);
@@ -138,7 +138,7 @@ public class Main {
         Logger.log("Licenses before DIG: " + strObj);
 
         if (license != null) {
-            Logger.log("Use License: " + license);
+//            Logger.log("Use License: " + license);
             //копаем - и находим список сокровищ на уровне
             //### DIG ###
             treasures = Action.dig(license, point, point.getDepth());
