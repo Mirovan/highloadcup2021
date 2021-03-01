@@ -22,18 +22,24 @@ public class ClientRequest<T> {
             .build();
 
 
-    public static HttpResponse<String> doGet(ActionEnum actionEnum) throws IOException, InterruptedException, ExecutionException {
+    public static HttpResponse<String> doGet(ActionEnum actionEnum) throws IOException, InterruptedException {
         String url = Constant.SERVER_URI + actionEnum.getRequest();
 
         HttpRequest request =
                 HttpRequest.newBuilder()
                         .uri(URI.create(url))
-//                        .timeout(Duration.ofSeconds(2))
+                        .header("Content-Type", "application/json; charset=UTF-8")
+                        .timeout(Duration.ofSeconds(1))
                         .build();
-        HttpResponse<String> response =
-                httpClient
-                        .sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                        .get();
+        CompletableFuture<HttpResponse<String>> cf = httpClient
+                .sendAsync(request, HttpResponse.BodyHandlers.ofString());
+
+        HttpResponse<String> response = null;
+        try {
+            response = cf.get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
         return response;
     }
 
