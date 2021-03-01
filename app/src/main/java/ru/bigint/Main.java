@@ -97,7 +97,7 @@ public class Main {
 
     private String[] dig(Client client, Point point) throws IOException, InterruptedException, ExecutionException {
         //Проверка - если нет лицензий - то надо получить лицензии многопоточно
-        Logger.log("Client Licenses: " + client.getLicenses().size());
+//        Logger.log("Client Licenses: " + client.getLicenses().size());
 
         //Если нет лицензий - то запрашиваем
         if (client.getLicenses() == null || client.getLicenses().size() == 0) {
