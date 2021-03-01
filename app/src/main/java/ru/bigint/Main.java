@@ -99,32 +99,43 @@ public class Main {
         //Проверка - если нет лицензий - то надо получить лицензии многопоточно
         Logger.log("Client Licenses: " + client.getLicenses().size());
 
+        //Если нет лицензий - то запрашиваем
         if (client.getLicenses() == null || client.getLicenses().size() == 0) {
             //### LICENSE ###
             List<License> licenses = Action.getLicenses(client);
             client.setLicenses(licenses);
         }
         //ToDo: For Log
-        License[] licenses = ActionRequest.license();
-        if (licenses != null){
-            String strObj = Arrays.stream(licenses).map(item -> item.toString()).collect(Collectors.joining("; "));
-            Logger.log("Get request Licenses: " + strObj);
-        } else {
-            Logger.log("Get request Licenses: no licenses at server ((");
-        }
-
-
-        //Выбираем лицензию
-        License license = null;
-        for (License item : client.getLicenses()) {
-            //Если число попыток копания этой лицензии не исчерпано
-            if (item.getDigUsed() < item.getDigAllowed()) {
-                license = item;
-                break;
+        {
+            License[] licenses = ActionRequest.license();
+            if (licenses != null) {
+                String strObj = Arrays.stream(licenses).map(item -> item.toString()).collect(Collectors.joining("; "));
+                Logger.log("Get request Licenses: " + strObj);
+            } else {
+                Logger.log("Get request Licenses: no licenses at server ((");
             }
         }
 
+        //Обновляем список лицензий
+        List<License> licensesUpd = new ArrayList<>();
+        for (int i=0; i<client.getLicenses().size(); i++) {
+            //Если число попыток копания этой лицензии не исчерпано
+            if (client.getLicenses().get(i).getDigUsed() < client.getLicenses().get(i).getDigAllowed()) {
+                licensesUpd.add(client.getLicenses().get(i));
+            }
+        }
+        client.setLicenses(licensesUpd);
+
+        //Выбираем лицензию
+        License license = null;
+        if (client.getLicenses() != null && client.getLicenses().size() > 0) {
+            license = client.getLicenses().get(0);
+        }
+
         String[] treasures = null;
+
+        String strObj = client.getLicenses().stream().map(item -> item.toString()).collect(Collectors.joining("; "));
+        Logger.log("Licenses before DIG: " + strObj);
 
         if (license != null) {
             Logger.log("Use License: " + license);
@@ -150,6 +161,9 @@ public class Main {
                 client.setLicenses(updateLicenses);
             }
         }
+
+        strObj = client.getLicenses().stream().map(item -> item.toString()).collect(Collectors.joining("; "));
+        Logger.log("Licenses after DIG: " + strObj);
 
         return treasures;
     }
