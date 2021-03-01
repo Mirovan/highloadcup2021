@@ -103,9 +103,14 @@ public class Main {
             List<License> licenses = Action.getLicenses(client);
             client.setLicenses(licenses);
         }
+        //ToDo: For Log
         License[] licenses = ActionRequest.license();
-        String strObj = Arrays.stream(licenses).map(item -> item.toString()).collect(Collectors.joining("; "));
-        Logger.log("Get request Licenses: " + strObj);
+        if (licenses != null){
+            String strObj = Arrays.stream(licenses).map(item -> item.toString()).collect(Collectors.joining("; "));
+            Logger.log("Get request Licenses: " + strObj);
+        } else {
+            Logger.log("Get request Licenses: no licenses at server ((");
+        }
 
 
         //Выбираем лицензию
