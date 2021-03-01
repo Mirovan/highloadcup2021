@@ -87,12 +87,12 @@ public class ActionMultiRequest<T, U> {
         ActionEnum actionEnum = ActionEnum.LICENSES;
 
         //Делаем threadsCount-число асинхронных запросов на запрос /explore
-        List<T> requestList = new ArrayList<>();
-        for (int i = 0; i < Constant.threadsCountLicenses; i++) {
-            requestList.add(list.get(i));
-        }
+//        List<T> requestList = new ArrayList<>();
+//        for (int i = 0; i < list.size(); i++) {
+//            requestList.add(list.get(i));
+//        }
 
-        List<U> licenses = asyncResponseResult(requestList, actionEnum);
+        List<U> licenses = asyncResponseResult(list, actionEnum);
 
         return licenses;
     }

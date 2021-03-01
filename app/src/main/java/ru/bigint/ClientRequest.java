@@ -22,7 +22,7 @@ public class ClientRequest<T> {
             .build();
 
 
-    public HttpResponse<String> doGet(ActionEnum actionEnum) throws IOException, InterruptedException {
+    public static HttpResponse<String> doGet(ActionEnum actionEnum) throws IOException, InterruptedException {
         String url = Constant.SERVER_URI + actionEnum.getRequest();
 
         HttpRequest request =

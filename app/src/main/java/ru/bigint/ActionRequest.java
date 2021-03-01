@@ -76,11 +76,10 @@ public class ActionRequest {
 
     public static License license() throws IOException, InterruptedException {
 //        Logger.log("-- Licence post --");
-//        String body = Request.doGet(RequestEnum.LICENSES);
-//        MapperUtils<License> mapper = new MapperUtils<>(License.class);
-//        License license = mapper.convertToObject(body);
-//        return license;
-        return null;
+        HttpResponse<String> response = ClientRequest.doGet(ActionEnum.LICENSES);
+        MapperUtils<License> mapper = new MapperUtils<>(License.class);
+        License license = mapper.convertToObject(response.body());
+        return license;
     }
 
 

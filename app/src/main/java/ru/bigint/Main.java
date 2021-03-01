@@ -95,11 +95,15 @@ public class Main {
 
     private String[] dig(Client client, Point point) throws IOException, InterruptedException {
         //Проверка - если нет лицензий - то надо получить лицензии многопоточно
+        Logger.log("Client Licenses: " + client.getLicenses().size());
+
         if (client.getLicenses() == null || client.getLicenses().size() == 0) {
             //### LICENSE ###
             List<License> licenses = Action.getLicenses(client);
             client.setLicenses(licenses);
         }
+        Logger.log("Get request Licenses: " + ActionRequest.license());
+
 
         //Выбираем лицензию
         License license = null;
