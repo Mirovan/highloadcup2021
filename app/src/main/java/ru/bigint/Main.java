@@ -6,6 +6,7 @@ import ru.bigint.model.Point;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Main {
 
@@ -102,7 +103,9 @@ public class Main {
             List<License> licenses = Action.getLicenses(client);
             client.setLicenses(licenses);
         }
-        Logger.log("Get request Licenses: " + ActionRequest.license());
+        License[] licenses = ActionRequest.license();
+        String strObj = Arrays.stream(licenses).map(item -> item.toString()).collect(Collectors.joining("; "));
+        Logger.log("Get request Licenses: " + strObj);
 
 
         //Выбираем лицензию

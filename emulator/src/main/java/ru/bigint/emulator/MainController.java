@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import org.springframework.web.bind.annotation.*;
 import ru.bigint.emulator.model.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 @RestController
@@ -52,8 +54,11 @@ public class MainController {
 
 
     @GetMapping("/licenses")
-    public LicencesResponse getLicences() {
-        return new LicencesResponse(1, 3, 0);
+    public LicencesResponse[] getLicences() {
+        List<LicencesResponse> list = new ArrayList<>();
+        list.add(new LicencesResponse(1, 3, 0));
+        list.add(new LicencesResponse(1, 3, 0));
+        return list.toArray(new LicencesResponse[0]);
     }
 
 
