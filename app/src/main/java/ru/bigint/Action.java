@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
 
 public class Action {
 
@@ -27,7 +28,7 @@ public class Action {
     }
 
 
-    public static Balance balance() throws IOException, InterruptedException {
+    public static Balance balance() throws IOException, InterruptedException, ExecutionException {
         return ActionRequest.balance();
     }
 

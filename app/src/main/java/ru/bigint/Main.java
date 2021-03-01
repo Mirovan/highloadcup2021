@@ -6,13 +6,14 @@ import ru.bigint.model.Point;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 public class Main {
 
     private final static int maxDepth = 10;
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException, InterruptedException, ExecutionException {
 //        Logger.log("--- Running App ---");
 
         long startTime = System.currentTimeMillis();
@@ -23,7 +24,7 @@ public class Main {
 //        Logger.log("Time: " + (System.currentTimeMillis() - startTime));
     }
 
-    private void runGame() throws IOException, InterruptedException {
+    private void runGame() throws IOException, InterruptedException, ExecutionException {
 //        Logger.log("--- Play Game ---");
 //        Logger.log("OS: " + System.getProperty("os.name"));
 //        Logger.log("URI: " + URI);
@@ -94,7 +95,7 @@ public class Main {
     }
 
 
-    private String[] dig(Client client, Point point) throws IOException, InterruptedException {
+    private String[] dig(Client client, Point point) throws IOException, InterruptedException, ExecutionException {
         //Проверка - если нет лицензий - то надо получить лицензии многопоточно
         Logger.log("Client Licenses: " + client.getLicenses().size());
 

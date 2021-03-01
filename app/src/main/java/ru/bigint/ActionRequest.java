@@ -4,8 +4,7 @@ import ru.bigint.model.*;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
+import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
 public class ActionRequest {
@@ -59,7 +58,7 @@ public class ActionRequest {
             }
 
             retry++;
-            if (response != null && response.statusCode() == 200 ) {
+            if (response != null && response.statusCode() == 200) {
                 break;
             }
         } while (retry < Constant.retryCount);
@@ -74,7 +73,7 @@ public class ActionRequest {
     }
 
 
-    public static License[] license() throws IOException, InterruptedException {
+    public static License[] license() throws IOException, InterruptedException, ExecutionException {
 //        Logger.log("-- Licence post --");
         HttpResponse<String> response = ClientRequest.doGet(ActionEnum.LICENSES);
         MapperUtils<License[]> mapper = new MapperUtils<>(License[].class);
@@ -157,7 +156,7 @@ public class ActionRequest {
     }
 
 
-    public static Balance balance() throws IOException, InterruptedException {
+    public static Balance balance() throws IOException, InterruptedException, ExecutionException {
         ActionEnum actionEnum = ActionEnum.BALANCE;
         Logger.log(actionEnum, ">>> Request to: " + actionEnum);
 

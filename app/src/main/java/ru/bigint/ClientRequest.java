@@ -22,7 +22,7 @@ public class ClientRequest<T> {
             .build();
 
 
-    public static HttpResponse<String> doGet(ActionEnum actionEnum) throws IOException, InterruptedException {
+    public static HttpResponse<String> doGet(ActionEnum actionEnum) throws IOException, InterruptedException, ExecutionException {
         String url = Constant.SERVER_URI + actionEnum.getRequest();
 
         HttpRequest request =
@@ -30,7 +30,10 @@ public class ClientRequest<T> {
                         .uri(URI.create(url))
 //                        .timeout(Duration.ofSeconds(2))
                         .build();
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response =
+                httpClient
+                        .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                        .get();
         return response;
     }
 
