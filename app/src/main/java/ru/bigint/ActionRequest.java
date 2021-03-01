@@ -73,11 +73,14 @@ public class ActionRequest {
     }
 
 
-    public static License[] license() throws IOException, InterruptedException, ExecutionException {
+    public static License[] license() {
 //        Logger.log("-- Licence post --");
         HttpResponse<String> response = ClientRequest.doGet(ActionEnum.LICENSES);
         MapperUtils<License[]> mapper = new MapperUtils<>(License[].class);
-        License[] licenses = mapper.convertToObject(response.body());
+        License[] licenses = null;
+        if (response != null) {
+            licenses = mapper.convertToObject(response.body());
+        }
         return licenses;
     }
 
