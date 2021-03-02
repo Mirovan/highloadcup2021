@@ -224,10 +224,7 @@ public class ActionRequest {
     }
 
 
-    public static List<DigWrapper> dig(Client client, List<Point> points, List<License> licenses) {
-//        ActionMultiRequest<DigRequest, DigWrapper> actionMultiRequest = new ActionMultiRequest<>(DigRequest.class, DigWrapper.class);
-//        List<DigWrapper> responseList = actionMultiRequest.dig(client, points, licenses);
-        //List<String> treasures = treasureList.stream().flatMap(Arrays::stream).collect(Collectors.toList());
+    public static List<DigWrapper> dig(List<Point> points, List<License> licenses) {
         ActionEnum actionEnum = ActionEnum.DIG;
 
         String url = Constant.SERVER_URI + actionEnum.getRequest();
@@ -272,6 +269,8 @@ public class ActionRequest {
 
                         return new DigWrapper(digRequest, treasures);
                     });
+
+            listCf.add(cf);
         }
 
 

@@ -83,7 +83,7 @@ public class Main {
             }
 
             //делаем асинхронные запросы на раскопки
-            List<DigWrapper> digs = ActionRequest.dig(client, digPoints, licenses);
+            List<DigWrapper> digs = ActionRequest.dig(digPoints, licenses);
 
             //Просматриваем результаты раскопок
             for (DigWrapper dig : digs) {
@@ -113,6 +113,10 @@ public class Main {
 
                 //Если у точки еще есть сокровища, то возвращаем точку в стек
                 if (point.getTreasuresCount() > 0) {
+                    //Если раскопки удались - то увеличиваем глубину
+                    if (dig.getTreasures() != null) {
+                        point.setDepth(point.getDepth() + 1);
+                    }
                     stack.add(point);
                 }
             }
