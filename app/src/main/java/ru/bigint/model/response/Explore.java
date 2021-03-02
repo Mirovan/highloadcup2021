@@ -1,4 +1,6 @@
-package ru.bigint.model;
+package ru.bigint.model.response;
+
+import ru.bigint.model.request.ExploreRequest;
 
 public class Explore {
     private ExploreRequest area;

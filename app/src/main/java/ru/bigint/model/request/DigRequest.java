@@ -1,4 +1,4 @@
-package ru.bigint.model;
+package ru.bigint.model.request;
 
 public class DigRequest {
     private int licenseID;

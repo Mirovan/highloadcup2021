@@ -1,5 +1,7 @@
 package ru.bigint.model;
 
+import ru.bigint.model.response.License;
+
 import java.util.List;
 
 public class Client {

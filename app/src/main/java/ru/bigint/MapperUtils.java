@@ -2,7 +2,6 @@ package ru.bigint;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ru.bigint.model.Explore;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;

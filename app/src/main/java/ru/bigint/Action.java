@@ -1,6 +1,11 @@
 package ru.bigint;
 
 import ru.bigint.model.*;
+import ru.bigint.model.request.DigRequest;
+import ru.bigint.model.request.ExploreRequest;
+import ru.bigint.model.response.Balance;
+import ru.bigint.model.response.Explore;
+import ru.bigint.model.response.License;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -63,7 +68,7 @@ public class Action {
                         } else {
                             pointList = new ArrayList<>();
                         }
-                        pointList.add(new Point(treasure.getArea().getPosX(), treasure.getArea().getPosY(), 1));
+                        pointList.add(new Point(treasure.getArea().getPosX(), treasure.getArea().getPosY(), 1, treasure.getAmount()));
                         treasureMap.put(treasureCount, pointList);
                     }
                 }
@@ -81,11 +86,13 @@ public class Action {
     }
 
 
-    public static List<License> getLicenses(Client client) {
+    public static List<License> getLicenses(Client client, int count) {
         ActionMultiRequest<Integer[], License> actionMultiRequest = new ActionMultiRequest<>(Integer[].class, License.class);
         List<Integer[]> requestList = new ArrayList<>();
-        for (int i = 0; i < Constant.threadsCountLicenses && client.getLicenses().size() < Constant.threadsCountLicenses; i++) {
-            //Запрос платной лицензии
+
+        //Запрашием count-лицензий
+        for (int i = 0; i < count; i++) {
+            //Запрос платной лицензии - если есть деньги
             if (client != null && client.getMoney() != null && client.getMoney().size() > 0) {
                 requestList.add(new Integer[]{client.getMoney().get(0)});
                 client.getMoney().remove(0);

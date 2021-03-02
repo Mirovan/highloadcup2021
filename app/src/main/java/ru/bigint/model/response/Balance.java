@@ -1,4 +1,4 @@
-package ru.bigint.model;
+package ru.bigint.model.response;
 
 import java.util.Arrays;
 

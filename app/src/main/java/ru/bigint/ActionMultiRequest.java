@@ -1,6 +1,10 @@
 package ru.bigint;
 
 import ru.bigint.model.*;
+import ru.bigint.model.request.DigRequest;
+import ru.bigint.model.request.ExploreRequest;
+import ru.bigint.model.response.Explore;
+import ru.bigint.model.response.License;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
@@ -43,7 +47,7 @@ public class ActionMultiRequest<T, U> {
                     } else {
                         pointList = new ArrayList<>();
                     }
-                    pointList.add(new Point(explore.getArea().getPosX(), explore.getArea().getPosY(), 1));
+                    pointList.add(new Point(explore.getArea().getPosX(), explore.getArea().getPosY(), 1, explore.getAmount()));
                     treasureMap.put(treasureCount, pointList);
                 }
             }
@@ -99,9 +103,29 @@ public class ActionMultiRequest<T, U> {
 
 
     /**
+     * Возвращает результат раскопок
+     */
+    public List<U> dig(Client client, List<Point> points, List<License> licenses) {
+        ActionEnum actionEnum = ActionEnum.DIG;
+
+        //Делаем асинхронные запросы по числу лицензий
+        List<T> requestList = new ArrayList<>();
+        for (int i = 0; i < licenses.size() && i < points.size(); i++) {
+            Point point = points.get(i);
+            License license = licenses.get(i);
+            DigRequest digRequest = new DigRequest(license.getId(), point.getX(), point.getY(), point.getDepth());
+            requestList.add((T) digRequest);
+        }
+
+        List<U> treasureList = asyncResponseResult(requestList, actionEnum);
+        return treasureList;
+    }
+
+
+    /**
      * Возвращает список с результатом асинхронных запросов
      * */
-    public List<U> asyncResponseResult(List<T> requestList, ActionEnum actionEnum) {
+    private List<U> asyncResponseResult(List<T> requestList, ActionEnum actionEnum) {
         MapperUtils<U> mapper = new MapperUtils<>(responseClassType);
 
         List<U> resultList = new ArrayList<>();

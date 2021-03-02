@@ -4,12 +4,13 @@ public class Point {
     private int x;
     private int y;
     private int depth;
+    private int treasuresCount;
 
-
-    public Point(int x, int y, int depth) {
+    public Point(int x, int y, int depth, int treasuresCount) {
         this.x = x;
         this.y = y;
         this.depth = depth;
+        this.treasuresCount = treasuresCount;
     }
 
     public int getX() {
@@ -34,5 +35,13 @@ public class Point {
 
     public void setDepth(int depth) {
         this.depth = depth;
+    }
+
+    public int getTreasuresCount() {
+        return treasuresCount;
+    }
+
+    public void setTreasuresCount(int treasuresCount) {
+        this.treasuresCount = treasuresCount;
     }
 }
