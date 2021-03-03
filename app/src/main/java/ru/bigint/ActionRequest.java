@@ -260,9 +260,12 @@ public class ActionRequest {
                     .thenApply(httpResponse -> {
                         String[] treasures = null;
                         if (httpResponse != null) {
-                            MapperUtils<String[]> resultMapper = new MapperUtils<>(String[].class);
-                            treasures = resultMapper.convertToObject(httpResponse.body());
-                            Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Response code: " + httpResponse.statusCode() + "; Response body: " + httpResponse.body());
+//                            if (httpResponse.statusCode() == 200 || httpResponse.statusCode() == 404 || httpResponse.statusCode() == 403)) {
+                            if (httpResponse.statusCode() == 200) {
+                                MapperUtils<String[]> resultMapper = new MapperUtils<>(String[].class);
+                                treasures = resultMapper.convertToObject(httpResponse.body());
+                                Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Response code: " + httpResponse.statusCode() + "; Response body: " + httpResponse.body());
+                            }
                         } else {
                             Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null");
                         }
@@ -273,16 +276,21 @@ public class ActionRequest {
             listCf.add(cf);
         }
 
+        List<DigWrapper> res = null;
 
-        List<DigWrapper> res = listCf.stream().map(item -> {
-            DigWrapper digWrapper = null;
-            try {
-                digWrapper = item.get();
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-            return digWrapper;
-        }).collect(Collectors.toList());
+        try {
+            res = listCf.stream().map(item -> {
+                DigWrapper digWrapper = null;
+                try {
+                    digWrapper = item.get();
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
+                return digWrapper;
+            }).collect(Collectors.toList());
+        } catch (NullPointerException e) {
+            Logger.log(e.getMessage());
+        }
 
         return res;
     }

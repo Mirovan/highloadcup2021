@@ -97,7 +97,7 @@ public class Main {
                 }
 
                 //Если найдено сокровище - обновляем данные у точки
-                if (dig.getTreasures() != null && dig.getTreasures().length > 0) {
+                if (dig.getTreasures() != null) {
                     point.setTreasuresCount(point.getTreasuresCount() - dig.getTreasures().length);
 
                     //Обмениваем сокровища на золото
@@ -108,7 +108,6 @@ public class Main {
                         if (money == null) money = new Integer[0];
                         client.getMoney().addAll(Arrays.asList(money));
                     }
-
                 }
 
                 //Если у точки еще есть сокровища, то возвращаем точку в стек
