@@ -90,19 +90,24 @@ public class Action {
         ActionMultiRequest<Integer[], License> actionMultiRequest = new ActionMultiRequest<>(Integer[].class, License.class);
         List<Integer[]> requestList = new ArrayList<>();
 
+        int paidLicenses = 0;
         //Запрашием count-лицензий
         for (int i = 0; i < count; i++) {
             //Запрос платной лицензии - если есть деньги
-//            if (client != null && client.getMoney() != null && client.getMoney().size() > 0) {
-//                requestList.add(new Integer[]{client.getMoney().get(0)});
-//                client.getMoney().remove(0);
-//            }
-//            //Запрос бесплатной лицензии
-//            else {
-//                requestList.add(new Integer[]{});
-//            }
+            if (paidLicenses < Constant.paidLicensesCount
+                    && client != null
+                    && client.getMoney() != null
+                    && client.getMoney().size() > 0) {
+                paidLicenses++;
+                requestList.add(new Integer[]{client.getMoney().get(0)});
+                client.getMoney().remove(0);
+            }
+            //Запрос бесплатной лицензии
+            else {
+                requestList.add(new Integer[]{});
+            }
 
-            requestList.add(new Integer[]{});
+//            requestList.add(new Integer[]{});
 
         }
 

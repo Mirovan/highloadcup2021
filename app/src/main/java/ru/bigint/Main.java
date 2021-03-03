@@ -62,9 +62,6 @@ public class Main {
 
         //Достаем по несколько элементов и асинхронно отправляем запрос
         while ( !stack.isEmpty() ) {
-            //print balance
-            Logger.log(Action.balance());
-
             //Запрос - сколько у нас лицензий
             License[] licensesArr = ActionRequest.license();
             List<License> licenses = new ArrayList<>();

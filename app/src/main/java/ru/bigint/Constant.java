@@ -9,6 +9,9 @@ public class Constant {
     //Число потоков для получения лицензий (по условию может быть только 10 активных лицензий)
     public final static int threadsCountLicenses = 10;
 
+    //Число платных лицензий которые можно запросить за один запрос
+    public final static int paidLicensesCount = 1;
+
     //Число попыток для повторных неуспешных запросов
     public static int retryCount = 5;
 
