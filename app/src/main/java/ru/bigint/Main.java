@@ -87,36 +87,41 @@ public class Main {
 
             //Просматриваем результаты раскопок
             for (DigWrapper dig : digs) {
-                DigRequest digRequest = dig.getDigRequest();
-                //находим это точку в списке
-                Point point = null;
-                for (Point p: digPoints) {
-                    if (p.getX() == digRequest.getPosX() && p.getY() == digRequest.getPosY()) {
-                        point = p;
+                if (dig != null) {
+
+                    Point point = null;
+                    if (dig.getDigRequest() != null) {
+                        DigRequest digRequest = dig.getDigRequest();
+                        //находим это точку в списке
+                        for (Point p : digPoints) {
+                            if (p.getX() == digRequest.getPosX() && p.getY() == digRequest.getPosY()) {
+                                point = p;
+                            }
+                        }
                     }
-                }
 
-                //Если найдено сокровище - обновляем данные у точки
-                if (dig.getTreasures() != null) {
-                    point.setTreasuresCount(point.getTreasuresCount() - dig.getTreasures().length);
-
-                    //Обмениваем сокровища на золото
-                    for (String treasure : dig.getTreasures()) {
-                        if (client.getMoney() == null) client.setMoney(new LinkedList<>());
-                        //### CASH ###
-                        Integer[] money = Action.cash(treasure);
-                        if (money == null) money = new Integer[0];
-                        client.getMoney().addAll(Arrays.asList(money));
-                    }
-                }
-
-                //Если у точки еще есть сокровища, то возвращаем точку в стек
-                if (point.getTreasuresCount() > 0) {
-                    //Если раскопки удались - то увеличиваем глубину
+                    //Если найдено сокровище - обновляем данные у точки
                     if (dig.getTreasures() != null) {
-                        point.setDepth(point.getDepth() + 1);
+                        point.setTreasuresCount(point.getTreasuresCount() - dig.getTreasures().length);
+
+                        //Обмениваем сокровища на золото
+                        for (String treasure : dig.getTreasures()) {
+                            if (client.getMoney() == null) client.setMoney(new LinkedList<>());
+                            //### CASH ###
+                            Integer[] money = Action.cash(treasure);
+                            if (money == null) money = new Integer[0];
+                            client.getMoney().addAll(Arrays.asList(money));
+                        }
                     }
-                    stack.add(point);
+
+                    //Если у точки еще есть сокровища, то возвращаем точку в стек
+                    if (point.getTreasuresCount() > 0) {
+                        //Если раскопки удались - то увеличиваем глубину
+                        if (dig.getTreasures() != null) {
+                            point.setDepth(point.getDepth() + 1);
+                        }
+                        stack.add(point);
+                    }
                 }
             }
         }

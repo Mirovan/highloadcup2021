@@ -285,7 +285,7 @@ public class ActionRequest {
                 try {
                     digWrapper = listCf.get(i).get();
                 } catch (InterruptedException | ExecutionException e) {
-                    Logger.log("DIG collect" + e.getMessage());
+                    Logger.log("DIG collect = " + e.getMessage());
                 }
                 res.add(digWrapper);
             }
