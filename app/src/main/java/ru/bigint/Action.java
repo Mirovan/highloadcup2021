@@ -93,14 +93,17 @@ public class Action {
         //Запрашием count-лицензий
         for (int i = 0; i < count; i++) {
             //Запрос платной лицензии - если есть деньги
-            if (client != null && client.getMoney() != null && client.getMoney().size() > 0) {
-                requestList.add(new Integer[]{client.getMoney().get(0)});
-                client.getMoney().remove(0);
-            }
-            //Запрос бесплатной лицензии
-            else {
-                requestList.add(new Integer[]{});
-            }
+//            if (client != null && client.getMoney() != null && client.getMoney().size() > 0) {
+//                requestList.add(new Integer[]{client.getMoney().get(0)});
+//                client.getMoney().remove(0);
+//            }
+//            //Запрос бесплатной лицензии
+//            else {
+//                requestList.add(new Integer[]{});
+//            }
+
+            requestList.add(new Integer[]{});
+
         }
 
         return actionMultiRequest.getLicenses(requestList);
