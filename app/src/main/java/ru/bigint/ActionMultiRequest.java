@@ -141,9 +141,9 @@ public class ActionMultiRequest<T, U> {
                 HttpResponse<String> response = cf.get();
                 if (response != null) {
                     resultObject = mapper.convertToObject(response.body());
-                    Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
+//                    Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
                 } else {
-                    Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null: " + response);
+//                    Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null: " + response);
                 }
 
                 //Если объект не пустой
