@@ -260,11 +260,13 @@ public class ActionRequest {
                     .thenApply(httpResponse -> {
                         String[] treasures = null;
                         if (httpResponse != null) {
+                            Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Response code: " + httpResponse.statusCode() + "; Response body: " + httpResponse.body());
 //                            if (httpResponse.statusCode() == 200 || httpResponse.statusCode() == 404 || httpResponse.statusCode() == 403)) {
                             if (httpResponse.statusCode() == 200) {
                                 MapperUtils<String[]> resultMapper = new MapperUtils<>(String[].class);
                                 treasures = resultMapper.convertToObject(httpResponse.body());
-                                Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Response code: " + httpResponse.statusCode() + "; Response body: " + httpResponse.body());
+                            } else if (httpResponse.statusCode() == 404 || httpResponse.statusCode() == 403) {
+                                treasures = new String[]{};
                             }
                         } else {
                             Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null");
