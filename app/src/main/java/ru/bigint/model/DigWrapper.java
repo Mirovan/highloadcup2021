@@ -2,6 +2,8 @@ package ru.bigint.model;
 
 import ru.bigint.model.request.DigRequest;
 
+import java.util.Arrays;
+
 public class DigWrapper {
     private DigRequest digRequest;
     private String[] treasures;
@@ -25,5 +27,13 @@ public class DigWrapper {
 
     public void setTreasures(String[] treasures) {
         this.treasures = treasures;
+    }
+
+    @Override
+    public String toString() {
+        return "DigWrapper{" +
+                "digRequest=" + digRequest +
+                ", treasures=" + Arrays.toString(treasures) +
+                '}';
     }
 }
