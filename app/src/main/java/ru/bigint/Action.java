@@ -47,20 +47,35 @@ public class Action {
         long time = System.currentTimeMillis();
 
         Point startPoint = getMaxTreasuresArea();
-        startPoint = new Point(1, 1);
+//        startPoint = new Point(1, 1);
+        Point endPoint = new Point(
+                Math.min(startPoint.getX() + Constant.areaSize, Constant.mapSize),
+                Math.min(startPoint.getY() + Constant.areaSize, Constant.mapSize)
+        );
 
         Logger.log("Time after getting startPoint : " + (System.currentTimeMillis() - time));
         time = System.currentTimeMillis();
-
-        ActionMultiRequest<ExploreRequest, Explore> actionMultiRequest = new ActionMultiRequest<>(ExploreRequest.class, Explore.class);
 
         //коллекция для хранения сокровищ. ключ - число сокровищ, значения - список координат
         Map<Integer, List<Point>> treasureMap = new TreeMap<>();
 
         //Опрашиваем всю карту в заданных границах и получаем мапу
-        for (int x = 0; x < Constant.areaSize && startPoint.getX()+x < Constant.mapSize; x++) {
-            for (int y = 0; y < Constant.areaSize && startPoint.getY()+y < Constant.mapSize; y = y + Constant.threadsCountExplore) {
-                List<Explore> treasures = actionMultiRequest.getTreasureMap(startPoint.getX()+x, startPoint.getY()+y);
+        for (int x = startPoint.getX(); x < endPoint.getX(); x++) {
+            List<ExploreRequest> requestList = new ArrayList<>();
+            for (int y = startPoint.getY(); y < endPoint.getY(); y++) {
+                requestList.add(new ExploreRequest(x, y, 1, 1));
+            }
+
+            //делим массив запросов на партиции
+            int partitionSize = Constant.threadsCountExplore;
+            List<List<ExploreRequest>> partitions = new ArrayList<>();
+            for (int i=0; i<requestList.size(); i += partitionSize) {
+                partitions.add(requestList.subList(i, Math.min(i + partitionSize, requestList.size())));
+            }
+
+            //для каждой партиции отправляем запросы
+            for (List<ExploreRequest> list : partitions) {
+                List<Explore> treasures = ActionRequest.exploreMulti(list);
 
                 for (Explore treasure: treasures) {
                     //Если сокровища в точке есть

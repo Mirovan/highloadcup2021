@@ -300,6 +300,70 @@ public class ActionRequest {
     }
 
 
+    public static List<Explore> exploreMulti(List<ExploreRequest> exploreRequests) {
+        ActionEnum actionEnum = ActionEnum.EXPLORE;
+
+        String url = Constant.SERVER_URI + actionEnum.getRequest();
+
+        List<CompletableFuture<Explore>> listCf = new ArrayList<>();
+        for (int i = 0; i < exploreRequests.size(); i++) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            String requestBody = null;
+            try {
+                requestBody = objectMapper.writeValueAsString(exploreRequests.get(i));
+            } catch (JsonProcessingException e) {
+//                Logger.log(e.getMessage());
+            }
+
+            HttpRequest httpRequest =
+                    HttpRequest.newBuilder()
+                            .uri(URI.create(url))
+                            .header("Content-Type", "application/json; charset=UTF-8")
+                            .timeout(Duration.ofSeconds(5))
+                            .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                            .build();
+
+            //Отправляем http-запрос
+            CompletableFuture<Explore> cf = httpClient
+                    .sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString())
+                    .thenApply(httpResponse -> {
+                        Explore explore = null;
+                        if (httpResponse != null) {
+                            Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Response code: " + httpResponse.statusCode() + "; Response body: " + httpResponse.body());
+                            if (httpResponse.statusCode() == 200) {
+                                MapperUtils<Explore> resultMapper = new MapperUtils<>(Explore.class);
+                                explore = resultMapper.convertToObject(httpResponse.body());
+                            }
+                        } else {
+                            Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null");
+                        }
+
+                        return explore;
+                    });
+
+            listCf.add(cf);
+        }
+
+        List<Explore> res = null;
+
+        try {
+            res = listCf.stream().map(item -> {
+                Explore explore = null;
+                try {
+                    explore = item.get();
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
+                return explore;
+            }).collect(Collectors.toList());
+        } catch (NullPointerException e) {
+            Logger.log(e.getMessage());
+        }
+
+        return res;
+    }
+
+
     /**
      * Возвращает список с числом найденных сокровиз для объекта ExploreRequest из листа
      * */
