@@ -48,7 +48,8 @@ public class Action {
     public static Map<Integer, List<Point>> getExplore() {
         long time = System.currentTimeMillis();
 
-        Point startPoint = getMaxTreasuresArea();
+//        Point startPoint = getMaxTreasuresArea();
+        Point startPoint = new Point(1, 1);
 
         Logger.log("Time after getting startPoint : " + (System.currentTimeMillis() - time));
 
