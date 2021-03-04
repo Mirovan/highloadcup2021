@@ -56,9 +56,9 @@ public class Action {
         Map<Integer, List<Point>> treasureMap = new TreeMap<>();
 
         //Опрашиваем всю карту в заданных границах и получаем мапу
-        for (int x = 1; x < Constant.areaSize; x++) {
-            for (int y = 1; y < Constant.areaSize; y = y + Constant.threadsCount) {
-                List<Explore> treasures = actionMultiRequest.getTreasureMap(x, y);
+        for (int x = 0; x < Constant.areaSize && startPoint.getX()+x < Constant.mapSize; x++) {
+            for (int y = 0; y < Constant.areaSize && startPoint.getY()+y < Constant.mapSize; y = y + Constant.threadsCountExplore) {
+                List<Explore> treasures = actionMultiRequest.getTreasureMap(startPoint.getX()+x, startPoint.getY()+y);
 
                 for (Explore treasure : treasures) {
                     //Если сокровища в точке есть
@@ -96,17 +96,16 @@ public class Action {
     private static Point getMaxTreasuresArea() {
         Point res = new Point(1, 1);
 
-        ActionMultiRequest<ExploreRequest, Explore> actionMultiRequest = new ActionMultiRequest<>(ExploreRequest.class, Explore.class);
-
-        List<ExploreRequest> requestList = null;
+        //формируем список квадратных областей
+        List<ExploreRequest> requestList = new ArrayList<>();
         for (int x = 1; x < Constant.mapSize; x = x + Constant.areaSize) {
             for (int y = 1; y < Constant.mapSize; y = y + Constant.areaSize) {
-                requestList = new ArrayList<>();
                 ExploreRequest exploreRequest = new ExploreRequest(x, y, Constant.areaSize, Constant.areaSize);
                 requestList.add(exploreRequest);
             }
         }
 
+        //отправляем запросы для определения числа сокровищ в области
         List<Explore> treasures = ActionRequest.getMaxTreasuresAreaRequest(requestList);
         int maxAmountTreasures = 0;
         for (Explore explore: treasures) {

@@ -4,7 +4,7 @@ public class Constant {
     //Общий размер карты
     public final static int mapSize = 3500;
     //Размер карты для просмотра
-    public final static int areaSize = 310;
+    public final static int areaSize = 300;
 
     //Число потоков
     public final static int threadsCount = 10;
