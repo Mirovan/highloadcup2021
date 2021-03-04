@@ -79,8 +79,9 @@ public class Action {
         for (Integer k : treasureMap.keySet()) {
             strTreasuresCount += k + "(count=" + treasureMap.get(k).size() + "), ";
         }
-        Logger.log(ActionEnum.EXPLORE, "Treasures count: " + strTreasuresCount);
-        Logger.log(ActionEnum.EXPLORE, "Time for get treasure map: " + (System.currentTimeMillis() - time));
+
+        Logger.log("Time after get treasure map: " + (System.currentTimeMillis() - time));
+        Logger.log("Treasures count: " + strTreasuresCount);
 
         return treasureMap;
     }

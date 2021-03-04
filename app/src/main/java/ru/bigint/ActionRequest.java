@@ -283,17 +283,6 @@ public class ActionRequest {
         List<DigWrapper> res = null;
 
         try {
-//            res = new ArrayList<>();
-//            for (int i=0; i<listCf.size(); i++) {
-//                DigWrapper digWrapper = null;
-//                try {
-//                    digWrapper = listCf.get(i).get();
-//                } catch (InterruptedException | ExecutionException e) {
-//                    Logger.log("DIG collect = " + e.getMessage());
-//                }
-//                res.add(digWrapper);
-//            }
-
             res = listCf.stream().map(item -> {
                 DigWrapper digWrapper = null;
                 try {
