@@ -10,7 +10,7 @@ public class Constant {
     public final static int threadsCountLicenses = 10;
 
     //Число платных лицензий которые можно запросить за один запрос
-    public final static int paidLicensesCount = 1;
+    public final static int paidLicensesCount = 10;
 
     //Число попыток для повторных неуспешных запросов
     public static int retryCount = 5;
