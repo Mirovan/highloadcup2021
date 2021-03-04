@@ -82,11 +82,11 @@ public class Main {
             //делаем асинхронные запросы на раскопки
             List<DigWrapper> digs = ActionRequest.dig(digPoints, licenses);
 
-            Logger.log("Dig size: " + digs.size());
+//            Logger.log("Dig size: " + digs.size());
 
             //Просматриваем результаты раскопок
             for (DigWrapper dig : digs) {
-                Logger.log("Dig item: " + dig);
+//                Logger.log("Dig item: " + dig);
                 if (dig != null) {
 
                     Point point = null;
