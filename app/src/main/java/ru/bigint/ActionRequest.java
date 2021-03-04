@@ -294,7 +294,7 @@ public class ActionRequest {
 //                res.add(digWrapper);
 //            }
 
-            res = listCf.parallelStream().map(item -> {
+            res = listCf.stream().map(item -> {
                 DigWrapper digWrapper = null;
                 try {
                     digWrapper = item.get();

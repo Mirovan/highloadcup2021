@@ -2,7 +2,7 @@ package ru.bigint;
 
 public class Constant {
     //Размер карты для просмотра
-    public final static int areaSize = 350;
+    public final static int areaSize = 310;
 
     //Число потоков
     public final static int threadsCount = 10;
