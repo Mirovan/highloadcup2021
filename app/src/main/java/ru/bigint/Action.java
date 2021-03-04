@@ -109,7 +109,7 @@ public class Action {
         List<Explore> treasures = ActionRequest.getMaxTreasuresAreaRequest(requestList);
         int maxAmountTreasures = 0;
         for (Explore explore: treasures) {
-            if (explore.getAmount() > maxAmountTreasures) {
+            if (explore != null && explore.getAmount() > maxAmountTreasures) {
                 maxAmountTreasures = explore.getAmount();
                 res = new Point(explore.getArea().getPosX(), explore.getArea().getPosY());
             }
