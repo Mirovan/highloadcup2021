@@ -2,7 +2,7 @@ package ru.bigint;
 
 public class Constant {
     //Размер карты для просмотра
-    public final static int areaSize = 280;
+    public final static int areaSize = 300;
 
     //Число потоков
     public final static int threadsCount = 10;
@@ -10,10 +10,10 @@ public class Constant {
     public final static int threadsCountLicenses = 10;
 
     //Число платных лицензий которые можно запросить за один запрос
-    public final static int paidLicensesCount = 2;
+    public final static int paidLicensesCount = 10;
 
     //Число попыток для повторных неуспешных запросов
-    public static int retryCount = 5;
+    public static int retryCount = 3;
 
     private static String SERVER_ADDRESS = "localhost";
     static {
