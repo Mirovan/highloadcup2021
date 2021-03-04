@@ -17,7 +17,7 @@ public class Constant {
     public final static int paidLicensesCount = 10;
 
     //Число попыток для повторных неуспешных запросов
-    public static int retryCount = 2;
+    public static int retryCount = 3;
 
     private static String SERVER_ADDRESS = "localhost";
     static {
