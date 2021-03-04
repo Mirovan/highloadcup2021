@@ -46,9 +46,11 @@ public class Action {
 
 
     public static Map<Integer, List<Point>> getExplore() {
+        long time = System.currentTimeMillis();
+
         Point startPoint = getMaxTreasuresArea();
 
-        long time = System.currentTimeMillis();
+        Logger.log("Time after getting startPoint : " + (System.currentTimeMillis() - time));
 
         ActionMultiRequest<ExploreRequest, Explore> actionMultiRequest = new ActionMultiRequest<>(ExploreRequest.class, Explore.class);
 
@@ -83,8 +85,8 @@ public class Action {
         for (Integer k : treasureMap.keySet()) {
             strTreasuresCount += k + "(count=" + treasureMap.get(k).size() + "), ";
         }
-        Logger.log(ActionEnum.EXPLORE, "Treasures count: " + strTreasuresCount);
-        Logger.log(ActionEnum.EXPLORE, "Time for get treasure map: " + (System.currentTimeMillis() - time));
+        Logger.log("Treasures count: " + strTreasuresCount);
+        Logger.log("Time after get treasure map: " + (System.currentTimeMillis() - time));
 
         return treasureMap;
     }

@@ -86,7 +86,7 @@ public class Main {
 
             //Просматриваем результаты раскопок
             for (DigWrapper dig : digs) {
-                Logger.log("Dig item: " + dig);
+                Logger.log(ActionEnum.DIG, "Dig item: " + dig);
                 if (dig != null) {
 
                     Point point = null;
