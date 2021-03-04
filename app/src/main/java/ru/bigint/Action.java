@@ -8,10 +8,12 @@ import ru.bigint.model.response.Explore;
 import ru.bigint.model.response.License;
 
 import java.io.IOException;
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class Action {
@@ -44,6 +46,8 @@ public class Action {
 
 
     public static Map<Integer, List<Point>> getExplore() {
+        Point startPoint = getMaxTreasuresArea();
+
         long time = System.currentTimeMillis();
 
         ActionMultiRequest<ExploreRequest, Explore> actionMultiRequest = new ActionMultiRequest<>(ExploreRequest.class, Explore.class);
@@ -56,7 +60,7 @@ public class Action {
             for (int y = 1; y < Constant.areaSize; y = y + Constant.threadsCount) {
                 List<Explore> treasures = actionMultiRequest.getTreasureMap(x, y);
 
-                for (Explore treasure: treasures) {
+                for (Explore treasure : treasures) {
                     //Если сокровища в точке есть
                     if (treasure != null && treasure.getAmount() != 0) {
                         int treasureCount = treasure.getAmount();
@@ -83,6 +87,36 @@ public class Action {
         Logger.log(ActionEnum.EXPLORE, "Time for get treasure map: " + (System.currentTimeMillis() - time));
 
         return treasureMap;
+    }
+
+
+    /**
+     * Возвращает начальную точку для квадрата с максимальным числом сокровищ
+     */
+    private static Point getMaxTreasuresArea() {
+        Point res = new Point(1, 1);
+
+        ActionMultiRequest<ExploreRequest, Explore> actionMultiRequest = new ActionMultiRequest<>(ExploreRequest.class, Explore.class);
+
+        List<ExploreRequest> requestList = null;
+        for (int x = 1; x < Constant.mapSize; x = x + Constant.areaSize) {
+            for (int y = 1; y < Constant.mapSize; y = y + Constant.areaSize) {
+                requestList = new ArrayList<>();
+                ExploreRequest exploreRequest = new ExploreRequest(x, y, Constant.areaSize, Constant.areaSize);
+                requestList.add(exploreRequest);
+            }
+        }
+
+        List<Explore> treasures = ActionRequest.getMaxTreasuresAreaRequest(requestList);
+        int maxAmountTreasures = 0;
+        for (Explore explore: treasures) {
+            if (explore.getAmount() > maxAmountTreasures) {
+                maxAmountTreasures = explore.getAmount();
+                res = new Point(explore.getArea().getPosX(), explore.getArea().getPosY());
+            }
+        }
+
+        return res;
     }
 
 

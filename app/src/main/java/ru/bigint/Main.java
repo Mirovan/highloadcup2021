@@ -2,18 +2,15 @@ package ru.bigint;
 
 import ru.bigint.model.Client;
 import ru.bigint.model.DigWrapper;
+import ru.bigint.model.Point;
 import ru.bigint.model.request.DigRequest;
 import ru.bigint.model.response.License;
-import ru.bigint.model.Point;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 public class Main {
-
-    private final static int maxDepth = 10;
 
     public static void main(String[] args) throws IOException, InterruptedException, ExecutionException {
 //        Logger.log("--- Running App ---");
