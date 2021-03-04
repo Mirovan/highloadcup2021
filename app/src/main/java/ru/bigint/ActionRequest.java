@@ -320,7 +320,7 @@ public class ActionRequest {
 
         //Формируем запросы
         List<CompletableFuture<Explore>> listCf = new ArrayList<>();
-        for (int i = 0; i < requestList.size() && i < requestList.size(); i++) {
+        for (int i = 0; i < requestList.size(); i++) {
             ObjectMapper objectMapper = new ObjectMapper();
             String requestBody = null;
             try {

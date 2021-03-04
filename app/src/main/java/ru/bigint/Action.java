@@ -100,7 +100,11 @@ public class Action {
         List<ExploreRequest> requestList = new ArrayList<>();
         for (int x = 1; x < Constant.mapSize; x = x + Constant.areaSize) {
             for (int y = 1; y < Constant.mapSize; y = y + Constant.areaSize) {
-                ExploreRequest exploreRequest = new ExploreRequest(x, y, Constant.areaSize, Constant.areaSize);
+                int sizeX = Constant.areaSize;
+                int sizeY = Constant.areaSize;
+                if (x + sizeX > Constant.mapSize) sizeX = Constant.mapSize - x;
+                if (y + sizeY > Constant.mapSize) sizeY = Constant.mapSize - y;
+                ExploreRequest exploreRequest = new ExploreRequest(x, y, sizeX, sizeY);
                 requestList.add(exploreRequest);
             }
         }
