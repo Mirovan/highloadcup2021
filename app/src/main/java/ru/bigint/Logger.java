@@ -1,7 +1,7 @@
 package ru.bigint;
 
 public class Logger {
-    private static ActionEnum[] LOGGER_LEVEL = {ActionEnum.DIG, ActionEnum.LICENSES, ActionEnum.CASH};
+    private static ActionEnum[] LOGGER_LEVEL = {};
 
     public static void log(ActionEnum actionEnum, Object msg) {
         for (ActionEnum item: LOGGER_LEVEL) {

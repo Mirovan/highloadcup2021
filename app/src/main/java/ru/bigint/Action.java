@@ -46,15 +46,21 @@ public class Action {
     public static Map<Integer, List<Point>> getExplore() {
         long time = System.currentTimeMillis();
 
+        Point startPoint = getMaxTreasuresArea();
+        startPoint = new Point(1, 1);
+
+        Logger.log("Time after getting startPoint : " + (System.currentTimeMillis() - time));
+        time = System.currentTimeMillis();
+
         ActionMultiRequest<ExploreRequest, Explore> actionMultiRequest = new ActionMultiRequest<>(ExploreRequest.class, Explore.class);
 
         //коллекция для хранения сокровищ. ключ - число сокровищ, значения - список координат
         Map<Integer, List<Point>> treasureMap = new TreeMap<>();
 
         //Опрашиваем всю карту в заданных границах и получаем мапу
-        for (int x = 1; x < Constant.areaSize; x++) {
-            for (int y = 1; y < Constant.areaSize; y = y + Constant.threadsCount) {
-                List<Explore> treasures = actionMultiRequest.getTreasureMap(x, y);
+        for (int x = 0; x < Constant.areaSize && startPoint.getX()+x < Constant.mapSize; x++) {
+            for (int y = 0; y < Constant.areaSize && startPoint.getY()+y < Constant.mapSize; y = y + Constant.threadsCountExplore) {
+                List<Explore> treasures = actionMultiRequest.getTreasureMap(startPoint.getX()+x, startPoint.getY()+y);
 
                 for (Explore treasure: treasures) {
                     //Если сокровища в точке есть
@@ -84,6 +90,40 @@ public class Action {
         Logger.log("Treasures count: " + strTreasuresCount);
 
         return treasureMap;
+    }
+
+
+    /**
+     * Возвращает начальную точку для квадрата с максимальным числом сокровищ
+     */
+    private static Point getMaxTreasuresArea() {
+        Point res = new Point(1, 1);
+
+        //формируем список квадратных областей
+        List<ExploreRequest> requestList = new ArrayList<>();
+        for (int x = 1; x < Constant.mapSize; x = x + Constant.areaSize) {
+            for (int y = 1; y < Constant.mapSize; y = y + Constant.areaSize) {
+                int sizeX = Constant.areaSize;
+                int sizeY = Constant.areaSize;
+                if (x + sizeX > Constant.mapSize) sizeX = Constant.mapSize - x;
+                if (y + sizeY > Constant.mapSize) sizeY = Constant.mapSize - y;
+                ExploreRequest exploreRequest = new ExploreRequest(x, y, sizeX, sizeY);
+                requestList.add(exploreRequest);
+            }
+        }
+
+        //отправляем запросы для определения числа сокровищ в области
+        List<Explore> treasures = ActionRequest.getMaxTreasuresAreaRequest(requestList);
+        int maxAmountTreasures = 0;
+        for (Explore explore: treasures) {
+            if (explore != null && explore.getAmount() > maxAmountTreasures) {
+                maxAmountTreasures = explore.getAmount();
+                res = new Point(explore.getArea().getPosX(), explore.getArea().getPosY());
+            }
+        }
+        Logger.log("Start point for explore: " + res + "; maxAmountTreasures = " + maxAmountTreasures);
+
+        return res;
     }
 
 

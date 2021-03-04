@@ -6,6 +6,11 @@ public class Point {
     private int depth;
     private int treasuresCount;
 
+    public Point(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
     public Point(int x, int y, int depth, int treasuresCount) {
         this.x = x;
         this.y = y;
@@ -43,5 +48,15 @@ public class Point {
 
     public void setTreasuresCount(int treasuresCount) {
         this.treasuresCount = treasuresCount;
+    }
+
+    @Override
+    public String toString() {
+        return "Point{" +
+                "x=" + x +
+                ", y=" + y +
+                ", depth=" + depth +
+                ", treasuresCount=" + treasuresCount +
+                '}';
     }
 }
