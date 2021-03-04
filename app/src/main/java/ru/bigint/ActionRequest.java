@@ -24,6 +24,10 @@ import java.util.stream.Collectors;
 
 public class ActionRequest {
 
+    private static HttpClient httpClient = HttpClient.newBuilder()
+                .connectTimeout(Duration.ofSeconds(2))
+                .build();
+
     public static Explore explore(ExploreRequest exploreRequest) throws IOException, InterruptedException {
 //        Logger.log("-- Explore --");
         ActionEnum actionEnum = ActionEnum.EXPLORE;
@@ -228,8 +232,6 @@ public class ActionRequest {
         ActionEnum actionEnum = ActionEnum.DIG;
 
         String url = Constant.SERVER_URI + actionEnum.getRequest();
-
-        HttpClient httpClient = HttpClient.newBuilder().build();
 
         //Формируем запросы по числу лицензий
         List<CompletableFuture<DigWrapper>> listCf = new ArrayList<>();
