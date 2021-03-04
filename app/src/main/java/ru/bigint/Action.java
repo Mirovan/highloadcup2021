@@ -114,6 +114,7 @@ public class Action {
                 res = new Point(explore.getArea().getPosX(), explore.getArea().getPosY());
             }
         }
+        Logger.log("Start point for explore: " + res + "; maxAmountTreasures = " + maxAmountTreasures);
 
         return res;
     }
