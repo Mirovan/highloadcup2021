@@ -4,12 +4,12 @@ public class Constant {
     //Общий размер карты
     public final static int mapSize = 3499;
     //Размер карты для просмотра
-    public final static int areaSize = 310;
+    public final static int areaSize = 300;
 
     //Число потоков
     public final static int threadsCount = 10;
     //Число потоков для просмотра карты
-    public final static int threadsCountExplore = 10;
+    public final static int threadsCountExplore = 15;
     //Число потоков для получения лицензий (по условию может быть только 10 активных лицензий)
     public final static int threadsCountLicenses = 10;
 
