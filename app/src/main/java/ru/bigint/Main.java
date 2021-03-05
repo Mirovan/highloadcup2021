@@ -58,7 +58,7 @@ public class Main {
 
         //Достаем по несколько элементов и асинхронно отправляем запрос
         while ( !stack.isEmpty() ) {
-            List<License> licenses = new ArrayList<>();
+//            List<License> licenses = new ArrayList<>();
             //Запрос - сколько у нас лицензий
 //            License[] licensesArr = ActionRequest.license();
 //            int licenseCount = 0;
@@ -69,25 +69,27 @@ public class Main {
             //Делаем запросы на получение новы лицензий
 //            licenses.addAll(Action.getLicenses(client, Constant.threadsCountLicenses - licenseCount));
 
-            //Удаляем истекшие лицензии
-
-            for (License license: client.getLicenses()) {
-                if (license.getDigUsed() > 0) licenses.add(license);
+            {
+                List<License> licenses = new ArrayList<>();
+                //Удаляем истекшие лицензии
+                for (License license : client.getLicenses()) {
+                    if (license.getDigUsed() > 0) licenses.add(license);
+                }
+                licenses.addAll(Action.getLicenses(client, Constant.threadsCountLicenses - licenses.size()));
+                client.setLicenses(licenses);
+                Logger.log(ActionEnum.LICENSES, "Before dig: " + client.getLicenses().stream().map(Objects::toString).collect(Collectors.joining("; ")));
             }
-            licenses.addAll(Action.getLicenses(client, Constant.threadsCountLicenses - licenses.size()));
-            Logger.log(ActionEnum.LICENSES, "Before dig: " + licenses.stream().map(Objects::toString).collect(Collectors.joining("; ")));
-
 
             //Список точек из стека
             List<Point> digPoints = new ArrayList<>();
-            for (int i = 0; i < licenses.size(); i++) {
+            for (int i = 0; i < client.getLicenses().size(); i++) {
                 if (!stack.isEmpty()) {
                     digPoints.add(stack.pop());
                 }
             }
 
             //делаем асинхронные запросы на раскопки
-            List<DigWrapper> digs = ActionRequest.dig(digPoints, licenses);
+            List<DigWrapper> digs = ActionRequest.dig(digPoints, client.getLicenses());
 
 //            Logger.log("Dig size: " + digs.size());
 
@@ -141,7 +143,7 @@ public class Main {
                 }
             }
 
-            Logger.log(ActionEnum.LICENSES, "After dig: " + licenses.stream().map(Objects::toString).collect(Collectors.joining("; ")));
+            Logger.log(ActionEnum.LICENSES, "After dig: " + client.getLicenses().stream().map(Objects::toString).collect(Collectors.joining("; ")));
 
         }
     }
