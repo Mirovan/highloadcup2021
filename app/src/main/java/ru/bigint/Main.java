@@ -73,7 +73,7 @@ public class Main {
                 List<License> licenses = new ArrayList<>();
                 //Удаляем истекшие лицензии
                 for (License license : client.getLicenses()) {
-                    if (license.getDigUsed() > 0) licenses.add(license);
+                    if (license.getDigUsed() >= license.getDigAllowed()) licenses.add(license);
                 }
                 licenses.addAll(Action.getLicenses(client, Constant.threadsCountLicenses - licenses.size()));
                 client.setLicenses(licenses);
@@ -115,7 +115,7 @@ public class Main {
                         int idLicense = dig.getDigRequest().getLicenseID();
                         for (License license: client.getLicenses()) {
                             if (license.getId() == idLicense) {
-                                license.setDigUsed(license.getDigUsed() - 1);
+                                license.setDigUsed(license.getDigUsed() + 1);
                             }
                         }
 
