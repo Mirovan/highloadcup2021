@@ -78,8 +78,8 @@ public class Main {
                 List<License> newLicenses = Action.getLicenses(client, Constant.threadsCountLicenses - licenses.size());
                 licenses.addAll(newLicenses);
                 client.setLicenses(licenses);
-                Logger.log(ActionEnum.LICENSES, "Before dig NEW Licenses: " + newLicenses.stream().map(Objects::toString).collect(Collectors.joining("; ")));
-                Logger.log(ActionEnum.LICENSES, "Before dig: " + client.getLicenses().stream().map(Objects::toString).collect(Collectors.joining("; ")));
+//                Logger.log(ActionEnum.LICENSES, "Before dig NEW Licenses: " + newLicenses.stream().map(Objects::toString).collect(Collectors.joining("; ")));
+//                Logger.log(ActionEnum.LICENSES, "Before dig: " + client.getLicenses().stream().map(Objects::toString).collect(Collectors.joining("; ")));
             }
 
             //Список точек из стека
@@ -145,7 +145,7 @@ public class Main {
                 }
             }
 
-            Logger.log(ActionEnum.LICENSES, "After dig: " + client.getLicenses().stream().map(Objects::toString).collect(Collectors.joining("; ")));
+//            Logger.log(ActionEnum.LICENSES, "After dig: " + client.getLicenses().stream().map(Objects::toString).collect(Collectors.joining("; ")));
 
         }
     }
