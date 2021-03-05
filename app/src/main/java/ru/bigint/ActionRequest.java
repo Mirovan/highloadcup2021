@@ -397,13 +397,13 @@ public class ActionRequest {
                     .thenApply(httpResponse -> {
                         Explore explore = null;
                         if (httpResponse != null) {
-                            Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Response code: " + httpResponse.statusCode() + "; Response body: " + httpResponse.body());
+//                            Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Response code: " + httpResponse.statusCode() + "; Response body: " + httpResponse.body());
                             if (httpResponse.statusCode() == 200) {
                                 MapperUtils<Explore> resultMapper = new MapperUtils<>(Explore.class);
                                 explore = resultMapper.convertToObject(httpResponse.body());
                             }
                         } else {
-                            Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null");
+//                            Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null");
                         }
 
                         return explore;

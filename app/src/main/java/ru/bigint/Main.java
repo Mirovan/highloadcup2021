@@ -23,12 +23,10 @@ public class Main {
 //        Logger.log("Time: " + (System.currentTimeMillis() - startTime));
     }
 
-    private void runGame() throws IOException, InterruptedException, ExecutionException {
+    private void runGame() throws IOException, InterruptedException {
 //        Logger.log("--- Play Game ---");
 //        Logger.log("OS: " + System.getProperty("os.name"));
 //        Logger.log("URI: " + URI);
-
-        int resMoney = 0;
 
 //        RequestEndpoint.healthCheck(URI);
 

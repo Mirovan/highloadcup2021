@@ -9,7 +9,7 @@ public class Constant {
     //Число потоков
     public final static int threadsCount = 10;
     //Число потоков для просмотра карты
-    public final static int threadsCountExplore = 15;
+    public final static int threadsCountExplore = 20;
     //Число потоков для получения лицензий (по условию может быть только 10 активных лицензий)
     public final static int threadsCountLicenses = 10;
 
