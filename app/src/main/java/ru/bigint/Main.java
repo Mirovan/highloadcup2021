@@ -9,6 +9,7 @@ import ru.bigint.model.response.License;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 public class Main {
 
@@ -74,7 +75,7 @@ public class Main {
                 if (license.getDigUsed() > 0) licenses.add(license);
             }
             licenses.addAll(Action.getLicenses(client, Constant.threadsCountLicenses - licenses.size()));
-
+            Logger.log(ActionEnum.LICENSES, "Before dig: " + licenses.stream().map(Objects::toString).collect(Collectors.joining("; ")));
 
 
             //Список точек из стека
@@ -139,6 +140,9 @@ public class Main {
                     }
                 }
             }
+
+            Logger.log(ActionEnum.LICENSES, "After dig: " + licenses.stream().map(Objects::toString).collect(Collectors.joining("; ")));
+
         }
     }
 
