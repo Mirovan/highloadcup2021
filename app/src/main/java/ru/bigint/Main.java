@@ -34,7 +34,7 @@ public class Main {
         client.setLicenses(new ArrayList<>());
 
         //коллекция для хранения сокровищ. ключ - число сокровищ, значения - список координат
-        Map<Integer, List<Point>> treasureMap = Action.getExplore();
+        Map<Integer, List<Point>> treasureMap = Action.getExploreMap();
 
         List<Integer> treasureAmountList = new ArrayList<>(treasureMap.keySet());
 
@@ -57,17 +57,25 @@ public class Main {
 
         //Достаем по несколько элементов и асинхронно отправляем запрос
         while ( !stack.isEmpty() ) {
-            //Запрос - сколько у нас лицензий
-            License[] licensesArr = ActionRequest.license();
             List<License> licenses = new ArrayList<>();
-            int licenseCount = 0;
-            if (licensesArr != null) {
-                licenseCount = licensesArr.length;
-                licenses.addAll(Arrays.asList(licensesArr));
-            }
-
+            //Запрос - сколько у нас лицензий
+//            License[] licensesArr = ActionRequest.license();
+//            int licenseCount = 0;
+//            if (licensesArr != null) {
+//                licenseCount = licensesArr.length;
+//                licenses.addAll(Arrays.asList(licensesArr));
+//            }
             //Делаем запросы на получение новы лицензий
-            licenses.addAll(Action.getLicenses(client, Constant.threadsCountLicenses - licenseCount));
+//            licenses.addAll(Action.getLicenses(client, Constant.threadsCountLicenses - licenseCount));
+
+            //Удаляем истекшие лицензии
+
+            for (License license: client.getLicenses()) {
+                if (license.getDigUsed() > 0) licenses.add(license);
+            }
+            licenses.addAll(Action.getLicenses(client, Constant.threadsCountLicenses - licenses.size()));
+
+
 
             //Список точек из стека
             List<Point> digPoints = new ArrayList<>();
@@ -100,6 +108,15 @@ public class Main {
 
                     //Если найдено сокровище - обновляем данные у точки
                     if (dig.getTreasures() != null) {
+                        //обновляем лицензию
+                        int idLicense = dig.getDigRequest().getLicenseID();
+                        for (License license: client.getLicenses()) {
+                            if (license.getId() == idLicense) {
+                                license.setDigUsed(license.getDigUsed() - 1);
+                            }
+                        }
+
+                        //Обновляем число найденных сокровищ для точки
                         point.setTreasuresCount(point.getTreasuresCount() - dig.getTreasures().length);
 
                         //Обмениваем сокровища на золото

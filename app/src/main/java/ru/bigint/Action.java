@@ -43,7 +43,10 @@ public class Action {
     }
 
 
-    public static Map<Integer, List<Point>> getExplore() {
+    /**
+     * Возвращает map: ключ - число сокровищ в клетке, значение - список клеток с сокровищами
+     * */
+    public static Map<Integer, List<Point>> getExploreMap() {
         long time = System.currentTimeMillis();
 
         Point startPoint = getMaxTreasuresArea();
