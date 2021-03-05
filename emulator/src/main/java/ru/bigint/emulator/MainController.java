@@ -14,6 +14,7 @@ public class MainController {
     final AreaData areaData;
 //    private static AtomicInteger queryNum = new AtomicInteger(0);
     volatile int queryNum;
+    volatile int licenseId;
 
     public MainController(AreaData areaData) {
         this.areaData = areaData;
@@ -70,7 +71,10 @@ public class MainController {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return new LicencesResponse(1, 3, 0);
+        synchronized (this) {
+            licenseId++;
+            return new LicencesResponse(licenseId, 3, 0);
+        }
     }
 
 

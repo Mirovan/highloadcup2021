@@ -73,7 +73,7 @@ public class Main {
                 List<License> licenses = new ArrayList<>();
                 //Удаляем истекшие лицензии
                 for (License license : client.getLicenses()) {
-                    if (license.getDigUsed() >= license.getDigAllowed()) licenses.add(license);
+                    if (license.getDigUsed() < license.getDigAllowed()) licenses.add(license);
                 }
                 List<License> newLicenses = Action.getLicenses(client, Constant.threadsCountLicenses - licenses.size());
                 licenses.addAll(newLicenses);
