@@ -78,7 +78,7 @@ public class Stage2Request {
     }
 
 
-    public static License license(int[] requestObj) {
+    public static License license(Integer[] requestObj) {
         ActionEnum actionEnum = ActionEnum.LICENSES;
 
         String url = Constant.SERVER_URI + actionEnum.getRequest();

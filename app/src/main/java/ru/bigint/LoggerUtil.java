@@ -10,7 +10,7 @@ public class LoggerUtil {
     public static void log(ActionEnum actionEnum, Object msg) {
         for (ActionEnum item: LOGGER_LEVEL) {
             if (item.equals(actionEnum) || item.equals(ActionEnum.ALL)) {
-                System.out.println("Action: " + actionEnum + "; Log: " + msg);
+                System.out.println("Action: " + actionEnum + "; " + msg);
             }
         }
     }
@@ -23,13 +23,13 @@ public class LoggerUtil {
         String strObj = null;
         if (requestObject instanceof String[]) {
             String[] arr = (String[]) requestObject;
-            strObj = Arrays.stream(arr).collect(Collectors.joining());
+            strObj = "[" + Arrays.stream(arr).collect(Collectors.joining()) + "]";
         } else if (requestObject instanceof Integer[]) {
             Integer[] arr = (Integer[]) requestObject;
-            strObj = Arrays.stream(arr).map(item -> String.valueOf(item)).collect(Collectors.joining(", "));
+            strObj = "[" + Arrays.stream(arr).map(item -> String.valueOf(item)).collect(Collectors.joining(", ")) + "]";
         } else {
             strObj = requestObject.toString();
         }
-        log(actionEnum, "Action: " + actionEnum + "; Request object: " + strObj + "; Response Code: " + httpResponse.statusCode() + "; Body: " + httpResponse.body());
+        log(actionEnum, "Request object: " + strObj + "; Response Code: " + httpResponse.statusCode() + "; Body: " + httpResponse.body());
     }
 }
