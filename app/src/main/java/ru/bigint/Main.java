@@ -24,6 +24,7 @@ public class Main {
     private void runGame() throws IOException, InterruptedException {
         Client client = new Client();
         client.setLicenses(new ArrayList<>());
+        client.setMoney(new ArrayList<>());
 
         for (int x = 1; x < Constant.mapSize; x++) {
             for (int y = 1; y < Constant.mapSize; y++) {
@@ -31,22 +32,33 @@ public class Main {
                 Explore explore = Stage2Request.explore(new ExploreRequest(x, y, 1, 1));
 
                 if (explore != null && explore.getAmount() > 0) {
-                    License license;
-                    do {
-                        license = Stage2Request.license(new Integer[]{});
-                    } while (license == null);
+                    int pointTreasures = explore.getAmount();
 
-                    String[] dig;
-                    do {
-                        dig = Stage2Request.dig(license);
-                    } while (dig == null);
+                    License license = null;
 
-                    for (String treasure: dig) {
-                        Integer[] cash;
+                    int depth = 1;
+                    while (pointTreasures > 0) {
+                        if (license == null || license.getDigUsed() >= license.getDigAllowed()) {
+                            do {
+                                license = Stage2Request.license(new int[]{});
+                            } while (license == null);
+                        }
+
+                        String[] dig;
                         do {
-                            cash = Stage2Request.cash(treasure);
-                        } while (cash == null);
-                        client.getMoney().addAll(Arrays.asList(cash));
+                            DigRequest digRequest = new DigRequest(license.getId(), x, y, depth);
+                            dig = Stage2Request.dig(digRequest);
+                        } while (dig == null);
+                        depth++;
+
+                        for (String treasure : dig) {
+                            Integer[] cash;
+                            do {
+                                cash = Stage2Request.cash(treasure);
+                            } while (cash == null);
+                            client.getMoney().addAll(Arrays.asList(cash));
+                            pointTreasures = pointTreasures - cash.length;
+                        }
                     }
                 }
 

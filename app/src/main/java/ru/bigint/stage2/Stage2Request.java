@@ -7,6 +7,7 @@ import ru.bigint.Constant;
 import ru.bigint.LoggerUtil;
 import ru.bigint.MapperUtils;
 import ru.bigint.model.Client;
+import ru.bigint.model.request.DigRequest;
 import ru.bigint.model.request.ExploreRequest;
 import ru.bigint.model.response.Explore;
 import ru.bigint.model.response.License;
@@ -53,7 +54,7 @@ public class Stage2Request {
                 .thenApply(httpResponse -> {
                     Explore responseObj = null;
                     if (httpResponse != null) {
-                        LoggerUtil.logRequestResponse(actionEnum, httpRequest, httpResponse);
+                        LoggerUtil.logRequestResponse(actionEnum, requestObj, httpResponse);
                         if (httpResponse.statusCode() == 200) {
                             MapperUtils<Explore> resultMapper = new MapperUtils<>(Explore.class);
                             responseObj = resultMapper.convertToObject(httpResponse.body());
@@ -77,7 +78,7 @@ public class Stage2Request {
     }
 
 
-    public static License license(Integer[] requestObj) {
+    public static License license(int[] requestObj) {
         ActionEnum actionEnum = ActionEnum.LICENSES;
 
         String url = Constant.SERVER_URI + actionEnum.getRequest();
@@ -104,7 +105,7 @@ public class Stage2Request {
                 .thenApply(httpResponse -> {
                     License responseObj = null;
                     if (httpResponse != null) {
-                        LoggerUtil.logRequestResponse(actionEnum, httpRequest, httpResponse);
+                        LoggerUtil.logRequestResponse(actionEnum, requestObj, httpResponse);
                         if (httpResponse.statusCode() == 200) {
                             MapperUtils<License> resultMapper = new MapperUtils<>(License.class);
                             responseObj = resultMapper.convertToObject(httpResponse.body());
@@ -128,8 +129,8 @@ public class Stage2Request {
     }
 
 
-    public static String[] dig(License requestObj) {
-        ActionEnum actionEnum = ActionEnum.LICENSES;
+    public static String[] dig(DigRequest requestObj) {
+        ActionEnum actionEnum = ActionEnum.DIG;
 
         String url = Constant.SERVER_URI + actionEnum.getRequest();
 
@@ -155,7 +156,7 @@ public class Stage2Request {
                 .thenApply(httpResponse -> {
                     String[] responseObj = null;
                     if (httpResponse != null) {
-                        LoggerUtil.logRequestResponse(actionEnum, httpRequest, httpResponse);
+                        LoggerUtil.logRequestResponse(actionEnum, requestObj, httpResponse);
                         if (httpResponse.statusCode() == 200) {
                             MapperUtils<String[]> resultMapper = new MapperUtils<>(String[].class);
                             responseObj = resultMapper.convertToObject(httpResponse.body());
@@ -182,7 +183,7 @@ public class Stage2Request {
 
 
     public static Integer[] cash(String requestObj) {
-        ActionEnum actionEnum = ActionEnum.LICENSES;
+        ActionEnum actionEnum = ActionEnum.CASH;
 
         String url = Constant.SERVER_URI + actionEnum.getRequest();
 
@@ -208,7 +209,7 @@ public class Stage2Request {
                 .thenApply(httpResponse -> {
                     Integer[] responseObj = null;
                     if (httpResponse != null) {
-                        LoggerUtil.logRequestResponse(actionEnum, httpRequest, httpResponse);
+                        LoggerUtil.logRequestResponse(actionEnum, requestObj, httpResponse);
                         if (httpResponse.statusCode() == 200) {
                             MapperUtils<Integer[]> resultMapper = new MapperUtils<>(Integer[].class);
                             responseObj = resultMapper.convertToObject(httpResponse.body());
