@@ -1,7 +1,7 @@
 package ru.bigint;
 
 public class Constant {
-    public final static String version = "stage2_002";
+    public final static String version = "stage2_003";
 
     //Общий размер карты
     public final static int mapSize = 3499;

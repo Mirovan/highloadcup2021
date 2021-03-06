@@ -1,6 +1,5 @@
 package ru.bigint;
 
-import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -31,6 +30,6 @@ public class LoggerUtil {
         } else {
             strObj = requestObject.toString();
         }
-        System.out.println("Action: " + actionEnum + "; Request object: " + strObj + "; Response Code: " + httpResponse.statusCode() + "; Body: " + httpResponse.body());
+        log(actionEnum, "Action: " + actionEnum + "; Request object: " + strObj + "; Response Code: " + httpResponse.statusCode() + "; Body: " + httpResponse.body());
     }
 }

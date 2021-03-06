@@ -26,6 +26,8 @@ public class Main {
         client.setLicenses(new ArrayList<>());
         client.setMoney(new ArrayList<>());
 
+        License license = null;
+
         for (int x = 1; x < Constant.mapSize; x++) {
             for (int y = 1; y < Constant.mapSize; y++) {
 
@@ -33,8 +35,6 @@ public class Main {
 
                 if (explore != null && explore.getAmount() > 0) {
                     int pointTreasures = explore.getAmount();
-
-                    License license = null;
 
                     int depth = 1;
                     while (pointTreasures > 0) {
@@ -49,15 +49,19 @@ public class Main {
                             DigRequest digRequest = new DigRequest(license.getId(), x, y, depth);
                             dig = Stage2Request.dig(digRequest);
                         } while (dig == null);
-                        depth++;
 
-                        for (String treasure : dig) {
-                            Integer[] cash;
-                            do {
-                                cash = Stage2Request.cash(treasure);
-                            } while (cash == null);
-                            client.getMoney().addAll(Arrays.asList(cash));
-                            pointTreasures = pointTreasures - cash.length;
+                        if (dig != null) {
+                            license.setDigUsed(license.getDigUsed() + 1);
+                            depth++;
+
+                            for (String treasure : dig) {
+                                Integer[] cash;
+                                do {
+                                    cash = Stage2Request.cash(treasure);
+                                } while (cash == null);
+                                client.getMoney().addAll(Arrays.asList(cash));
+                                pointTreasures = pointTreasures - cash.length;
+                            }
                         }
                     }
                 }
