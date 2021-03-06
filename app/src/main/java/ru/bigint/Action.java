@@ -49,14 +49,14 @@ public class Action {
     public static Map<Integer, List<Point>> getExploreMap() {
         long time = System.currentTimeMillis();
 
-        Point startPoint = getMaxTreasuresArea();
-//        startPoint = new Point(1, 1);
+//        Point startPoint = getMaxTreasuresArea();
+        Point startPoint = new Point(1, 1);
         Point endPoint = new Point(
                 Math.min(startPoint.getX() + Constant.areaSize, Constant.mapSize),
                 Math.min(startPoint.getY() + Constant.areaSize, Constant.mapSize)
         );
 
-        Logger.log("Time after getting startPoint : " + (System.currentTimeMillis() - time));
+        LoggerUtil.log(ActionEnum.EXPLORE, "Time after getting startPoint : " + (System.currentTimeMillis() - time));
         time = System.currentTimeMillis();
 
         //коллекция для хранения сокровищ. ключ - число сокровищ, значения - список координат
@@ -104,8 +104,8 @@ public class Action {
             strTreasuresCount += k + "(count=" + treasureMap.get(k).size() + "), ";
         }
 
-        Logger.log("Time after get treasure map: " + (System.currentTimeMillis() - time));
-        Logger.log("Treasures count: " + strTreasuresCount);
+        LoggerUtil.log(ActionEnum.EXPLORE, "Time after get treasure map: " + (System.currentTimeMillis() - time));
+        LoggerUtil.log(ActionEnum.EXPLORE, "Treasures count: " + strTreasuresCount);
 
         return treasureMap;
     }
@@ -139,7 +139,7 @@ public class Action {
                 res = new Point(explore.getArea().getPosX(), explore.getArea().getPosY());
             }
         }
-        Logger.log("Start point for explore: " + res + "; maxAmountTreasures = " + maxAmountTreasures);
+        LoggerUtil.log("Start point for explore: " + res + "; maxAmountTreasures = " + maxAmountTreasures);
 
         return res;
     }
@@ -150,15 +150,18 @@ public class Action {
         List<Integer[]> requestList = new ArrayList<>();
 
         int paidLicenses = 0;
+
         //Запрашием count-лицензий
         for (int i = 0; i < count; i++) {
             //Запрос платной лицензии - если есть деньги
             if (paidLicenses < Constant.paidLicensesCount
                     && client != null
                     && client.getMoney() != null
-                    && client.getMoney().size() > 0) {
+                    && client.getMoney().size() >= 3) {
                 paidLicenses++;
-                requestList.add(new Integer[]{client.getMoney().get(0)});
+                requestList.add(new Integer[]{client.getMoney().get(0), client.getMoney().get(1), client.getMoney().get(2)});
+                client.getMoney().remove(0);
+                client.getMoney().remove(0);
                 client.getMoney().remove(0);
             }
             //Запрос бесплатной лицензии

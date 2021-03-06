@@ -57,8 +57,8 @@ public class ActionMultiRequest<T, U> {
         for (Integer k : treasureMap.keySet()) {
             strTreasuresCount += k + "(count=" + treasureMap.get(k).size() + "), ";
         }
-        Logger.log("Treasures count: " + strTreasuresCount);
-        Logger.log("Time for get treasure map: " + (System.currentTimeMillis() - time));
+        LoggerUtil.log("Treasures count: " + strTreasuresCount);
+        LoggerUtil.log("Time for get treasure map: " + (System.currentTimeMillis() - time));
 
         return treasureMap;
     }
@@ -139,9 +139,9 @@ public class ActionMultiRequest<T, U> {
             try {
                 U resultObject = null;
                 HttpResponse<String> response = cf.get();
+                LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
                 if (response != null) {
                     resultObject = mapper.convertToObject(response.body());
-//                    Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
                 } else {
 //                    Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null: " + response);
                 }

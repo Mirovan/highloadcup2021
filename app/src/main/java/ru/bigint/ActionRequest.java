@@ -31,7 +31,7 @@ public class ActionRequest {
     public static Explore explore(ExploreRequest exploreRequest) throws IOException, InterruptedException {
 //        Logger.log("-- Explore --");
         ActionEnum actionEnum = ActionEnum.EXPLORE;
-        Logger.log(actionEnum, ">>> Request to: " + actionEnum + "; Object = " + exploreRequest);
+        LoggerUtil.log(actionEnum, ">>> Request to: " + actionEnum + "; Object = " + exploreRequest);
 
 
         HttpResponse<String> response;
@@ -39,9 +39,9 @@ public class ActionRequest {
         do {
             response = ClientRequest.doPost(actionEnum, exploreRequest);
             if (response != null) {
-                Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
+                LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
             } else {
-                Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Retry: " + retry + "; Response = null: " + response);
+                LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Retry: " + retry + "; Response = null: " + response);
             }
 
             retry++;
@@ -63,7 +63,7 @@ public class ActionRequest {
     public static License license(int[] licenseRequest) throws IOException, InterruptedException {
 //        Logger.log("-- Licence post --");
         ActionEnum actionEnum = ActionEnum.LICENSES;
-        Logger.log(actionEnum, ">>> Request to: " + actionEnum + "; Object = " + Arrays.toString(licenseRequest));
+        LoggerUtil.log(actionEnum, ">>> Request to: " + actionEnum + "; Object = " + Arrays.toString(licenseRequest));
 
 
         HttpResponse<String> response;
@@ -71,9 +71,9 @@ public class ActionRequest {
         do {
             response = ClientRequest.doPost(actionEnum, licenseRequest);
             if (response != null) {
-                Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
+                LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
             } else {
-                Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Retry: " + retry + "; Response = null: " + response);
+                LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Retry: " + retry + "; Response = null: " + response);
             }
 
             retry++;
@@ -95,7 +95,7 @@ public class ActionRequest {
     public static License[] license() {
 //        Logger.log("-- Licence post --");
         ActionEnum actionEnum = ActionEnum.LICENSES;
-        Logger.log(actionEnum, ">>> Request to: " + actionEnum);
+        LoggerUtil.log(actionEnum, ">>> Request to: " + actionEnum);
 
         MapperUtils<License[]> mapper = new MapperUtils<>(License[].class);
         HttpResponse<String> response = null;
@@ -104,9 +104,9 @@ public class ActionRequest {
         do {
             response = ClientRequest.doGet(ActionEnum.LICENSES);
             if (response != null) {
-                Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
+                LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
             } else {
-                Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Retry: " + retry + "; Response = null: " + response);
+                LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Retry: " + retry + "; Response = null: " + response);
             }
 
             retry++;
@@ -126,16 +126,16 @@ public class ActionRequest {
     public static String[] dig(DigRequest digRequest) throws IOException, InterruptedException {
 //        Logger.log("-- Dig --");
         ActionEnum actionEnum = ActionEnum.DIG;
-        Logger.log(actionEnum, ">>> Request to: " + actionEnum + "; Object = " + digRequest);
+        LoggerUtil.log(actionEnum, ">>> Request to: " + actionEnum + "; Object = " + digRequest);
 
         HttpResponse<String> response;
         int retry = 1;
         do {
             response = ClientRequest.doPost(actionEnum, digRequest);
             if (response != null) {
-                Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
+                LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
             } else {
-                Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Retry: " + retry + "; Response = null: " + response);
+                LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Retry: " + retry + "; Response = null: " + response);
             }
 
             retry++;
@@ -161,16 +161,16 @@ public class ActionRequest {
     public static Integer[] cash(String treasure) throws IOException, InterruptedException {
 //        Logger.log("-- Cash --");
         ActionEnum actionEnum = ActionEnum.CASH;
-        Logger.log(actionEnum, ">>> Request to: " + actionEnum + "; Object = " + treasure);
+        LoggerUtil.log(actionEnum, ">>> Request to: " + actionEnum + "; Object = " + treasure);
 
         HttpResponse<String> response;
         int retry = 1;
         do {
             response = ClientRequest.doPost(actionEnum, treasure);
             if (response != null) {
-                Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
+                LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
             } else {
-                Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Retry: " + retry + "; Response = null: " + response);
+                LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Retry: " + retry + "; Response = null: " + response);
             }
 
             retry++;
@@ -199,7 +199,7 @@ public class ActionRequest {
 
     public static Balance balance() throws IOException, InterruptedException, ExecutionException {
         ActionEnum actionEnum = ActionEnum.BALANCE;
-        Logger.log(actionEnum, ">>> Request to: " + actionEnum);
+        LoggerUtil.log(actionEnum, ">>> Request to: " + actionEnum);
 
         HttpResponse<String> response;
         int retry = 1;
@@ -207,9 +207,9 @@ public class ActionRequest {
             ClientRequest clientRequest = new ClientRequest();
             response = clientRequest.doGet(actionEnum);
             if (response != null) {
-                Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
+                LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Retry: " + retry + "; Response code: " + response.statusCode() + "; Response body: " + response.body());
             } else {
-                Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Retry: " + retry + "; Response = null: " + response);
+                LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Retry: " + retry + "; Response = null: " + response);
             }
 
             retry++;
@@ -262,7 +262,7 @@ public class ActionRequest {
                     .thenApply(httpResponse -> {
                         String[] treasures = null;
                         if (httpResponse != null) {
-                            Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Response code: " + httpResponse.statusCode() + "; Response body: " + httpResponse.body());
+                            LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Response code: " + httpResponse.statusCode() + "; Response body: " + httpResponse.body());
 //                            if (httpResponse.statusCode() == 200 || httpResponse.statusCode() == 404 || httpResponse.statusCode() == 403)) {
                             if (httpResponse.statusCode() == 200) {
                                 MapperUtils<String[]> resultMapper = new MapperUtils<>(String[].class);
@@ -271,7 +271,7 @@ public class ActionRequest {
                                 treasures = new String[]{};
                             }
                         } else {
-                            Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null");
+                            LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null");
                         }
 
                         return new DigWrapper(digRequest, treasures);
@@ -293,7 +293,7 @@ public class ActionRequest {
                 return digWrapper;
             }).collect(Collectors.toList());
         } catch (NullPointerException e) {
-            Logger.log(e.getMessage());
+            LoggerUtil.log(e.getMessage());
         }
 
         return res;
@@ -329,13 +329,13 @@ public class ActionRequest {
                     .thenApply(httpResponse -> {
                         Explore explore = null;
                         if (httpResponse != null) {
-                            Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Response code: " + httpResponse.statusCode() + "; Response body: " + httpResponse.body());
+                            LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Response code: " + httpResponse.statusCode() + "; Response body: " + httpResponse.body());
                             if (httpResponse.statusCode() == 200) {
                                 MapperUtils<Explore> resultMapper = new MapperUtils<>(Explore.class);
                                 explore = resultMapper.convertToObject(httpResponse.body());
                             }
                         } else {
-                            Logger.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null");
+                            LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null");
                         }
 
                         return explore;
@@ -357,7 +357,7 @@ public class ActionRequest {
                 return explore;
             }).collect(Collectors.toList());
         } catch (NullPointerException e) {
-            Logger.log(e.getMessage());
+            LoggerUtil.log(e.getMessage());
         }
 
         return res;
@@ -420,12 +420,12 @@ public class ActionRequest {
                 try {
                     explore = item.get();
                 } catch (InterruptedException | ExecutionException e) {
-                    Logger.log(e.getMessage());
+                    LoggerUtil.log(e.getMessage());
                 }
                 return explore;
             }).collect(Collectors.toList());
         } catch (NullPointerException e) {
-            Logger.log(e.getMessage());
+            LoggerUtil.log(e.getMessage());
         }
 
         return res;
