@@ -6,8 +6,10 @@ import ru.bigint.ActionEnum;
 import ru.bigint.Constant;
 import ru.bigint.LoggerUtil;
 import ru.bigint.MapperUtils;
+import ru.bigint.model.Client;
 import ru.bigint.model.request.ExploreRequest;
 import ru.bigint.model.response.Explore;
+import ru.bigint.model.response.License;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -23,7 +25,8 @@ public class Stage2Request {
             .connectTimeout(Duration.ofSeconds(2))
             .build();
 
-    public static Explore explore(ExploreRequest exploreRequest) {
+
+    public static Explore explore(ExploreRequest requestObj) {
         ActionEnum actionEnum = ActionEnum.EXPLORE;
 
         String url = Constant.SERVER_URI + actionEnum.getRequest();
@@ -31,7 +34,7 @@ public class Stage2Request {
         ObjectMapper objectMapper = new ObjectMapper();
         String requestBody = null;
         try {
-            requestBody = objectMapper.writeValueAsString(exploreRequest);
+            requestBody = objectMapper.writeValueAsString(requestObj);
         } catch (JsonProcessingException e) {
             LoggerUtil.log(e.getMessage());
         }
@@ -48,18 +51,18 @@ public class Stage2Request {
         CompletableFuture<Explore> cf = httpClient
                 .sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString())
                 .thenApply(httpResponse -> {
-                    Explore explore = null;
+                    Explore responseObj = null;
                     if (httpResponse != null) {
                         LoggerUtil.logRequestResponse(actionEnum, httpRequest, httpResponse);
                         if (httpResponse.statusCode() == 200) {
                             MapperUtils<Explore> resultMapper = new MapperUtils<>(Explore.class);
-                            explore = resultMapper.convertToObject(httpResponse.body());
+                            responseObj = resultMapper.convertToObject(httpResponse.body());
                         }
                     } else {
                         LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null");
                     }
 
-                    return explore;
+                    return responseObj;
                 });
 
 
@@ -72,4 +75,162 @@ public class Stage2Request {
 
         return res;
     }
+
+
+    public static License license(Integer[] requestObj) {
+        ActionEnum actionEnum = ActionEnum.LICENSES;
+
+        String url = Constant.SERVER_URI + actionEnum.getRequest();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestBody = null;
+        try {
+            requestBody = objectMapper.writeValueAsString(requestObj);
+        } catch (JsonProcessingException e) {
+            LoggerUtil.log(e.getMessage());
+        }
+
+        HttpRequest httpRequest =
+                HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .header("Content-Type", "application/json; charset=UTF-8")
+                        .timeout(Duration.ofSeconds(2))
+                        .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                        .build();
+
+        //Отправляем http-запрос
+        CompletableFuture<License> cf = httpClient
+                .sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString())
+                .thenApply(httpResponse -> {
+                    License responseObj = null;
+                    if (httpResponse != null) {
+                        LoggerUtil.logRequestResponse(actionEnum, httpRequest, httpResponse);
+                        if (httpResponse.statusCode() == 200) {
+                            MapperUtils<License> resultMapper = new MapperUtils<>(License.class);
+                            responseObj = resultMapper.convertToObject(httpResponse.body());
+                        }
+                    } else {
+                        LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null");
+                    }
+
+                    return responseObj;
+                });
+
+
+        License res = null;
+        try {
+            res = cf.get();
+        } catch (InterruptedException | ExecutionException e) {
+            LoggerUtil.log(actionEnum, e.getMessage());
+        }
+
+        return res;
+    }
+
+
+    public static String[] dig(License requestObj) {
+        ActionEnum actionEnum = ActionEnum.LICENSES;
+
+        String url = Constant.SERVER_URI + actionEnum.getRequest();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestBody = null;
+        try {
+            requestBody = objectMapper.writeValueAsString(requestObj);
+        } catch (JsonProcessingException e) {
+            LoggerUtil.log(e.getMessage());
+        }
+
+        HttpRequest httpRequest =
+                HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .header("Content-Type", "application/json; charset=UTF-8")
+                        .timeout(Duration.ofSeconds(2))
+                        .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                        .build();
+
+        //Отправляем http-запрос
+        CompletableFuture<String[]> cf = httpClient
+                .sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString())
+                .thenApply(httpResponse -> {
+                    String[] responseObj = null;
+                    if (httpResponse != null) {
+                        LoggerUtil.logRequestResponse(actionEnum, httpRequest, httpResponse);
+                        if (httpResponse.statusCode() == 200) {
+                            MapperUtils<String[]> resultMapper = new MapperUtils<>(String[].class);
+                            responseObj = resultMapper.convertToObject(httpResponse.body());
+                        } else if (httpResponse.statusCode() == 404) {
+                            responseObj = new String[]{};
+                        }
+                    } else {
+                        LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null");
+                    }
+
+                    return responseObj;
+                });
+
+
+        String[] res = null;
+        try {
+            res = cf.get();
+        } catch (InterruptedException | ExecutionException e) {
+            LoggerUtil.log(actionEnum, e.getMessage());
+        }
+
+        return res;
+    }
+
+
+    public static Integer[] cash(String requestObj) {
+        ActionEnum actionEnum = ActionEnum.LICENSES;
+
+        String url = Constant.SERVER_URI + actionEnum.getRequest();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestBody = null;
+        try {
+            requestBody = objectMapper.writeValueAsString(requestObj);
+        } catch (JsonProcessingException e) {
+            LoggerUtil.log(e.getMessage());
+        }
+
+        HttpRequest httpRequest =
+                HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .header("Content-Type", "application/json; charset=UTF-8")
+                        .timeout(Duration.ofSeconds(2))
+                        .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                        .build();
+
+        //Отправляем http-запрос
+        CompletableFuture<Integer[]> cf = httpClient
+                .sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString())
+                .thenApply(httpResponse -> {
+                    Integer[] responseObj = null;
+                    if (httpResponse != null) {
+                        LoggerUtil.logRequestResponse(actionEnum, httpRequest, httpResponse);
+                        if (httpResponse.statusCode() == 200) {
+                            MapperUtils<Integer[]> resultMapper = new MapperUtils<>(Integer[].class);
+                            responseObj = resultMapper.convertToObject(httpResponse.body());
+                        } else if (httpResponse.statusCode() == 404) {
+                            responseObj = new Integer[]{};
+                        }
+                    } else {
+                        LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null");
+                    }
+
+                    return responseObj;
+                });
+
+
+        Integer[] res = null;
+        try {
+            res = cf.get();
+        } catch (InterruptedException | ExecutionException e) {
+            LoggerUtil.log(actionEnum, e.getMessage());
+        }
+
+        return res;
+    }
+
 }

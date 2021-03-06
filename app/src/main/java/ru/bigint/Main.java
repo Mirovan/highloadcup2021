@@ -25,19 +25,36 @@ public class Main {
         Client client = new Client();
         client.setLicenses(new ArrayList<>());
 
-//        for (int x = 1; x < Constant.mapSize; x++) {
-//            for (int y = 1; y < Constant.mapSize; y++) {
-//
-//                Explore explore = Stage2Request.explore(new ExploreRequest(x, y, 1, 1));
-//
-//                if (explore != null && explore.getAmount() > 0) {
-//
-//                    License license = Stage2Request.license();
-//                }
-//
-//            }
-//        }
+        for (int x = 1; x < Constant.mapSize; x++) {
+            for (int y = 1; y < Constant.mapSize; y++) {
 
+                Explore explore = Stage2Request.explore(new ExploreRequest(x, y, 1, 1));
+
+                if (explore != null && explore.getAmount() > 0) {
+                    License license;
+                    do {
+                        license = Stage2Request.license(new Integer[]{});
+                    } while (license == null);
+
+                    String[] dig;
+                    do {
+                        dig = Stage2Request.dig(license);
+                    } while (dig == null);
+
+                    for (String treasure: dig) {
+                        Integer[] cash;
+                        do {
+                            cash = Stage2Request.cash(treasure);
+                        } while (cash == null);
+                        client.getMoney().addAll(Arrays.asList(cash));
+                    }
+                }
+
+            }
+        }
+
+
+/*
 
         //коллекция для хранения сокровищ. ключ - число сокровищ, значения - список координат
         Map<Integer, List<Point>> treasureMap = Action.getExploreMap();
@@ -151,8 +168,9 @@ public class Main {
             }
 
 //            Logger.log(ActionEnum.LICENSES, "After dig: " + client.getLicenses().stream().map(Objects::toString).collect(Collectors.joining("; ")));
-
         }
+        */
+
     }
 
 }
