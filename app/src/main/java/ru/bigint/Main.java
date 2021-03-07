@@ -7,6 +7,7 @@ import ru.bigint.model.request.DigRequest;
 import ru.bigint.model.request.ExploreRequest;
 import ru.bigint.model.response.Explore;
 import ru.bigint.model.response.License;
+import ru.bigint.stage2.AlgoUtils;
 import ru.bigint.stage2.Stage2Request;
 
 import java.io.IOException;
@@ -28,25 +29,25 @@ public class Main {
 
         License license = null;
 
-
-        int k = 0;
         int tres = 0;
         for (int x = 1; x < Constant.mapSize; x++) {
-            for (int y = 1; y < Constant.mapSize; y++) {
+            AlgoUtils.iteration = 0;
+            List<Point> list = AlgoUtils.binSearch(x, 1, 3499);
+            System.out.println("x=" + x + "; iteration: " + AlgoUtils.iteration);
+            Integer tresByX = list.stream().map(Point::getTreasuresCount).reduce(0, (a, b) -> a + b);
+            tres = tres + tresByX;
+            System.out.println("tresByX: " + tresByX + "; allTres = " + tres);
 
-                k++;
+/*            for (int y = 1; y < Constant.mapSize; y++) {
+
                 Explore explore = Stage2Request.explore(new ExploreRequest(x, y, 1, 1));
 
-                System.out.println("Iteration: " + k);
                 if (explore != null && explore.getAmount() > 0) {
                     int pointTreasures = explore.getAmount();
 
-                    tres++;
-
-                    System.out.println("tres: " + tres);
 
 
-/*
+
                     int depth = 1;
                     while (pointTreasures > 0) {
                         if (license == null || license.getDigUsed() >= license.getDigAllowed()) {
@@ -85,10 +86,9 @@ public class Main {
                             }
                         }
                     }
-                    */
                 }
 
-            }
+            }*/
         }
 
     }
