@@ -31,8 +31,7 @@ public class Main {
 
         int tres = 0;
         for (int x = 1; x < Constant.mapSize; x++) {
-            AlgoUtils.iteration = 0;
-            List<Point> list = AlgoUtils.binSearch(x, 1, 3499);
+            List<Point> list = AlgoUtils.binSearch(x, 1, Constant.mapSize);
             System.out.println("x=" + x + "; iteration: " + AlgoUtils.iteration);
             Integer tresByX = list.stream().map(Point::getTreasuresCount).reduce(0, (a, b) -> a + b);
             tres = tres + tresByX;
