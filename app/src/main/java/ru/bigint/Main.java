@@ -27,15 +27,13 @@ public class Main {
         client.setLicenses(new ArrayList<>());
         client.setMoney(new ArrayList<>());
 
+        int tres = 0;
+
+        List<Point> points = Stage2Request.getPoints();
+
         License license = null;
 
-        int tres = 0;
         for (int x = 1; x < Constant.mapSize; x++) {
-            List<Point> list = AlgoUtils.binSearch(x, 1, Constant.mapSize);
-            System.out.println("x=" + x + "; iteration: " + AlgoUtils.iteration);
-            Integer tresByX = list.stream().map(Point::getTreasuresCount).reduce(0, (a, b) -> a + b);
-            tres = tres + tresByX;
-            System.out.println("tresByX: " + tresByX + "; allTres = " + tres);
 
 /*            for (int y = 1; y < Constant.mapSize; y++) {
 

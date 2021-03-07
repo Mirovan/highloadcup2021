@@ -8,21 +8,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AlgoUtils {
-    public static int iteration;
-
     /**
      * Бинарный поиск сокровищ для столбца на x-координате
      * */
     public static List<Point> binSearch(int x, int left, int right) {
-        iteration++;
-
         List<Point> res = new ArrayList<>();
         int middleIndex = (left + right) / 2;
 
         Explore exploreLeft = Stage2Request.explore(new ExploreRequest(x, left, 1, middleIndex-left+1));
         int leftCount = 0;
         if (exploreLeft != null) leftCount = exploreLeft.getAmount();
-        Explore exploreRight = Stage2Request.explore(new ExploreRequest(x, middleIndex+1, 1, right-middleIndex-1));
+        Explore exploreRight = Stage2Request.explore(new ExploreRequest(x, middleIndex+1, 1, Math.max(1, right-middleIndex-1)));
         int rightCount = 0;
         if (exploreRight != null) rightCount = exploreRight.getAmount();
 

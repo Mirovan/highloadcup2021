@@ -7,6 +7,7 @@ import ru.bigint.Constant;
 import ru.bigint.LoggerUtil;
 import ru.bigint.MapperUtils;
 import ru.bigint.model.Client;
+import ru.bigint.model.Point;
 import ru.bigint.model.request.DigRequest;
 import ru.bigint.model.request.ExploreRequest;
 import ru.bigint.model.response.Explore;
@@ -17,8 +18,12 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
+import java.util.stream.Collectors;
 
 public class Stage2Request {
 
@@ -229,6 +234,64 @@ public class Stage2Request {
             res = cf.get();
         } catch (InterruptedException | ExecutionException e) {
             LoggerUtil.log(actionEnum, e.getMessage());
+        }
+
+        return res;
+    }
+
+
+    /**
+     * Возвращает список точек с сокровищами
+     */
+    public static List<Point> getPoints() {
+        List<Point> res = new ArrayList<>();
+
+        ForkJoinPool myThreadPool = new ForkJoinPool(Constant.threadsCountExplore);
+
+        //Формирую список запрос для всей карты
+        List<CompletableFuture<List<Point>>> cfList = new ArrayList<>();
+        for (int x = 0; x < Constant.mapSize; x++) {
+            int finalX = x;
+            CompletableFuture<List<Point>> cf = new CompletableFuture<>();
+            cf.completeAsync(() -> {
+                List<Point> list = AlgoUtils.binSearch(finalX, 1, Constant.mapSize);
+                return list;
+            }, myThreadPool);
+            cfList.add(cf);
+        }
+
+
+        int treasureCount = 0;
+        int x = 0;
+        for (int i = 0; i < cfList.size(); i = i + Constant.threadsCountExplore) {
+            List<CompletableFuture<List<Point>>> cfPartList =
+                    cfList.subList(
+                            i,
+                            Math.min(i+Constant.threadsCountExplore, cfList.size())
+                    );
+
+            //Ждем все потоки
+            CompletableFuture.allOf(cfPartList.toArray(new CompletableFuture[0])).join();
+
+            List<Point> list = null;
+            for (CompletableFuture<List<Point>> cfItem: cfPartList) {
+                try {
+                    list = cfItem.get();
+                } catch (InterruptedException | ExecutionException e) {
+                    LoggerUtil.log(ActionEnum.EXPLORE, e.getMessage());
+                }
+                if (list != null) {
+                    res.addAll(list);
+
+                    if (x > 135) {
+                        System.out.println("x=" + x);
+                        Integer tresByX = list.stream().map(Point::getTreasuresCount).reduce(0, Integer::sum);
+                        treasureCount = treasureCount + tresByX;
+                        System.out.println("tresByX: " + tresByX + "; allTres = " + treasureCount);
+                    }
+                }
+                x++;
+            }
         }
 
         return res;
