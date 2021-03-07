@@ -28,14 +28,25 @@ public class Main {
 
         License license = null;
 
+
+        int k = 0;
+        int tres = 0;
         for (int x = 1; x < Constant.mapSize; x++) {
             for (int y = 1; y < Constant.mapSize; y++) {
 
+                k++;
                 Explore explore = Stage2Request.explore(new ExploreRequest(x, y, 1, 1));
 
+                System.out.println("Iteration: " + k);
                 if (explore != null && explore.getAmount() > 0) {
                     int pointTreasures = explore.getAmount();
 
+                    tres++;
+
+                    System.out.println("tres: " + tres);
+
+
+/*
                     int depth = 1;
                     while (pointTreasures > 0) {
                         if (license == null || license.getDigUsed() >= license.getDigAllowed()) {
@@ -74,6 +85,7 @@ public class Main {
                             }
                         }
                     }
+                    */
                 }
 
             }
