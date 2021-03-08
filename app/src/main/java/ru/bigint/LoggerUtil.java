@@ -30,6 +30,10 @@ public class LoggerUtil {
         } else {
             strObj = requestObject.toString();
         }
-        log(actionEnum, "Request object: " + strObj + "; Response Code: " + httpResponse.statusCode() + "; Body: " + httpResponse.body());
+
+        //ToDo: only errors
+        if ( httpResponse.statusCode() != 200 ) {
+            log(actionEnum, "Request object: " + strObj + "; Response Code: " + httpResponse.statusCode() + "; Body: " + httpResponse.body());
+        }
     }
 }

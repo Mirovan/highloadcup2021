@@ -244,11 +244,15 @@ public class Stage2Request {
      * Возвращает список точек с сокровищами
      */
     public static List<Point> getPoints() {
+        long time = System.currentTimeMillis();
+
         List<Point> res = new ArrayList<>();
 
-        ForkJoinPool myThreadPool = new ForkJoinPool(Constant.threadsCountExplore);
+//        ForkJoinPool myThreadPool = new ForkJoinPool(3);
 
-        //Формирую список запрос для всей карты
+        int treasureCount = 0;
+
+        //Формирую список N-запросов для всей карты
         List<CompletableFuture<List<Point>>> cfList = new ArrayList<>();
         for (int x = 0; x < Constant.mapSize; x++) {
             int finalX = x;
@@ -256,12 +260,30 @@ public class Stage2Request {
             cf.completeAsync(() -> {
                 List<Point> list = AlgoUtils.binSearch(finalX, 1, Constant.mapSize);
                 return list;
-            }, myThreadPool);
+            });
             cfList.add(cf);
+
+            if (x % 20 == 0) {
+                List<List<Point>> pointLists = cfList.stream()
+                        .map(CompletableFuture::join)
+                        .collect(Collectors.toList());
+
+                for (List<Point> list: pointLists) {
+                    res.addAll(list);
+//                    if (x > 140)
+                        System.out.println("x=" + x);
+                    Integer tresByX = list.stream().map(Point::getTreasuresCount).reduce(0, Integer::sum);
+                    treasureCount = treasureCount + tresByX;
+//                    if (x > 140)
+                        System.out.println("tresByX: " + tresByX + "; allTres = " + treasureCount + "; Time: " + (System.currentTimeMillis() - time));
+                }
+
+                cfList.clear();
+            }
         }
 
 
-        int treasureCount = 0;
+/*        int treasureCount = 0;
         int x = 0;
         for (int i = 0; i < cfList.size(); i = i + Constant.threadsCountExplore) {
             List<CompletableFuture<List<Point>>> cfPartList =
@@ -271,28 +293,42 @@ public class Stage2Request {
                     );
 
             //Ждем все потоки
-            CompletableFuture.allOf(cfPartList.toArray(new CompletableFuture[0])).join();
+//            CompletableFuture.allOf(cfPartList.toArray(new CompletableFuture[0])).join();
 
-            List<Point> list = null;
-            for (CompletableFuture<List<Point>> cfItem: cfPartList) {
-                try {
-                    list = cfItem.get();
-                } catch (InterruptedException | ExecutionException e) {
-                    LoggerUtil.log(ActionEnum.EXPLORE, e.getMessage());
-                }
-                if (list != null) {
-                    res.addAll(list);
+            List<List<Point>> pointLists = cfPartList.stream()
+                    .map(CompletableFuture::join)
+                    .collect(Collectors.toList());
 
-                    if (x > 135) {
-                        System.out.println("x=" + x);
-                        Integer tresByX = list.stream().map(Point::getTreasuresCount).reduce(0, Integer::sum);
-                        treasureCount = treasureCount + tresByX;
-                        System.out.println("tresByX: " + tresByX + "; allTres = " + treasureCount);
-                    }
-                }
+//            res.addAll(res);
+            for (List<Point> list: pointLists) {
+                res.addAll(list);
+                if (x > 140) System.out.println("x=" + x);
+                Integer tresByX = list.stream().map(Point::getTreasuresCount).reduce(0, Integer::sum);
+                treasureCount = treasureCount + tresByX;
+                if (x > 140) System.out.println("tresByX: " + tresByX + "; allTres = " + treasureCount + "; Time: " + (System.currentTimeMillis() - time));
                 x++;
-            }
-        }
+            }*/
+
+//
+//            for (CompletableFuture<List<Point>> cfItem: cfPartList) {
+//                try {
+//                    list = cfItem.get();
+//                } catch (InterruptedException | ExecutionException e) {
+//                    LoggerUtil.log(ActionEnum.EXPLORE, e.getMessage());
+//                }
+//                if (list != null) {
+//                    res.addAll(list);
+//
+//                    if (x > 135) {
+//                        System.out.println("x=" + x);
+//                        Integer tresByX = list.stream().map(Point::getTreasuresCount).reduce(0, Integer::sum);
+//                        treasureCount = treasureCount + tresByX;
+//                        System.out.println("tresByX: " + tresByX + "; allTres = " + treasureCount);
+//                    }
+//                }
+//                x++;
+//            }
+//        }
 
         return res;
     }
