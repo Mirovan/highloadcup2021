@@ -256,7 +256,7 @@ public class Stage2Request {
             int finalX = x;
             CompletableFuture<List<Point>> cf = new CompletableFuture<>();
             cf.completeAsync(() -> {
-                List<Point> list = AlgoUtils.binSearch(finalX, 1, Constant.maxExploreX);
+                List<Point> list = AlgoUtils.binSearch(finalX, 1, Constant.mapSize);
                 return list;
             });
             cfList.add(cf);
@@ -270,11 +270,11 @@ public class Stage2Request {
                 for (List<Point> list: pointLists) {
                     res.addAll(list);
 //                    if (x > 140)
-                        System.out.println("x=" + x);
+//                        System.out.println("x=" + x);
                     Integer tresByX = list.stream().map(Point::getTreasuresCount).reduce(0, Integer::sum);
                     treasureCount = treasureCount + tresByX;
 //                    if (x > 140)
-                        System.out.println("tresByX: " + tresByX + "; allTres = " + treasureCount + "; Time: " + (System.currentTimeMillis() - time));
+//                        System.out.println("tresByX: " + tresByX + "; allTres = " + treasureCount + "; Time: " + (System.currentTimeMillis() - time));
                 }
 
                 cfList.clear();

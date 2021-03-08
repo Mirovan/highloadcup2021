@@ -1,18 +1,14 @@
 package ru.bigint;
 
 import ru.bigint.model.Client;
-import ru.bigint.model.DigWrapper;
 import ru.bigint.model.Point;
 import ru.bigint.model.request.DigRequest;
-import ru.bigint.model.request.ExploreRequest;
-import ru.bigint.model.response.Explore;
 import ru.bigint.model.response.License;
-import ru.bigint.stage2.AlgoUtils;
 import ru.bigint.stage2.Stage2Request;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.ExecutionException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Main {
 
@@ -29,6 +25,7 @@ public class Main {
 
         //получаем все точки с сокровищами
         List<Point> points = Stage2Request.getPoints();
+        LoggerUtil.log("Points with treasures: " + points.size());
 
         License license = null;
 
