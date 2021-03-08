@@ -248,22 +248,21 @@ public class Stage2Request {
 
         List<Point> res = new ArrayList<>();
 
-//        ForkJoinPool myThreadPool = new ForkJoinPool(3);
-
         int treasureCount = 0;
 
         //Формирую список N-запросов для всей карты
         List<CompletableFuture<List<Point>>> cfList = new ArrayList<>();
-        for (int x = 0; x < Constant.mapSize; x++) {
+        for (int x = 0; x < Constant.maxExploreX; x++) {
             int finalX = x;
             CompletableFuture<List<Point>> cf = new CompletableFuture<>();
             cf.completeAsync(() -> {
-                List<Point> list = AlgoUtils.binSearch(finalX, 1, Constant.mapSize);
+                List<Point> list = AlgoUtils.binSearch(finalX, 1, Constant.maxExploreX);
                 return list;
             });
             cfList.add(cf);
 
-            if (x % 20 == 0) {
+            //Каждые N-раз отправляем запросы на сервер
+            if (x % Constant.threadsCountExplore == 0) {
                 List<List<Point>> pointLists = cfList.stream()
                         .map(CompletableFuture::join)
                         .collect(Collectors.toList());

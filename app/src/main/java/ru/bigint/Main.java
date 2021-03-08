@@ -27,65 +27,55 @@ public class Main {
         client.setLicenses(new ArrayList<>());
         client.setMoney(new ArrayList<>());
 
-        int tres = 0;
-
+        //получаем все точки с сокровищами
         List<Point> points = Stage2Request.getPoints();
 
         License license = null;
 
-        for (int x = 1; x < Constant.mapSize; x++) {
+        for (Point point : points) {
 
-/*            for (int y = 1; y < Constant.mapSize; y++) {
+            int pointTreasures = point.getTreasuresCount();
 
-                Explore explore = Stage2Request.explore(new ExploreRequest(x, y, 1, 1));
-
-                if (explore != null && explore.getAmount() > 0) {
-                    int pointTreasures = explore.getAmount();
-
-
-
-
-                    int depth = 1;
-                    while (pointTreasures > 0) {
-                        if (license == null || license.getDigUsed() >= license.getDigAllowed()) {
-                            Integer[] money = new Integer[]{};
-                            //Формируем список монет для получения платной лицензии
-                            if (client.getMoney().size() >= Constant.licensePaymentCount) {
-                                money = new Integer[Constant.licensePaymentCount];
-                                for (int i=0; i<Constant.licensePaymentCount; i++) {
-                                    money[i] = client.getMoney().get(0);
-                                    client.getMoney().remove(0);
-                                }
-                            }
-
-                            do {
-                                license = Stage2Request.license(money);
-                            } while (license == null);
-                        }
-
-                        String[] dig;
-                        do {
-                            DigRequest digRequest = new DigRequest(license.getId(), x, y, depth);
-                            dig = Stage2Request.dig(digRequest);
-                        } while (dig == null);
-
-                        if (dig != null) {
-                            license.setDigUsed(license.getDigUsed() + 1);
-                            depth++;
-
-                            for (String treasure : dig) {
-                                Integer[] cash;
-                                do {
-                                    cash = Stage2Request.cash(treasure);
-                                } while (cash == null);
-                                client.getMoney().addAll(Arrays.asList(cash));
-                                pointTreasures = pointTreasures - cash.length;
-                            }
+            int depth = 1;
+            //пока сокровища есть в точке
+            while (pointTreasures > 0) {
+                if (license == null || license.getDigUsed() >= license.getDigAllowed()) {
+                    Integer[] money = new Integer[]{};
+                    //Формируем список монет для получения платной лицензии
+                    if (client.getMoney().size() >= Constant.licensePaymentCount) {
+                        money = new Integer[Constant.licensePaymentCount];
+                        for (int i = 0; i < Constant.licensePaymentCount; i++) {
+                            money[i] = client.getMoney().get(0);
+                            client.getMoney().remove(0);
                         }
                     }
+
+                    do {
+                        license = Stage2Request.license(money);
+                    } while (license == null);
                 }
 
-            }*/
+                String[] dig;
+                do {
+                    DigRequest digRequest = new DigRequest(license.getId(), point.getX(), point.getY(), depth);
+                    dig = Stage2Request.dig(digRequest);
+                } while (dig == null);
+
+                if (dig != null) {
+                    license.setDigUsed(license.getDigUsed() + 1);
+                    depth++;
+
+                    for (String treasure : dig) {
+                        Integer[] cash;
+                        do {
+                            cash = Stage2Request.cash(treasure);
+                        } while (cash == null);
+                        client.getMoney().addAll(Arrays.asList(cash));
+                        pointTreasures = pointTreasures - cash.length;
+                    }
+                }
+            }
+
         }
 
     }

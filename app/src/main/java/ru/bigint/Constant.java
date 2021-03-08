@@ -1,7 +1,7 @@
 package ru.bigint;
 
 public class Constant {
-    public final static String version = "test_async_explore_003";
+    public final static String version = "stage2_005_async_explore";
 
     //Общий размер карты
     public final static int mapSize = 3499;
@@ -11,9 +11,13 @@ public class Constant {
     //Число потоков
     public final static int threadsCount = 10;
     //Число потоков для просмотра карты
-    public final static int threadsCountExplore = 10;
+    public final static int threadsCountExplore = 20;
     //Число потоков для получения лицензий (по условию может быть только 10 активных лицензий)
     public final static int threadsCountLicenses = 10;
+
+    //Максимальный X для просмотра карты построчно (по столбцам)
+    public final static int maxExploreX = 50;
+
 
     //Число платных лицензий которые можно запросить за один запрос
     public final static int paidLicensesCount = 10;
