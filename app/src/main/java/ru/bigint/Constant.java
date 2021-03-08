@@ -16,7 +16,7 @@ public class Constant {
     public final static int threadsCountLicenses = 10;
 
     //Максимальный X для просмотра карты построчно (по столбцам)
-    public final static int maxExploreX = 50;
+    public final static int maxExploreX = 20;
 
 
     //Число платных лицензий которые можно запросить за один запрос

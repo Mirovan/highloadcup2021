@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public class LoggerUtil {
-    private static ActionEnum[] LOGGER_LEVEL = {ActionEnum.EXPLORE};
+    private static ActionEnum[] LOGGER_LEVEL = {ActionEnum.ALL};
 
     public static void log(ActionEnum actionEnum, Object msg) {
         for (ActionEnum item: LOGGER_LEVEL) {
@@ -32,8 +32,8 @@ public class LoggerUtil {
         }
 
         //ToDo: only errors
-        if ( httpResponse.statusCode() != 200 ) {
+//        if ( httpResponse.statusCode() != 200 ) {
             log(actionEnum, "Request object: " + strObj + "; Response Code: " + httpResponse.statusCode() + "; Body: " + httpResponse.body());
-        }
+//        }
     }
 }
