@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public class LoggerUtil {
-    private static ActionEnum[] LOGGER_LEVEL = {ActionEnum.DIG, ActionEnum.LICENSES, ActionEnum.CASH};
+    private static ActionEnum[] LOGGER_LEVEL = {ActionEnum.EXPLORE};
 
     public static void log(ActionEnum actionEnum, Object msg) {
         for (ActionEnum item: LOGGER_LEVEL) {
