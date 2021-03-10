@@ -1,14 +1,13 @@
 package ru.bigint;
 
 import ru.bigint.model.Client;
+import ru.bigint.model.DigWrapper;
 import ru.bigint.model.Point;
 import ru.bigint.model.request.DigRequest;
 import ru.bigint.model.response.License;
 import ru.bigint.stage2.Stage2Request;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class Main {
 
@@ -27,53 +26,101 @@ public class Main {
         List<Point> points = Stage2Request.getPoints();
         LoggerUtil.log("Points with treasures: " + points.size());
 
-        License license = null;
+//        License license = null;
 
-        for (Point point : points) {
+        Stack<Point> pointStack = new Stack<>();
+        pointStack.addAll(points);
 
-            int pointTreasures = point.getTreasuresCount();
+        //Пока стек с точками не пустой
+        while (!pointStack.empty()) {
+            //Убираем истекшие лицензии
+            List<License> licencesUpdate = new ArrayList<>();
+            for (License lic: client.getLicenses()) {
+                if (lic.getDigUsed() < lic.getDigAllowed()) {
+                    licencesUpdate.add(lic);
+                }
+            }
+            client.setLicenses(licencesUpdate);
 
-            int depth = 1;
-            //пока сокровища есть в точке
-            while (pointTreasures > 0) {
-                if (license == null || license.getDigUsed() >= license.getDigAllowed()) {
-                    Integer[] money = new Integer[]{};
-                    //Формируем список монет для получения платной лицензии
-                    if (client.getMoney().size() >= Constant.licensePaymentCount) {
-                        money = new Integer[Constant.licensePaymentCount];
-                        for (int i = 0; i < Constant.licensePaymentCount; i++) {
-                            money[i] = client.getMoney().get(0);
-                            client.getMoney().remove(0);
-                        }
+            //Получаем новые лицензии - в одном потоке/синхронно - пока все лицензии не получим
+            List<License> licensesNew = new ArrayList<>();
+            for (int i = client.getLicenses().size(); i < Constant.maxLicencesCount; i++) {
+                Integer[] money = new Integer[]{};
+                //Формируем список монет для получения платной лицензии
+                if (client.getMoney().size() >= Constant.licensePaymentCount) {
+                    money = new Integer[Constant.licensePaymentCount];
+                    for (int j = 0; j < Constant.licensePaymentCount; j++) {
+                        money[j] = client.getMoney().get(0);
+                        client.getMoney().remove(0);
                     }
-
-                    do {
-                        license = Stage2Request.license(money);
-                    } while (license == null);
                 }
 
-                String[] dig;
+                License license;
                 do {
-                    DigRequest digRequest = new DigRequest(license.getId(), point.getX(), point.getY(), depth);
-                    dig = Stage2Request.dig(digRequest);
-                } while (dig == null);
+                    license = Stage2Request.license(money);
+                } while (license == null);
 
-                if (dig != null) {
+                if (license != null) licensesNew.add(license);
+            }
+            client.getLicenses().addAll(licensesNew);
+
+
+            //List - коллекция для последующего исследования (после раскопок), stack - используем для понимания в каких точках копаем
+            List<Point> digPoints = new ArrayList<>();
+            Stack<Point> digPointsStack = new Stack<>();
+            int digPointCount = client.getLicenses().stream()
+                    .reduce(0, (res, item) -> res + (item.getDigAllowed()-item.getDigUsed()), Integer::sum);
+
+            for (int i = 0; i < digPointCount; i++) {
+                if (!pointStack.empty()) {
+                    Point point = pointStack.pop();
+                    digPoints.add(point);
+                    digPointsStack.add(point);
+                }
+            }
+
+
+            //копаем
+            List<DigWrapper> digs = Stage2Request.dig(client.getLicenses(), digPointsStack);
+
+            for (DigWrapper dig: digs) {
+                //Если что-то выкопали (может и пустое)
+                if (dig.getTreasures() != null) {
+                    int licId = dig.getDigRequest().getLicenseID();
+                    //Обновляем лицензию в общем списке
+                    License license = client.getLicenses().stream()
+                            .filter(item -> item.getId() == licId)
+                            .findFirst()
+                            .get();
                     license.setDigUsed(license.getDigUsed() + 1);
-                    depth++;
 
-                    for (String treasure : dig) {
+                    //находим точку в списке и обновляем её
+                    Point point = digPoints.stream()
+                            .filter(item -> item.getX() == dig.getDigRequest().getPosX()
+                                    && item.getY() == dig.getDigRequest().getPosY())
+                            .findFirst()
+                            .get();
+                    point.setDepth(point.getDepth() + 1);
+                    point.setTreasuresCount(point.getTreasuresCount() - dig.getTreasures().length);
+
+                    //Помещаем обратно точку в стек - если сокровища еще есть
+                    if (point.getTreasuresCount() > 0) {
+                        pointStack.add(point);
+                    }
+
+                    //Меняем сокровища
+                    for (String treasure : dig.getTreasures()) {
                         Integer[] cash;
                         do {
                             cash = Stage2Request.cash(treasure);
                         } while (cash == null);
                         client.getMoney().addAll(Arrays.asList(cash));
-                        pointTreasures = pointTreasures - cash.length;
                     }
                 }
             }
 
         }
+
 
     }
 

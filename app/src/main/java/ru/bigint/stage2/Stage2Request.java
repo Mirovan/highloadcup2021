@@ -7,6 +7,7 @@ import ru.bigint.Constant;
 import ru.bigint.LoggerUtil;
 import ru.bigint.MapperUtils;
 import ru.bigint.model.Client;
+import ru.bigint.model.DigWrapper;
 import ru.bigint.model.Point;
 import ru.bigint.model.request.DigRequest;
 import ru.bigint.model.request.ExploreRequest;
@@ -19,7 +20,9 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Stack;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
@@ -244,8 +247,6 @@ public class Stage2Request {
      * Возвращает список точек с сокровищами
      */
     public static List<Point> getPoints() {
-        long time = System.currentTimeMillis();
-
         List<Point> res = new ArrayList<>();
 
         int treasureCount = 0;
@@ -267,69 +268,94 @@ public class Stage2Request {
                         .map(CompletableFuture::join)
                         .collect(Collectors.toList());
 
-                for (List<Point> list: pointLists) {
+                for (List<Point> list : pointLists) {
                     res.addAll(list);
-//                    if (x > 140)
-//                        System.out.println("x=" + x);
                     Integer tresByX = list.stream().map(Point::getTreasuresCount).reduce(0, Integer::sum);
                     treasureCount = treasureCount + tresByX;
-//                    if (x > 140)
-//                        System.out.println("tresByX: " + tresByX + "; allTres = " + treasureCount + "; Time: " + (System.currentTimeMillis() - time));
                 }
 
                 cfList.clear();
             }
         }
 
-
-/*        int treasureCount = 0;
-        int x = 0;
-        for (int i = 0; i < cfList.size(); i = i + Constant.threadsCountExplore) {
-            List<CompletableFuture<List<Point>>> cfPartList =
-                    cfList.subList(
-                            i,
-                            Math.min(i+Constant.threadsCountExplore, cfList.size())
-                    );
-
-            //Ждем все потоки
-//            CompletableFuture.allOf(cfPartList.toArray(new CompletableFuture[0])).join();
-
-            List<List<Point>> pointLists = cfPartList.stream()
-                    .map(CompletableFuture::join)
-                    .collect(Collectors.toList());
-
-//            res.addAll(res);
-            for (List<Point> list: pointLists) {
-                res.addAll(list);
-                if (x > 140) System.out.println("x=" + x);
-                Integer tresByX = list.stream().map(Point::getTreasuresCount).reduce(0, Integer::sum);
-                treasureCount = treasureCount + tresByX;
-                if (x > 140) System.out.println("tresByX: " + tresByX + "; allTres = " + treasureCount + "; Time: " + (System.currentTimeMillis() - time));
-                x++;
-            }*/
-
-//
-//            for (CompletableFuture<List<Point>> cfItem: cfPartList) {
-//                try {
-//                    list = cfItem.get();
-//                } catch (InterruptedException | ExecutionException e) {
-//                    LoggerUtil.log(ActionEnum.EXPLORE, e.getMessage());
-//                }
-//                if (list != null) {
-//                    res.addAll(list);
-//
-//                    if (x > 135) {
-//                        System.out.println("x=" + x);
-//                        Integer tresByX = list.stream().map(Point::getTreasuresCount).reduce(0, Integer::sum);
-//                        treasureCount = treasureCount + tresByX;
-//                        System.out.println("tresByX: " + tresByX + "; allTres = " + treasureCount);
-//                    }
-//                }
-//                x++;
-//            }
-//        }
-
         return res;
     }
 
+
+    /**
+     * Асинхронные раскопки
+     */
+    public static List<DigWrapper> dig(List<License> licenses, Stack<Point> digPointStack) {
+        ActionEnum actionEnum = ActionEnum.DIG;
+        String url = Constant.SERVER_URI + actionEnum.getRequest();
+
+        List<DigWrapper> res = new ArrayList<>();
+
+        //Формируем список с запросами
+        List<DigRequest> requestList = new ArrayList<>();
+        for (License license : licenses) {
+            for (int i = license.getDigUsed(); i < license.getDigAllowed(); i++) {
+                if (!digPointStack.isEmpty()) {
+                    Point point = digPointStack.pop();
+                    DigRequest digRequest = new DigRequest(license.getId(), point.getX(), point.getY(), point.getDepth());
+                    requestList.add(digRequest);
+                }
+            }
+        }
+
+        List<CompletableFuture<DigWrapper>> listCf = null;
+        for (int i = 0; i < requestList.size(); i++) {
+            DigRequest requestObj = requestList.get(i);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String requestBody = null;
+            try {
+                requestBody = objectMapper.writeValueAsString(requestObj);
+            } catch (JsonProcessingException e) {
+//                Logger.log(e.getMessage());
+            }
+
+            HttpRequest httpRequest =
+                    HttpRequest.newBuilder()
+                            .uri(URI.create(url))
+                            .header("Content-Type", "application/json; charset=UTF-8")
+                            .timeout(Duration.ofSeconds(5))
+                            .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                            .build();
+
+            //Отправляем http-запрос
+            CompletableFuture<DigWrapper> cf = httpClient
+                    .sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString())
+                    .thenApply(httpResponse -> {
+                        String[] treasures = null;
+                        if (httpResponse != null) {
+                            LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Response code: " + httpResponse.statusCode() + "; Response body: " + httpResponse.body());
+                            if (httpResponse.statusCode() == 200) {
+                                MapperUtils<String[]> resultMapper = new MapperUtils<>(String[].class);
+                                treasures = resultMapper.convertToObject(httpResponse.body());
+                            } else if (httpResponse.statusCode() == 404 || httpResponse.statusCode() == 403) {
+                                treasures = new String[]{};
+                            }
+                        } else {
+                            LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null");
+                        }
+
+                        return new DigWrapper(requestObj, treasures);
+                    });
+
+            listCf.add(cf);
+
+            if (i % Constant.threadsCountDig == 0) {
+                List<DigWrapper> digListRes = listCf.stream()
+                        .map(CompletableFuture::join)
+                        .collect(Collectors.toList());
+
+                res.addAll(digListRes);
+
+                listCf.clear();
+            }
+        }
+
+        return res;
+    }
 }
