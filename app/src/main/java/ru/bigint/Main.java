@@ -3,11 +3,13 @@ package ru.bigint;
 import ru.bigint.model.Client;
 import ru.bigint.model.DigWrapper;
 import ru.bigint.model.Point;
-import ru.bigint.model.request.DigRequest;
 import ru.bigint.model.response.License;
 import ru.bigint.stage2.Stage2Request;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Stack;
 
 public class Main {
 
@@ -30,6 +32,8 @@ public class Main {
 
         Stack<Point> pointStack = new Stack<>();
         pointStack.addAll(points);
+
+        int stop = 0;
 
         //Пока стек с точками не пустой
         while (!pointStack.empty()) {
@@ -81,9 +85,13 @@ public class Main {
 
 
             //копаем
+//            System.out.println(" ########### DIG ############ ");
             List<DigWrapper> digs = Stage2Request.dig(client.getLicenses(), digPointsStack);
 
             for (DigWrapper dig: digs) {
+//                if (dig.getDigRequest().getLicenseID() >= 7 && dig.getDigRequest().getLicenseID() <= 10)
+//                System.out.println("!!! - Dig: " + dig);
+
                 //Если что-то выкопали (может и пустое)
                 if (dig.getTreasures() != null) {
                     int licId = dig.getDigRequest().getLicenseID();
@@ -92,7 +100,9 @@ public class Main {
                             .filter(item -> item.getId() == licId)
                             .findFirst()
                             .get();
+//                    if (license.getId() >= 7 && license.getId() <= 10) System.out.println("lic before dig: " + license);
                     license.setDigUsed(license.getDigUsed() + 1);
+//                    if (license.getId() >= 7 && license.getId() <= 10) System.out.println("lic after dig: " + license);
 
                     //находим точку в списке и обновляем её
                     Point point = digPoints.stream()
@@ -119,6 +129,9 @@ public class Main {
                 }
             }
 
+            stop++;
+//            if (stop >= 4) break;
+//            System.out.println(" ####################### ");
         }
 
 
