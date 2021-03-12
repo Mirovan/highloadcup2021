@@ -1,6 +1,7 @@
 package ru.bigint.stage2;
 
 import ru.bigint.model.Point;
+import ru.bigint.model.Stage2Request;
 import ru.bigint.model.request.ExploreRequest;
 import ru.bigint.model.response.Explore;
 

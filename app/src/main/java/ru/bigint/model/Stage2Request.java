@@ -1,4 +1,4 @@
-package ru.bigint.stage2;
+package ru.bigint.model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,6 +12,8 @@ import ru.bigint.model.request.DigRequest;
 import ru.bigint.model.request.ExploreRequest;
 import ru.bigint.model.response.Explore;
 import ru.bigint.model.response.License;
+import ru.bigint.stage2.AlgoUtils;
+import ru.bigint.stage2.Req;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -19,6 +21,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.CompletableFuture;
@@ -32,6 +35,9 @@ public class Stage2Request {
     private static HttpClient httpClient = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(2))
             .build();
+
+    private static ExecutorService threadPoolExplore = Executors.newFixedThreadPool(Constant.threadsCountExplore);
+    private static ExecutorService threadPoolDig = Executors.newFixedThreadPool(Constant.threadsCountDig);
 
 
     public static Explore explore(ExploreRequest requestObj) {
@@ -246,36 +252,19 @@ public class Stage2Request {
      * Возвращает список точек с сокровищами
      */
     public static List<Point> getPoints() {
-        List<Point> res = new ArrayList<>();
-
-        int treasureCount = 0;
-
         //Формирую список N-запросов для всей карты
         List<CompletableFuture<List<Point>>> cfList = new ArrayList<>();
         for (int x = 0; x < Constant.maxExploreX; x++) {
             int finalX = x;
             CompletableFuture<List<Point>> cf = new CompletableFuture<>();
-            cf.completeAsync(() -> {
-                List<Point> list = AlgoUtils.binSearch(finalX, 1, Constant.mapSize);
-                return list;
-            });
+            cf.completeAsync(() -> AlgoUtils.binSearch(finalX, 1, Constant.mapSize), threadPoolExplore);
             cfList.add(cf);
-
-            //Каждые N-раз отправляем запросы на сервер
-            if (x % Constant.threadsCountExplore == 0) {
-                List<List<Point>> pointLists = cfList.stream()
-                        .map(CompletableFuture::join)
-                        .collect(Collectors.toList());
-
-                for (List<Point> list : pointLists) {
-                    res.addAll(list);
-                    Integer tresByX = list.stream().map(Point::getTreasuresCount).reduce(0, Integer::sum);
-                    treasureCount = treasureCount + tresByX;
-                }
-
-                cfList.clear();
-            }
         }
+
+        List<Point> res = cfList.stream()
+                .map(CompletableFuture::join)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
 
         return res;
     }
@@ -285,11 +274,6 @@ public class Stage2Request {
      * Асинхронные раскопки
      */
     public static List<DigWrapper> dig(List<License> licenses, Stack<Point> digPointStack) {
-        ActionEnum actionEnum = ActionEnum.DIG;
-        String url = Constant.SERVER_URI + actionEnum.getRequest();
-
-        List<DigWrapper> res = new ArrayList<>();
-
         //Формируем список с объектами-запросами
         List<DigRequest> requestList = new ArrayList<>();
         for (License license : licenses) {
@@ -302,40 +286,20 @@ public class Stage2Request {
             }
         }
 
-        ExecutorService threadPool = Executors.newFixedThreadPool(10);
-
         //список с асинхронными запросами
         List<CompletableFuture<DigWrapper>> listCf = new ArrayList<>();
         for (int i = 0; i < requestList.size(); i++) {
             DigRequest requestObj = requestList.get(i);
 
-//            ExecutorService threadPool = Executors.newFixedThreadPool(10);
-            //Отправляем http-запрос
             CompletableFuture<DigWrapper> cf = new CompletableFuture<>();
 
-            cf.completeAsync(() -> {
-                return Req.dig(requestObj, licenses);
-            }, threadPool);
+            cf.completeAsync(() -> Req.dig(requestObj, licenses), threadPoolDig);
             listCf.add(cf);
         }
 
-
-//        for (int i = 0; i < listCf.size(); i++) {
-//            if (i % Constant.threadsCountDig == 0) {
-//                List<DigWrapper> digListRes = listCf.stream()
-//                        .map(CompletableFuture::join)
-//                        .collect(Collectors.toList());
-//
-//                res.addAll(digListRes);
-//
-//                listCf.clear();
-//            }
-//        }
-
-        res = listCf.stream()
+        List<DigWrapper> res = listCf.stream()
                 .map(CompletableFuture::join)
                 .collect(Collectors.toList());
-
 
         return res;
     }

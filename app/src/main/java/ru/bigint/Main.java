@@ -4,7 +4,7 @@ import ru.bigint.model.Client;
 import ru.bigint.model.DigWrapper;
 import ru.bigint.model.Point;
 import ru.bigint.model.response.License;
-import ru.bigint.stage2.Stage2Request;
+import ru.bigint.model.Stage2Request;
 
 import java.util.ArrayList;
 import java.util.Arrays;
