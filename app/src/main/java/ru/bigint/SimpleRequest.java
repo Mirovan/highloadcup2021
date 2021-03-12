@@ -1,19 +1,14 @@
-package ru.bigint.model;
+package ru.bigint;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ru.bigint.ActionEnum;
-import ru.bigint.Constant;
-import ru.bigint.LoggerUtil;
-import ru.bigint.MapperUtils;
+import ru.bigint.model.AlgoUtils;
 import ru.bigint.model.DigWrapper;
 import ru.bigint.model.Point;
 import ru.bigint.model.request.DigRequest;
 import ru.bigint.model.request.ExploreRequest;
 import ru.bigint.model.response.Explore;
 import ru.bigint.model.response.License;
-import ru.bigint.stage2.AlgoUtils;
-import ru.bigint.stage2.Req;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -30,7 +25,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-public class Stage2Request {
+public class SimpleRequest {
 
     private static HttpClient httpClient = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(2))
@@ -195,6 +190,65 @@ public class Stage2Request {
     }
 
 
+    public static DigWrapper dig(DigRequest requestObj, List<License> licenses) {
+        ActionEnum actionEnum = ActionEnum.DIG;
+        String url = Constant.SERVER_URI + actionEnum.getRequest();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestBody = null;
+        try {
+            requestBody = objectMapper.writeValueAsString(requestObj);
+        } catch (JsonProcessingException e) {
+//                Logger.log(e.getMessage());
+        }
+
+        HttpRequest httpRequest =
+                HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .header("Content-Type", "application/json; charset=UTF-8")
+                        .timeout(Duration.ofSeconds(5))
+                        .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                        .build();
+
+        DigWrapper res = null;
+        try {
+            res = httpClient
+                    .sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString())
+                    .thenApply(httpResponse -> {
+                        String[] treasures = null;
+                        if (httpResponse != null) {
+                            License lic = licenses.stream()
+                                    .filter(item -> item.getId() == requestObj.getLicenseID())
+                                    .findFirst()
+                                    .get();
+                            //System.out.println(lic + "; " + requestObj.getLicenseID() + "; " + requestObj + "; Response Code: " + httpResponse.statusCode() + "; Body: " + httpResponse.body());
+                            LoggerUtil.logRequestResponse(actionEnum, " lic=" + lic.toString() + "; requestObj=" + requestObj.toString(), httpResponse);
+
+//                            if (requestObj.getLicenseID() >= 7 && requestObj.getLicenseID() <= 10) {
+//                            System.out.println(lic + "; " + requestObj.getLicenseID() + "; " + requestObj + "; Response Code: " + httpResponse.statusCode() + "; Body: " + httpResponse.body());
+//                            }
+
+                            if (httpResponse.statusCode() == 200) {
+                                MapperUtils<String[]> resultMapper = new MapperUtils<>(String[].class);
+                                treasures = resultMapper.convertToObject(httpResponse.body());
+                            } else if (httpResponse.statusCode() == 404 || httpResponse.statusCode() == 403) {
+                                treasures = new String[]{};
+                            }
+                        } else {
+                            LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null");
+                        }
+
+                        return new DigWrapper(requestObj, treasures);
+                    }).get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        return res;
+    }
+
+
+
     public static Integer[] cash(String requestObj) {
         ActionEnum actionEnum = ActionEnum.CASH;
 
@@ -247,60 +301,4 @@ public class Stage2Request {
         return res;
     }
 
-
-    /**
-     * Возвращает список точек с сокровищами
-     */
-    public static List<Point> getPoints() {
-        //Формирую список N-запросов для всей карты
-        List<CompletableFuture<List<Point>>> cfList = new ArrayList<>();
-        for (int x = 0; x < Constant.maxExploreX; x++) {
-            int finalX = x;
-            CompletableFuture<List<Point>> cf = new CompletableFuture<>();
-            cf.completeAsync(() -> AlgoUtils.binSearch(finalX, 1, Constant.mapSize), threadPoolExplore);
-            cfList.add(cf);
-        }
-
-        List<Point> res = cfList.stream()
-                .map(CompletableFuture::join)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
-
-        return res;
-    }
-
-
-    /**
-     * Асинхронные раскопки
-     */
-    public static List<DigWrapper> dig(List<License> licenses, Stack<Point> digPointStack) {
-        //Формируем список с объектами-запросами
-        List<DigRequest> requestList = new ArrayList<>();
-        for (License license : licenses) {
-            for (int i = license.getDigUsed(); i < license.getDigAllowed(); i++) {
-                if (!digPointStack.isEmpty()) {
-                    Point point = digPointStack.pop();
-                    DigRequest digRequest = new DigRequest(license.getId(), point.getX(), point.getY(), point.getDepth()+1);
-                    requestList.add(digRequest);
-                }
-            }
-        }
-
-        //список с асинхронными запросами
-        List<CompletableFuture<DigWrapper>> listCf = new ArrayList<>();
-        for (int i = 0; i < requestList.size(); i++) {
-            DigRequest requestObj = requestList.get(i);
-
-            CompletableFuture<DigWrapper> cf = new CompletableFuture<>();
-
-            cf.completeAsync(() -> Req.dig(requestObj, licenses), threadPoolDig);
-            listCf.add(cf);
-        }
-
-        List<DigWrapper> res = listCf.stream()
-                .map(CompletableFuture::join)
-                .collect(Collectors.toList());
-
-        return res;
-    }
 }

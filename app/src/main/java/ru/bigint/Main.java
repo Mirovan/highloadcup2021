@@ -4,7 +4,6 @@ import ru.bigint.model.Client;
 import ru.bigint.model.DigWrapper;
 import ru.bigint.model.Point;
 import ru.bigint.model.response.License;
-import ru.bigint.model.Stage2Request;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +24,7 @@ public class Main {
         client.setMoney(new ArrayList<>());
 
         //получаем все точки с сокровищами
-        List<Point> points = Stage2Request.getPoints();
+        List<Point> points = MultiRequest.getPoints();
         LoggerUtil.log("Points with treasures: " + points.size());
 
 //        License license = null;
@@ -61,7 +60,7 @@ public class Main {
 
                 License license;
                 do {
-                    license = Stage2Request.license(money);
+                    license = SimpleRequest.license(money);
                 } while (license == null);
 
                 if (license != null) licensesNew.add(license);
@@ -86,7 +85,7 @@ public class Main {
 
             //копаем
 //            System.out.println(" ########### DIG ############ ");
-            List<DigWrapper> digs = Stage2Request.dig(client.getLicenses(), digPointsStack);
+            List<DigWrapper> digs = MultiRequest.dig(client.getLicenses(), digPointsStack);
 
             for (DigWrapper dig: digs) {
 //                if (dig.getDigRequest().getLicenseID() >= 7 && dig.getDigRequest().getLicenseID() <= 10)
@@ -122,7 +121,7 @@ public class Main {
                     for (String treasure : dig.getTreasures()) {
                         Integer[] cash;
                         do {
-                            cash = Stage2Request.cash(treasure);
+                            cash = SimpleRequest.cash(treasure);
                         } while (cash == null);
                         client.getMoney().addAll(Arrays.asList(cash));
                     }
