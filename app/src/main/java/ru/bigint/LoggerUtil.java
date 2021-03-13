@@ -5,7 +5,9 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public class LoggerUtil {
-    private static ActionEnum[] LOGGER_LEVEL = {};
+    private static long TIME;
+
+    private static ActionEnum[] LOGGER_LEVEL = {ActionEnum.LICENSES};
 
     public static void log(ActionEnum actionEnum, Object msg) {
         for (ActionEnum item: LOGGER_LEVEL) {
@@ -13,6 +15,15 @@ public class LoggerUtil {
                 System.out.println("Action: " + actionEnum + "; " + msg);
             }
         }
+    }
+
+    public static void logStartTime() {
+        TIME = System.currentTimeMillis();
+    }
+
+    public static void logFinishTime(String msg) {
+        long time = System.currentTimeMillis();
+        System.out.println( msg + " " + (float) (time - TIME)/(1000.0f) );
     }
 
     public static void log(Object msg) {

@@ -213,14 +213,16 @@ public class SimpleRequest {
                             //System.out.println(lic + "; " + requestObj.getLicenseID() + "; " + requestObj + "; Response Code: " + httpResponse.statusCode() + "; Body: " + httpResponse.body());
                             LoggerUtil.logRequestResponse(actionEnum, " lic=" + lic.toString() + "; requestObj=" + requestObj.toString(), httpResponse);
 
-//                            if (requestObj.getLicenseID() >= 7 && requestObj.getLicenseID() <= 10) {
-//                            System.out.println(lic + "; " + requestObj.getLicenseID() + "; " + requestObj + "; Response Code: " + httpResponse.statusCode() + "; Body: " + httpResponse.body());
+//                            if (requestObj.getLicenseID() >= 100 && requestObj.getLicenseID() <= 110) {
+//                                System.out.println(lic + "; " + requestObj.getLicenseID() + "; " + requestObj + "; Response Code: " + httpResponse.statusCode() + "; Body: " + httpResponse.body());
 //                            }
-
                             if (httpResponse.statusCode() == 200) {
                                 MapperUtils<String[]> resultMapper = new MapperUtils<>(String[].class);
                                 treasures = resultMapper.convertToObject(httpResponse.body());
                             } else if (httpResponse.statusCode() == 404 || httpResponse.statusCode() == 403) {
+                                treasures = new String[]{};
+                            } else if (httpResponse.statusCode() == 422) {
+                                LoggerUtil.log("Dig Error: " + lic + "; " + requestObj.getLicenseID() + "; " + requestObj + "; Response Code: " + httpResponse.statusCode() + "; Body: " + httpResponse.body());
                                 treasures = new String[]{};
                             }
                         } else {

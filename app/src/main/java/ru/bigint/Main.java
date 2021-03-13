@@ -24,7 +24,7 @@ public class Main {
         client.setMoney(new ArrayList<>());
 
         //получаем все точки с сокровищами
-        List<Point> points = MultiRequest.getPoints();
+        List<Point> points = Actions.getPoints();
         LoggerUtil.log("Points with treasures: " + points.size());
 
 //        License license = null;
@@ -36,37 +36,8 @@ public class Main {
 
         //Пока стек с точками не пустой
         while (!pointStack.empty()) {
-            //Убираем истекшие лицензии
-            List<License> licencesUpdate = new ArrayList<>();
-            for (License lic: client.getLicenses()) {
-                if (lic.getDigUsed() < lic.getDigAllowed()) {
-                    licencesUpdate.add(lic);
-                }
-            }
-            client.setLicenses(licencesUpdate);
-
-            //Получаем новые лицензии - в одном потоке/синхронно - пока все лицензии не получим
-            List<License> licensesNew = new ArrayList<>();
-            for (int i = client.getLicenses().size(); i < Constant.maxLicencesCount; i++) {
-                Integer[] money = new Integer[]{};
-                //Формируем список монет для получения платной лицензии
-                if (client.getMoney().size() >= Constant.licensePaymentCount) {
-                    money = new Integer[Constant.licensePaymentCount];
-                    for (int j = 0; j < Constant.licensePaymentCount; j++) {
-                        money[j] = client.getMoney().get(0);
-                        client.getMoney().remove(0);
-                    }
-                }
-
-                License license;
-                do {
-                    license = SimpleRequest.license(money);
-                } while (license == null);
-
-                if (license != null) licensesNew.add(license);
-            }
-            client.getLicenses().addAll(licensesNew);
-
+            //Обновляем лицензии
+            Actions.updateLicenses(client);
 
             //List - коллекция для последующего исследования (после раскопок), stack - используем для понимания в каких точках копаем
             List<Point> digPoints = new ArrayList<>();
@@ -85,7 +56,9 @@ public class Main {
 
             //копаем
 //            System.out.println(" ########### DIG ############ ");
-            List<DigWrapper> digs = MultiRequest.dig(client.getLicenses(), digPointsStack);
+            List<DigWrapper> digs = Actions.dig(client.getLicenses(), digPointsStack);
+
+            LoggerUtil.logStartTime();
 
             for (DigWrapper dig: digs) {
 //                if (dig.getDigRequest().getLicenseID() >= 7 && dig.getDigRequest().getLicenseID() <= 10)
@@ -128,7 +101,10 @@ public class Main {
                 }
             }
 
-            stop++;
+            LoggerUtil.logFinishTime("Cash time:");
+
+
+//            stop++;
 //            if (stop >= 4) break;
 //            System.out.println(" ####################### ");
         }

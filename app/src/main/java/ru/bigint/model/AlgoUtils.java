@@ -27,6 +27,7 @@ public class AlgoUtils {
         if (leftCount != 0) {
             if (left == middleIndex) {
                 res.add(new Point(x, left, 0, leftCount));
+//                res.add(new Point(left, x, 0, leftCount));
             } else {
                 res.addAll(binSearch(x, left, middleIndex));
             }
@@ -34,6 +35,7 @@ public class AlgoUtils {
         if (rightCount != 0) {
             if (right == middleIndex+1) {
                 res.add(new Point(x, right, 0, rightCount));
+//                res.add(new Point(right, x, 0, rightCount));
             } else {
                 res.addAll(binSearch(x, middleIndex+1, right));
             }

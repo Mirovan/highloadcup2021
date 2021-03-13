@@ -1,0 +1,159 @@
+package ru.bigint;
+
+import ru.bigint.model.AlgoUtils;
+import ru.bigint.model.Client;
+import ru.bigint.model.DigWrapper;
+import ru.bigint.model.Point;
+import ru.bigint.model.request.DigRequest;
+import ru.bigint.model.response.License;
+
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
+
+public class Actions {
+
+    private static ExecutorService threadPoolExplore = Executors.newFixedThreadPool(Constant.threadsCountExplore);
+    private static ExecutorService threadPoolDig = Executors.newFixedThreadPool(Constant.threadsCountDig);
+    private static ExecutorService threadPoolLicense = Executors.newFixedThreadPool(Constant.threadsCountLicense);
+
+
+    /**
+     * Возвращает список точек с сокровищами
+     */
+    public static List<Point> getPoints() {
+        LoggerUtil.logStartTime();
+
+        //Формирую список N-запросов для всей карты
+        List<CompletableFuture<List<Point>>> cfList = new ArrayList<>();
+        for (int x = 0; x < Constant.maxExploreX; x++) {
+            int finalX = x;
+            CompletableFuture<List<Point>> cf = new CompletableFuture<>();
+            cf.completeAsync(() -> AlgoUtils.binSearch(finalX, 1, Constant.mapSize), threadPoolExplore);
+            cfList.add(cf);
+        }
+
+        List<Point> res = cfList.stream()
+                .map(CompletableFuture::join)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+
+        LoggerUtil.logFinishTime("Get Points time:");
+        return res;
+    }
+
+
+    /**
+     * Асинхронные раскопки
+     */
+    public static List<DigWrapper> dig(List<License> licenses, Stack<Point> digPointStack) {
+        LoggerUtil.logStartTime();
+
+        //Формируем список с объектами-запросами
+        List<DigRequest> requestList = new ArrayList<>();
+        for (License license : licenses) {
+            for (int i = license.getDigUsed(); i < license.getDigAllowed(); i++) {
+                if (!digPointStack.isEmpty()) {
+                    Point point = digPointStack.pop();
+                    DigRequest digRequest = new DigRequest(license.getId(), point.getX(), point.getY(), point.getDepth()+1);
+                    requestList.add(digRequest);
+                }
+            }
+        }
+
+        //список с асинхронными запросами
+        List<CompletableFuture<DigWrapper>> listCf = new ArrayList<>();
+        for (int i = 0; i < requestList.size(); i++) {
+            DigRequest requestObj = requestList.get(i);
+
+            CompletableFuture<DigWrapper> cf = new CompletableFuture<>();
+
+            cf.completeAsync(() -> SimpleRequest.dig(requestObj, licenses), threadPoolDig);
+            listCf.add(cf);
+        }
+
+        List<DigWrapper> res = listCf.stream()
+                .map(CompletableFuture::join)
+                .collect(Collectors.toList());
+
+        LoggerUtil.logFinishTime("Dig time:");
+
+        return res;
+    }
+
+
+    /**
+     * Получение и обновление лицензий
+     * */
+    public static void updateLicenses(Client client) {
+        LoggerUtil.logStartTime();
+
+        //Убираем истекшие лицензии
+        List<License> licencesUpdate = new ArrayList<>();
+        for (License lic: client.getLicenses()) {
+            if (lic.getDigUsed() < lic.getDigAllowed()) {
+                licencesUpdate.add(lic);
+            }
+        }
+        client.setLicenses(licencesUpdate);
+
+        //список с асинхронными запросами
+        List<CompletableFuture<License>> listCf = new ArrayList<>();
+        for (int i = client.getLicenses().size(); i < Constant.maxLicencesCount; i++) {
+            //Бесплатная лицензия
+            Integer[] requestObj = new Integer[]{};
+
+            if (client.getMoney().size() >= Constant.paidForLicense) {
+                requestObj = new Integer[Constant.paidForLicense];
+                for (int j = 0; j < Constant.paidForLicense; j++) {
+                    requestObj[j] = client.getMoney().get(0);
+                    client.getMoney().remove(0);
+                }
+            }
+
+            CompletableFuture<License> cf = new CompletableFuture<>();
+
+            Integer[] finalRequestObj = requestObj;
+            cf.completeAsync(() -> SimpleRequest.license(finalRequestObj), threadPoolLicense);
+            listCf.add(cf);
+        }
+
+        List<License> licensesNew = listCf.stream()
+                .map(CompletableFuture::join)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        client.getLicenses().addAll(licensesNew);
+
+        LoggerUtil.logFinishTime("Get/Update Licenses time:");
+
+/*
+        for (int i = client.getLicenses().size(); i < Constant.maxLicencesCount; i++) {
+            //Бесплатная лицензия
+            Integer[] money = new Integer[]{};
+
+//            if (i < Constant.paidlicenseCount) {
+                //Формируем список монет для получения платной лицензии
+                if (client.getMoney().size() >= Constant.paidForLicense) {
+                    money = new Integer[Constant.paidForLicense];
+                    for (int j = 0; j < Constant.paidForLicense; j++) {
+                        money[j] = client.getMoney().get(0);
+                        client.getMoney().remove(0);
+                    }
+                }
+//            }
+
+            License license;
+            do {
+                license = SimpleRequest.license(money);
+            } while (license == null);
+
+            if (license != null) licensesNew.add(license);
+        }
+        client.getLicenses().addAll(licensesNew);
+*/
+    }
+
+}
