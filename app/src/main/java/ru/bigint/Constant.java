@@ -1,7 +1,7 @@
 package ru.bigint;
 
 public class Constant {
-    public final static String version = "stage2_007_get_licenses_async";
+    public final static String version = "test_keep_treasures";
 
     //Общий размер карты
     public final static int mapSize = 3499;
@@ -13,6 +13,8 @@ public class Constant {
     public final static int threadsCountExplore = 30;
 
     public final static int threadsCountLicense = 10;
+
+    public final static int threadsCountCash = 20;
 
     //Максимальный X для просмотра карты построчно (по столбцам)
     public final static int maxExploreX = 65;

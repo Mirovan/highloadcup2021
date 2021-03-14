@@ -2,6 +2,7 @@ package ru.bigint;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import ru.bigint.model.CashWrapper;
 import ru.bigint.model.DigWrapper;
 import ru.bigint.model.request.DigRequest;
 import ru.bigint.model.request.ExploreRequest;
@@ -240,7 +241,7 @@ public class SimpleRequest {
 
 
 
-    public static Integer[] cash(String requestObj) {
+    public static CashWrapper cash(String requestObj) {
         ActionEnum actionEnum = ActionEnum.CASH;
 
         String url = Constant.SERVER_URI + actionEnum.getRequest();
@@ -262,7 +263,7 @@ public class SimpleRequest {
                         .build();
 
         //Отправляем http-запрос
-        CompletableFuture<Integer[]> cf = httpClient
+        CompletableFuture<CashWrapper> cf = httpClient
                 .sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString())
                 .thenApply(httpResponse -> {
                     Integer[] responseObj = null;
@@ -271,18 +272,16 @@ public class SimpleRequest {
                         if (httpResponse.statusCode() == 200) {
                             MapperUtils<Integer[]> resultMapper = new MapperUtils<>(Integer[].class);
                             responseObj = resultMapper.convertToObject(httpResponse.body());
-                        } else if (httpResponse.statusCode() == 404) {
-                            responseObj = new Integer[]{};
                         }
                     } else {
                         LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null");
                     }
 
-                    return responseObj;
+                    return new CashWrapper(requestObj, responseObj);
                 });
 
 
-        Integer[] res = null;
+        CashWrapper res = null;
         try {
             res = cf.get();
         } catch (InterruptedException | ExecutionException e) {

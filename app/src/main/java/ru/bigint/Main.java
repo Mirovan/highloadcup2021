@@ -34,6 +34,8 @@ public class Main {
 
         int stop = 0;
 
+        List<String> treasures = new ArrayList<>();
+
         //Пока стек с точками не пустой
         while (!pointStack.empty()) {
             //Обновляем лицензии
@@ -57,8 +59,6 @@ public class Main {
             //копаем
 //            System.out.println(" ########### DIG ############ ");
             List<DigWrapper> digs = Actions.dig(client.getLicenses(), digPointsStack);
-
-            LoggerUtil.logStartTime();
 
             for (DigWrapper dig: digs) {
 //                if (dig.getDigRequest().getLicenseID() >= 7 && dig.getDigRequest().getLicenseID() <= 10)
@@ -90,18 +90,20 @@ public class Main {
                         pointStack.add(point);
                     }
 
-                    //Меняем сокровища
+                    //Сохраняем в коллекцию сокровища
                     for (String treasure : dig.getTreasures()) {
-                        Integer[] cash;
-                        do {
-                            cash = SimpleRequest.cash(treasure);
-                        } while (cash == null);
-                        client.getMoney().addAll(Arrays.asList(cash));
+                        treasures.add(treasure);
+//                        Integer[] cash;
+//                        do {
+//                            cash = SimpleRequest.cash(treasure);
+//                        } while (cash == null);
+//                        client.getMoney().addAll(Arrays.asList(cash));
                     }
                 }
             }
 
-            LoggerUtil.logFinishTime("Cash time:");
+            List<Integer> money = Actions.cash(treasures);
+            client.getMoney().addAll(money);
 
 
 //            stop++;
