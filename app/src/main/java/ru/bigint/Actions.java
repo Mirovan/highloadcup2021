@@ -155,7 +155,8 @@ public class Actions {
 
         //Убираем из коллекции сокровищ то сокровище которое обменяли на деньги
         for (CashWrapper cashWrapper: res) {
-            treasures.remove(cashWrapper.getRequest());
+            //ToDo: переделать на HashMap
+            if (treasures!= null && treasures.contains(cashWrapper.getRequest())) treasures.remove(cashWrapper.getRequest());
         }
 
         LoggerUtil.logFinishTime("Cash time:");

@@ -56,8 +56,9 @@ public class Main {
             }
 
 
+            LoggerUtil.log("Treasures before dig: " + treasures.size());
+
             //копаем
-//            System.out.println(" ########### DIG ############ ");
             List<DigWrapper> digs = Actions.dig(client.getLicenses(), digPointsStack);
 
             for (DigWrapper dig: digs) {
@@ -105,12 +106,15 @@ public class Main {
             List<Integer> money = Actions.cash(treasures);
             client.getMoney().addAll(money);
 
+            LoggerUtil.log("Treasures after dig: " + treasures.size());
+
 
 //            stop++;
 //            if (stop >= 4) break;
 //            System.out.println(" ####################### ");
         }
 
+        LoggerUtil.log("FINISH");
 
     }
 
