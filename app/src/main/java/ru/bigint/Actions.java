@@ -157,13 +157,14 @@ public class Actions {
         for (CashWrapper cashWrapper: res) {
             //ToDo: переделать на HashMap
             if (treasures!= null
+                    && cashWrapper != null
                     && cashWrapper.getRequest() != null
                     && treasures.contains(cashWrapper.getRequest())) treasures.remove(cashWrapper.getRequest());
         }
 
         LoggerUtil.logFinishTime("Cash time:");
         return res.stream()
-                .filter(item -> item.getResponse() != null)
+                .filter(item -> item != null && item.getResponse() != null)
                 .map(CashWrapper::getResponse)
                 .flatMap(Stream::of)
                 .collect(Collectors.toList());
