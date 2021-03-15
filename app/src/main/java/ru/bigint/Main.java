@@ -8,6 +8,7 @@ import ru.bigint.model.response.Explore;
 import ru.bigint.model.response.License;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Stack;
 
@@ -28,8 +29,19 @@ public class Main {
         List<Point> points = Actions.explorePoints();
         LoggerUtil.log("Points with treasures: " + points.size());
 
+        String st = "";
+        for (Point p: points) {
+            st += p.getX() + "," + p.getY() + ",0,"+p.getTreasuresCount() + ";";
+        }
+
+        System.out.println(st);
+
+
+
+/*
         Stack<Point> pointStack = new Stack<>();
         pointStack.addAll(points);
+
 
         int stop = 0;
 
@@ -106,6 +118,7 @@ public class Main {
 //            if (stop >= 4) break;
 //            System.out.println(" ####################### ");
         }
+*/
 
         LoggerUtil.log("FINISH");
 

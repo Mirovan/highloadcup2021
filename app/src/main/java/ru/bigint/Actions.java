@@ -32,7 +32,7 @@ public class Actions {
         for (int x = 0; x < Constant.maxExploreX; x++) {
             int finalX = x;
             CompletableFuture<List<Point>> cf = new CompletableFuture<>();
-            cf.completeAsync(() -> AlgoUtils.binSearch(finalX, 1, Constant.mapSize), threadPoolExplore);
+            cf.completeAsync(() -> AlgoUtils.binSearch(finalX, 0, Constant.mapSize), threadPoolExplore);
             cfList.add(cf);
         }
 
