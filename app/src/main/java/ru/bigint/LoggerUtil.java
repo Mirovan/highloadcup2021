@@ -23,7 +23,7 @@ public class LoggerUtil {
 
     public static void logFinishTime(String msg) {
         long time = System.currentTimeMillis();
-        System.out.println( msg + " " + (float) (time - TIME)/(1000.0f) );
+//        System.out.println( msg + " " + (float) (time - TIME)/(1000.0f) );
     }
 
     public static void log(Object msg) {

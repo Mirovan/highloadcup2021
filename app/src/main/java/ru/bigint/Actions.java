@@ -22,8 +22,10 @@ public class Actions {
     /**
      * Возвращает список точек с сокровищами
      */
-    public static List<Point> getPoints() {
+    public static List<Point> explorePoints() {
         LoggerUtil.logStartTime();
+        long time = System.currentTimeMillis();
+
 
         //Формирую список N-запросов для всей карты
         List<CompletableFuture<List<Point>>> cfList = new ArrayList<>();
@@ -40,6 +42,7 @@ public class Actions {
                 .collect(Collectors.toList());
 
         LoggerUtil.logFinishTime("Get Points time:");
+        System.out.println( (float) (System.currentTimeMillis() - time)/(1000.0f) );
         return res;
     }
 

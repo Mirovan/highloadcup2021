@@ -64,7 +64,6 @@ public class SimpleRequest {
                     return responseObj;
                 });
 
-
         Explore res = null;
         try {
             res = cf.get();

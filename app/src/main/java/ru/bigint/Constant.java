@@ -1,7 +1,7 @@
 package ru.bigint;
 
 public class Constant {
-    public final static String version = "stage2_008_cash_async";
+    public final static String version = "stage2_008_select_good_explore_areas";
 
     //Общий размер карты
     public final static int mapSize = 3499;
@@ -17,7 +17,10 @@ public class Constant {
     public final static int threadsCountCash = 40;
 
     //Максимальный X для просмотра карты построчно (по столбцам)
-    public final static int maxExploreX = 135;
+    public final static int maxExploreX = 2000;
+
+    //какую область стоит рассматривать для поиска, не меннее сколько сикровищ олжно в ней быть
+    public final static int goodExploreAreaCount = 50;
 
     //Максимальное число лицензий (по условию может быть только 10 активных лицензий)
     public final static int maxLicencesCount = 10;

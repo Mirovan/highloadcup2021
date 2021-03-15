@@ -3,10 +3,11 @@ package ru.bigint;
 import ru.bigint.model.Client;
 import ru.bigint.model.DigWrapper;
 import ru.bigint.model.Point;
+import ru.bigint.model.request.ExploreRequest;
+import ru.bigint.model.response.Explore;
 import ru.bigint.model.response.License;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 
@@ -24,10 +25,8 @@ public class Main {
         client.setMoney(new ArrayList<>());
 
         //получаем все точки с сокровищами
-        List<Point> points = Actions.getPoints();
+        List<Point> points = Actions.explorePoints();
         LoggerUtil.log("Points with treasures: " + points.size());
-
-//        License license = null;
 
         Stack<Point> pointStack = new Stack<>();
         pointStack.addAll(points);
@@ -45,7 +44,7 @@ public class Main {
             List<Point> digPoints = new ArrayList<>();
             Stack<Point> digPointsStack = new Stack<>();
             int digPointCount = client.getLicenses().stream()
-                    .reduce(0, (res, item) -> res + (item.getDigAllowed()-item.getDigUsed()), Integer::sum);
+                    .reduce(0, (res, item) -> res + (item.getDigAllowed() - item.getDigUsed()), Integer::sum);
 
             for (int i = 0; i < digPointCount; i++) {
                 if (!pointStack.empty()) {
@@ -58,7 +57,7 @@ public class Main {
             //копаем
             List<DigWrapper> digs = Actions.dig(client.getLicenses(), digPointsStack);
 
-            for (DigWrapper dig: digs) {
+            for (DigWrapper dig : digs) {
 //                if (dig.getDigRequest().getLicenseID() >= 7 && dig.getDigRequest().getLicenseID() <= 10)
 //                System.out.println("!!! - Dig: " + dig);
 
