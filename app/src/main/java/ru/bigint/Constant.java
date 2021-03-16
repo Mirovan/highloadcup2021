@@ -17,7 +17,7 @@ public class Constant {
     public final static int threadsCountCash = 40;
 
     //Максимальный X для просмотра карты построчно (по столбцам)
-    public final static int maxExploreX = 12;
+    public final static int maxExploreX = 10;
 
     //какую область стоит рассматривать для поиска, не меннее сколько сикровищ олжно в ней быть
     public final static int goodExploreAreaCount = 50;

@@ -1,6 +1,7 @@
 package ru.bigint;
 
 import ru.bigint.hardcode.Hardcode;
+import ru.bigint.model.CashWrapper;
 import ru.bigint.model.Client;
 import ru.bigint.model.DigWrapper;
 import ru.bigint.model.Point;
@@ -8,6 +9,7 @@ import ru.bigint.model.response.License;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 
@@ -26,18 +28,12 @@ public class Main {
 
         //получаем все точки с сокровищами
 //        List<Point> points = Hardcode.getPoints();
-        List<Point> points = Actions.explorePoints(213);
+        List<Point> points = Actions.explorePoints(0);
         LoggerUtil.log("Points with treasures: " + points.size());
 
-        String st = "";
-        for (Point p: points) {
-            st += p.getX() + "," + p.getY() + "-" + p.getTreasuresCount() + ";";
-        }
-
-        System.out.println(st);
+        String stRes = "";
 
 
-/*
         Stack<Point> pointStack = new Stack<>();
         pointStack.addAll(points);
 
@@ -69,9 +65,6 @@ public class Main {
             List<DigWrapper> digs = Actions.dig(client.getLicenses(), digPointsStack);
 
             for (DigWrapper dig : digs) {
-//                if (dig.getDigRequest().getLicenseID() >= 7 && dig.getDigRequest().getLicenseID() <= 10)
-//                System.out.println("!!! - Dig: " + dig);
-
                 //Если что-то выкопали (может и пустое)
                 if (dig.getTreasures() != null) {
                     int licId = dig.getDigRequest().getLicenseID();
@@ -80,9 +73,7 @@ public class Main {
                             .filter(item -> item.getId() == licId)
                             .findFirst()
                             .get();
-//                    if (license.getId() >= 7 && license.getId() <= 10) System.out.println("lic before dig: " + license);
                     license.setDigUsed(license.getDigUsed() + 1);
-//                    if (license.getId() >= 7 && license.getId() <= 10) System.out.println("lic after dig: " + license);
 
                     //находим точку в списке и обновляем её
                     Point point = digPoints.stream()
@@ -100,25 +91,25 @@ public class Main {
 
                     //Сохраняем в коллекцию сокровища
                     for (String treasure : dig.getTreasures()) {
-                        treasures.add(treasure);
-//                        Integer[] cash;
-//                        do {
-//                            cash = SimpleRequest.cash(treasure);
-//                        } while (cash == null);
-//                        client.getMoney().addAll(Arrays.asList(cash));
+                        CashWrapper cash;
+                        do {
+                            cash = SimpleRequest.cash(treasure);
+                        } while (cash == null);
+                        client.getMoney().addAll(Arrays.asList(cash.getResponse()));
+
+
+                        //Если разница между числом заработанных денег при обмене сокровища и глубине больше N
+                        if (cash.getResponse().length - point.getDepth() > 2) {
+                            stRes += point.getX() + "," + point.getY() + "-" + point.getDepth() + ";";
+                        }
                     }
                 }
             }
 
-            List<Integer> money = Actions.cash(treasures);
-            client.getMoney().addAll(money);
-
-//            stop++;
-//            if (stop >= 4) break;
-//            System.out.println(" ####################### ");
         }
 
-*/
+        System.out.println(stRes);
+
         LoggerUtil.log("FINISH");
 
     }
