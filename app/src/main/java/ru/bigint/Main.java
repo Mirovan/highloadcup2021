@@ -1,12 +1,14 @@
 package ru.bigint;
 
 import ru.bigint.hardcode.Hardcode;
+import ru.bigint.model.CashWrapper;
 import ru.bigint.model.Client;
 import ru.bigint.model.DigWrapper;
 import ru.bigint.model.Point;
 import ru.bigint.model.response.License;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 
@@ -73,6 +75,9 @@ public class Main {
                                     && item.getY() == dig.getDigRequest().getPosY())
                             .findFirst()
                             .get();
+
+//                    System.out.println(point);
+
                     point.setDepth(point.getDepth() + 1);
                     point.setTreasuresCount(point.getTreasuresCount() - dig.getTreasures().length);
 
@@ -83,18 +88,20 @@ public class Main {
 
                     //Сохраняем в коллекцию сокровища
                     for (String treasure : dig.getTreasures()) {
-                        treasures.add(treasure);
-//                        Integer[] cash;
-//                        do {
-//                            cash = SimpleRequest.cash(treasure);
-//                        } while (cash == null);
-//                        client.getMoney().addAll(Arrays.asList(cash));
+//                        treasures.add(treasure);
+                        CashWrapper cash;
+                        do {
+                            cash = SimpleRequest.cash(treasure);
+                        } while (cash == null);
+                        System.out.println(point + "=" +cash.getResponse().length);
+//                        System.out.println(point.getX() + "," + point.getY() + "," + point.getDepth() + "=" +cash.getResponse().length);
+                        client.getMoney().addAll(Arrays.asList(cash.getResponse()));
                     }
                 }
             }
 
-            List<Integer> money = Actions.cash(treasures);
-            client.getMoney().addAll(money);
+//            List<Integer> money = Actions.cash(treasures);
+//            client.getMoney().addAll(money);
 
         }
 

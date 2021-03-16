@@ -232,7 +232,7 @@ public class SimpleRequest {
                         return new DigWrapper(requestObj, treasures);
                     }).get();
         } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
 
         return res;
