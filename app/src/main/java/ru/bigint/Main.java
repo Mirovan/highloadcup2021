@@ -25,16 +25,9 @@ public class Main {
         client.setMoney(new ArrayList<>());
 
         //получаем все точки с сокровищами
-//        List<Point> points = Hardcode.getPoints();
-        List<Point> points = Actions.explorePoints(52);
+        List<Point> points = Hardcode.getPoints();
+//        List<Point> points = Actions.explorePoints(52);
         LoggerUtil.log("Points with treasures: " + points.size());
-
-        String st = "";
-        for (Point p: points) {
-            st += p.getX() + "," + p.getY() + "-" + p.getTreasuresCount() + ";";
-        }
-
-        System.out.println(st);
 
 
 /*
