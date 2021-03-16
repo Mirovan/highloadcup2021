@@ -6,7 +6,6 @@ import ru.bigint.model.DigWrapper;
 import ru.bigint.model.Point;
 import ru.bigint.model.response.License;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -30,12 +29,8 @@ public class Main {
         LoggerUtil.log("Points with treasures: " + points.size());
 
 
-/*
         Stack<Point> pointStack = new Stack<>();
         pointStack.addAll(points);
-
-
-        int stop = 0;
 
         List<String> treasures = new ArrayList<>();
 
@@ -62,9 +57,6 @@ public class Main {
             List<DigWrapper> digs = Actions.dig(client.getLicenses(), digPointsStack);
 
             for (DigWrapper dig : digs) {
-//                if (dig.getDigRequest().getLicenseID() >= 7 && dig.getDigRequest().getLicenseID() <= 10)
-//                System.out.println("!!! - Dig: " + dig);
-
                 //Если что-то выкопали (может и пустое)
                 if (dig.getTreasures() != null) {
                     int licId = dig.getDigRequest().getLicenseID();
@@ -73,9 +65,7 @@ public class Main {
                             .filter(item -> item.getId() == licId)
                             .findFirst()
                             .get();
-//                    if (license.getId() >= 7 && license.getId() <= 10) System.out.println("lic before dig: " + license);
                     license.setDigUsed(license.getDigUsed() + 1);
-//                    if (license.getId() >= 7 && license.getId() <= 10) System.out.println("lic after dig: " + license);
 
                     //находим точку в списке и обновляем её
                     Point point = digPoints.stream()
@@ -106,12 +96,9 @@ public class Main {
             List<Integer> money = Actions.cash(treasures);
             client.getMoney().addAll(money);
 
-//            stop++;
-//            if (stop >= 4) break;
-//            System.out.println(" ####################### ");
         }
 
-*/
+
         LoggerUtil.log("FINISH");
 
     }
