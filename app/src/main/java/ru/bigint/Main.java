@@ -8,10 +8,8 @@ import ru.bigint.model.Point;
 import ru.bigint.model.response.License;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Main {
 
@@ -31,7 +29,7 @@ public class Main {
         List<Point> points = Actions.explorePoints(0);
         LoggerUtil.log("Points with treasures: " + points.size());
 
-        String stRes = "";
+        Set<Point> resSet = new TreeSet<>();
 
 
         Stack<Point> pointStack = new Stack<>();
@@ -100,8 +98,8 @@ public class Main {
                             client.getMoney().addAll(Arrays.asList(cash.getResponse()));
 
                             //Если разница между числом заработанных денег при обмене сокровища и глубине больше N
-                            if (cash.getResponse().length - point.getDepth() > 2) {
-                                stRes += point.getX() + "," + point.getY() + "-" + point.getDepth() + ";";
+                            if (cash.getResponse().length - point.getDepth() > 5) {
+                                resSet.add(point);
                             }
                         }
                     }
@@ -110,6 +108,14 @@ public class Main {
 
         }
 
+
+//        for (int i=0; i<resSet.toArray().length; i++) {
+//            stRes += point.getX() + "," + point.getY() + "-" + point.getDepth() + ";";
+//        }
+
+        String stRes = resSet.stream()
+                .map(point -> point.getX() + "," + point.getY() + "-" + point.getDepth())
+                .collect(Collectors.joining(";"));
         System.out.println(stRes);
 
         LoggerUtil.log("FINISH");

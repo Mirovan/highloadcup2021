@@ -1,6 +1,8 @@
 package ru.bigint.model;
 
-public class Point {
+import java.util.Objects;
+
+public class Point implements Comparable<Point> {
     private int x;
     private int y;
     private int depth;
@@ -58,5 +60,14 @@ public class Point {
                 ", depth=" + depth +
                 ", treasuresCount=" + treasuresCount +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Point point) {
+        if (this.getX() != point.getX()) {
+            return Integer.compare(this.getX(), point.getX());
+        } else {
+            return Integer.compare(this.getY(), point.getY());
+        }
     }
 }
