@@ -18,22 +18,6 @@ import java.util.stream.Collectors;
 public class Hardcode {
 
     public static List<Point> getPoints() {
-//        String fileName = "/coord.txt";
-//        ClassLoader classLoader = Hardcode.class.getClassLoader();
-//        File file = new File(classLoader.getResource(fileName).getFile());
-
-//        List<Point> res = new ArrayList<>();
-//        List<String> lines;
-//        try {
-//            lines = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
-//            for (String line : lines) {
-//                String[] values = line.split(",");
-//                res.add(new Point(Integer.valueOf(values[0]), Integer.valueOf(values[1]), Integer.valueOf(values[2]), Integer.valueOf(values[3])));
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
         List<Point> res = new ArrayList<>();
         try (InputStream inputStream = Hardcode.class.getResourceAsStream("/coord.txt");
              BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {

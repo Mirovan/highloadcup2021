@@ -25,20 +25,19 @@ public class Main {
         client.setMoney(new ArrayList<>());
 
         //получаем все точки с сокровищами
-//        List<Point> points = Actions.explorePoints(52);
-//        Hardcode hadrcode = new Hardcode();
-        List<Point> points = Hardcode.getPoints();
+//        List<Point> points = Hardcode.getPoints();
+        List<Point> points = Actions.explorePoints(52);
         LoggerUtil.log("Points with treasures: " + points.size());
 
-//        String st = "";
-//        for (Point p: points) {
-//            st += p.getX() + "," + p.getY() + "-" + p.getTreasuresCount() + ";";
-//        }
-//
-//        System.out.println(st);
+        String st = "";
+        for (Point p: points) {
+            st += p.getX() + "," + p.getY() + "-" + p.getTreasuresCount() + ";";
+        }
+
+        System.out.println(st);
 
 
-
+/*
         Stack<Point> pointStack = new Stack<>();
         pointStack.addAll(points);
 
@@ -119,7 +118,7 @@ public class Main {
 //            System.out.println(" ####################### ");
         }
 
-
+*/
         LoggerUtil.log("FINISH");
 
     }
