@@ -93,9 +93,11 @@ public class Main {
                         do {
                             cash = SimpleRequest.cash(treasure);
                         } while (cash == null);
-                        System.out.println(point + "=" +cash.getResponse().length);
+                        if (cash.getResponse() != null) {
+                            System.out.println(point + "=" + cash.getResponse().length);
+                            client.getMoney().addAll(Arrays.asList(cash.getResponse()));
+                        }
 //                        System.out.println(point.getX() + "," + point.getY() + "," + point.getDepth() + "=" +cash.getResponse().length);
-                        client.getMoney().addAll(Arrays.asList(cash.getResponse()));
                     }
                 }
             }
