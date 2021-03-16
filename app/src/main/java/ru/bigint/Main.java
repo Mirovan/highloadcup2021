@@ -26,7 +26,7 @@ public class Main {
 
         //получаем все точки с сокровищами
 //        List<Point> points = Hardcode.getPoints();
-        List<Point> points = Actions.explorePoints(169);
+        List<Point> points = Actions.explorePoints(213);
         LoggerUtil.log("Points with treasures: " + points.size());
 
         String st = "";
