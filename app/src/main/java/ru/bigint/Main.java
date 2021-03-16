@@ -95,12 +95,14 @@ public class Main {
                         do {
                             cash = SimpleRequest.cash(treasure);
                         } while (cash == null);
-                        client.getMoney().addAll(Arrays.asList(cash.getResponse()));
 
+                        if (cash.getResponse() != null) {
+                            client.getMoney().addAll(Arrays.asList(cash.getResponse()));
 
-                        //Если разница между числом заработанных денег при обмене сокровища и глубине больше N
-                        if (cash.getResponse().length - point.getDepth() > 2) {
-                            stRes += point.getX() + "," + point.getY() + "-" + point.getDepth() + ";";
+                            //Если разница между числом заработанных денег при обмене сокровища и глубине больше N
+                            if (cash.getResponse().length - point.getDepth() > 2) {
+                                stRes += point.getX() + "," + point.getY() + "-" + point.getDepth() + ";";
+                            }
                         }
                     }
                 }
