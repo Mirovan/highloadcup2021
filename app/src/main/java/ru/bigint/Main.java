@@ -1,14 +1,13 @@
 package ru.bigint;
 
+import ru.bigint.hardcode.Hardcode;
 import ru.bigint.model.Client;
 import ru.bigint.model.DigWrapper;
 import ru.bigint.model.Point;
-import ru.bigint.model.request.ExploreRequest;
-import ru.bigint.model.response.Explore;
 import ru.bigint.model.response.License;
 
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.Stack;
 
@@ -26,19 +25,20 @@ public class Main {
         client.setMoney(new ArrayList<>());
 
         //получаем все точки с сокровищами
-        List<Point> points = Actions.explorePoints();
+//        List<Point> points = Actions.explorePoints(52);
+//        Hardcode hadrcode = new Hardcode();
+        List<Point> points = Hardcode.getPoints();
         LoggerUtil.log("Points with treasures: " + points.size());
 
-        String st = "";
-        for (Point p: points) {
-            st += p.getX() + "," + p.getY() + ",0,"+p.getTreasuresCount() + ";";
-        }
+//        String st = "";
+//        for (Point p: points) {
+//            st += p.getX() + "," + p.getY() + "-" + p.getTreasuresCount() + ";";
+//        }
+//
+//        System.out.println(st);
 
-        System.out.println(st);
 
 
-
-/*
         Stack<Point> pointStack = new Stack<>();
         pointStack.addAll(points);
 
@@ -118,7 +118,7 @@ public class Main {
 //            if (stop >= 4) break;
 //            System.out.println(" ####################### ");
         }
-*/
+
 
         LoggerUtil.log("FINISH");
 

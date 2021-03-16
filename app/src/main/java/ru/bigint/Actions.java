@@ -22,17 +22,17 @@ public class Actions {
     /**
      * Возвращает список точек с сокровищами
      */
-    public static List<Point> explorePoints() {
+    public static List<Point> explorePoints(int startX) {
         LoggerUtil.logStartTime();
         long time = System.currentTimeMillis();
 
 
         //Формирую список N-запросов для всей карты
         List<CompletableFuture<List<Point>>> cfList = new ArrayList<>();
-        for (int x = 0; x < Constant.maxExploreX; x++) {
-            int finalX = x;
+        for (int i = 0; i < Constant.maxExploreX; i++) {
             CompletableFuture<List<Point>> cf = new CompletableFuture<>();
-            cf.completeAsync(() -> AlgoUtils.binSearch(finalX, 0, Constant.mapSize), threadPoolExplore);
+            int x = i + startX;
+            cf.completeAsync(() -> AlgoUtils.binSearch(x, 0, Constant.mapSize), threadPoolExplore);
             cfList.add(cf);
         }
 
