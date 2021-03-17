@@ -25,7 +25,11 @@ public class Hardcode {
                     .collect(Collectors.toList());
             for (String line : lines) {
                 String[] values = line.split(",");
-                res.add(new Point(Integer.valueOf(values[0]), Integer.valueOf(values[1]), Integer.valueOf(values[2]), Integer.valueOf(values[3])));
+                try {
+                    res.add(new Point(Integer.valueOf(values[0]), Integer.valueOf(values[1]), Integer.valueOf(values[2]), Integer.valueOf(values[3])));
+                } catch (Exception e) {
+                    e.getMessage();
+                }
             }
 
         } catch (IOException e) {
