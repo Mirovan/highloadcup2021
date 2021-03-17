@@ -1,22 +1,22 @@
 package ru.bigint;
 
-import ru.bigint.hardcode.Hardcode;
 import ru.bigint.model.CashWrapper;
 import ru.bigint.model.Client;
 import ru.bigint.model.DigWrapper;
 import ru.bigint.model.Point;
 import ru.bigint.model.response.License;
 
-import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Main {
 
     public static void main(String[] args) {
+        long time = System.currentTimeMillis();
         LoggerUtil.log("--- VERSION : " + Constant.version + " ---");
         Main main = new Main();
         main.runGame();
+        System.out.println( "Time: " + (float)(System.currentTimeMillis() - time)/1000 );
     }
 
     private void runGame() {
@@ -26,7 +26,7 @@ public class Main {
 
         //получаем все точки с сокровищами
 //        List<Point> points = Hardcode.getPoints();
-        List<Point> points = Actions.explorePoints(0);
+        List<Point> points = Actions.explorePoints(23);
         LoggerUtil.log("Points with treasures: " + points.size());
 
         Set<Point> resSet = new TreeSet<>();
@@ -98,7 +98,7 @@ public class Main {
                             client.getMoney().addAll(Arrays.asList(cash.getResponse()));
 
                             //Если разница между числом заработанных денег при обмене сокровища и глубине больше N
-                            if (cash.getResponse().length - point.getDepth() > 5) {
+                            if (cash.getResponse().length - point.getDepth() > Constant.deltaDigCashTreasure) {
                                 resSet.add(point);
                             }
                         }
@@ -109,17 +109,12 @@ public class Main {
         }
 
 
-//        for (int i=0; i<resSet.toArray().length; i++) {
-//            stRes += point.getX() + "," + point.getY() + "-" + point.getDepth() + ";";
-//        }
-
         String stRes = resSet.stream()
                 .map(point -> point.getX() + "," + point.getY() + "-" + point.getDepth())
                 .collect(Collectors.joining(";"));
         System.out.println(stRes);
 
         LoggerUtil.log("FINISH");
-
     }
 
 }
