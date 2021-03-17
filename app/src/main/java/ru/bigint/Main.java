@@ -6,7 +6,6 @@ import ru.bigint.model.Point;
 import ru.bigint.model.response.License;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 
@@ -24,7 +23,7 @@ public class Main {
         client.setMoney(new ArrayList<>());
 
         //получаем все точки с сокровищами
-        List<Point> points = Actions.getPoints();
+        List<Point> points = Actions.exploreArea();
         LoggerUtil.log("Points with treasures: " + points.size());
 
 //        License license = null;
@@ -90,12 +89,9 @@ public class Main {
 
                     //Сохраняем в коллекцию сокровища
                     for (String treasure : dig.getTreasures()) {
-                        treasures.add(treasure);
-//                        Integer[] cash;
-//                        do {
-//                            cash = SimpleRequest.cash(treasure);
-//                        } while (cash == null);
-//                        client.getMoney().addAll(Arrays.asList(cash));
+                        if (point.getDepth() >= Constant.deepCash) {
+                            treasures.add(treasure);
+                        }
                     }
                 }
             }

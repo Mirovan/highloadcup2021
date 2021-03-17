@@ -1,7 +1,7 @@
 package ru.bigint;
 
 public class Constant {
-    public final static String version = "stage2_008_cash_async";
+    public final static String version = "stage2_change_only_deep_treasures";
 
     //Общий размер карты
     public final static int mapSize = 3499;
@@ -17,13 +17,16 @@ public class Constant {
     public final static int threadsCountCash = 40;
 
     //Максимальный X для просмотра карты построчно (по столбцам)
-    public final static int maxExploreX = 135;
+    public final static int maxExploreX = 145;
 
     //Максимальное число лицензий (по условию может быть только 10 активных лицензий)
     public final static int maxLicencesCount = 10;
 
     //Число денег которые тратим на покупку лицензии
     public final static int paidForLicense = 1;
+
+    //Глубина при которой будем менять сокровище
+    public final static int deepCash = 3;
 
     //число платных лилцензий
     public final static int paidlicenseCount = 7;
