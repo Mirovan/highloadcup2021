@@ -4,18 +4,18 @@ public class Point {
     private int x;
     private int y;
     private int depth;
-    private int treasuresCount;
+    private int treasureDepth;
 
     public Point(int x, int y) {
         this.x = x;
         this.y = y;
     }
 
-    public Point(int x, int y, int depth, int treasuresCount) {
+    public Point(int x, int y, int depth, int treasureDepth) {
         this.x = x;
         this.y = y;
         this.depth = depth;
-        this.treasuresCount = treasuresCount;
+        this.treasureDepth = treasureDepth;
     }
 
     public int getX() {
@@ -42,12 +42,12 @@ public class Point {
         this.depth = depth;
     }
 
-    public int getTreasuresCount() {
-        return treasuresCount;
+    public int getTreasureDepth() {
+        return treasureDepth;
     }
 
-    public void setTreasuresCount(int treasuresCount) {
-        this.treasuresCount = treasuresCount;
+    public void setTreasureDepth(int treasureDepth) {
+        this.treasureDepth = treasureDepth;
     }
 
     @Override
@@ -56,7 +56,7 @@ public class Point {
                 "x=" + x +
                 ", y=" + y +
                 ", depth=" + depth +
-                ", treasuresCount=" + treasuresCount +
+                ", treasureDepth=" + treasureDepth +
                 '}';
     }
 }

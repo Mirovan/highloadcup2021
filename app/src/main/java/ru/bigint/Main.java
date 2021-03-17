@@ -74,21 +74,15 @@ public class Main {
                             .findFirst()
                             .get();
                     point.setDepth(point.getDepth() + 1);
-                    point.setTreasuresCount(point.getTreasuresCount() - dig.getTreasures().length);
 
-                    //Помещаем обратно точку в стек - если сокровища еще есть
-                    if (point.getTreasuresCount() > 0) {
+                    //Помещаем обратно точку в стек - если не дошли до нужного уровня
+                    if (point.getTreasureDepth() < point.getDepth()) {
                         pointStack.add(point);
-                    }
-
-                    //Сохраняем в коллекцию сокровища
-                    for (String treasure : dig.getTreasures()) {
-                        treasures.add(treasure);
-//                        Integer[] cash;
-//                        do {
-//                            cash = SimpleRequest.cash(treasure);
-//                        } while (cash == null);
-//                        client.getMoney().addAll(Arrays.asList(cash));
+                    } else {
+                        //Сохраняем в коллекцию сокровища
+                        for (String treasure : dig.getTreasures()) {
+                            treasures.add(treasure);
+                        }
                     }
                 }
             }
