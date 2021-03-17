@@ -5,7 +5,9 @@ import ru.bigint.model.DigWrapper;
 import ru.bigint.model.Point;
 import ru.bigint.model.response.License;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 
@@ -33,8 +35,6 @@ public class Main {
 
         int stop = 0;
 
-        List<String> treasures = new ArrayList<>();
-
         //Пока стек с точками не пустой
         while (!pointStack.empty()) {
             //Обновляем лицензии
@@ -56,6 +56,8 @@ public class Main {
 
             //копаем
             List<DigWrapper> digs = Actions.dig(client.getLicenses(), digPointsStack);
+
+            List<String> treasures = new ArrayList<>();
 
             for (DigWrapper dig: digs) {
 //                if (dig.getDigRequest().getLicenseID() >= 7 && dig.getDigRequest().getLicenseID() <= 10)
@@ -96,8 +98,18 @@ public class Main {
                 }
             }
 
-            List<Integer> money = Actions.cash(treasures);
-            client.getMoney().addAll(money);
+            Integer[] cash;
+            do {
+                cash = SimpleRequest.cash(treasures.toArray(new String[0]));
+            } while (cash == null);
+
+            client.getMoney().addAll(Arrays.asList(cash));
+
+//            Integer[] cash;
+//            do {
+//                cash = SimpleRequest.cash(treasure);
+//            } while (cash == null);
+//            client.getMoney().addAll(Arrays.asList(cash));
 
 //            stop++;
 //            if (stop >= 4) break;

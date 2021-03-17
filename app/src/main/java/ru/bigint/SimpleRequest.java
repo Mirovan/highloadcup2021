@@ -291,4 +291,55 @@ public class SimpleRequest {
         return res;
     }
 
+
+    public static Integer[] cash(String[] requestObj) {
+        ActionEnum actionEnum = ActionEnum.CASH;
+
+        String url = Constant.SERVER_URI + actionEnum.getRequest();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestBody = null;
+        try {
+            requestBody = objectMapper.writeValueAsString(requestObj);
+        } catch (JsonProcessingException e) {
+            LoggerUtil.log(e.getMessage());
+        }
+
+        HttpRequest httpRequest =
+                HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .header("Content-Type", "application/json; charset=UTF-8")
+                        .timeout(Duration.ofSeconds(2))
+                        .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                        .build();
+
+        //Отправляем http-запрос
+        CompletableFuture<Integer[]> cf = httpClient
+                .sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString())
+                .thenApply(httpResponse -> {
+                    Integer[] responseObj = null;
+                    if (httpResponse != null) {
+                        LoggerUtil.logRequestResponse(actionEnum, requestObj, httpResponse);
+                        if (httpResponse.statusCode() == 200) {
+                            MapperUtils<Integer[]> resultMapper = new MapperUtils<>(Integer[].class);
+                            responseObj = resultMapper.convertToObject(httpResponse.body());
+                        }
+                    } else {
+                        LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null");
+                    }
+
+                    return responseObj;
+                });
+
+
+        Integer[] res = null;
+        try {
+            res = cf.get();
+        } catch (InterruptedException | ExecutionException e) {
+            LoggerUtil.log(actionEnum, e.getMessage());
+        }
+
+        return res;
+    }
+
 }

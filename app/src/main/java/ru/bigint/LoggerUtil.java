@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 public class LoggerUtil {
     private static long TIME;
 
-    private static ActionEnum[] LOGGER_LEVEL = {};
+    private static ActionEnum[] LOGGER_LEVEL = {ActionEnum.CASH};
 
     public static void log(ActionEnum actionEnum, Object msg) {
         for (ActionEnum item: LOGGER_LEVEL) {
