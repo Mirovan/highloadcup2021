@@ -13,9 +13,11 @@ import java.util.Stack;
 public class Main {
 
     public static void main(String[] args) {
+        long time = System.currentTimeMillis();
         LoggerUtil.log("--- VERSION : " + Constant.version + " ---");
         Main main = new Main();
         main.runGame();
+        System.out.println( (float) (System.currentTimeMillis() - time));
     }
 
     private void runGame() {
@@ -76,7 +78,7 @@ public class Main {
                     point.setDepth(point.getDepth() + 1);
 
                     //Помещаем обратно точку в стек - если не дошли до нужного уровня
-                    if (point.getTreasureDepth() < point.getDepth()) {
+                    if (point.getDepth() < point.getTreasureDepth()) {
                         pointStack.add(point);
                     } else {
                         //Сохраняем в коллекцию сокровища
