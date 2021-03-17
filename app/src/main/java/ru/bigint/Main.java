@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 public class Main {
 
@@ -91,19 +92,22 @@ public class Main {
 
                     //Сохраняем в коллекцию сокровища
                     for (String treasure : dig.getTreasures()) {
-                        if (point.getDepth() >= Constant.deepCash) {
-                            treasures.add(treasure);
-                        }
+//                        if (point.getDepth() >= Constant.deepCash) {
+                        treasures.add(treasure);
+//                        }
                     }
                 }
             }
 
-            Integer[] cash;
-            do {
-                cash = SimpleRequest.cash(treasures.toArray(new String[0]));
-            } while (cash == null);
+            if (treasures != null && treasures.size() > 0) {
+                Integer[] cash;
+                do {
+                    String request = treasures.stream().collect(Collectors.joining("\r\n"));
+                    cash = SimpleRequest.multiCash(request);
+                } while (cash == null);
 
-            client.getMoney().addAll(Arrays.asList(cash));
+                client.getMoney().addAll(Arrays.asList(cash));
+            }
 
 //            Integer[] cash;
 //            do {

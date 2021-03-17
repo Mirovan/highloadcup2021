@@ -292,7 +292,7 @@ public class SimpleRequest {
     }
 
 
-    public static Integer[] cash(String[] requestObj) {
+    public static Integer[] multiCash(String requestObj) {
         ActionEnum actionEnum = ActionEnum.CASH;
 
         String url = Constant.SERVER_URI + actionEnum.getRequest();
