@@ -6,6 +6,7 @@ import ru.bigint.model.Point;
 import ru.bigint.model.response.License;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Main {
 
@@ -23,14 +24,13 @@ public class Main {
         client.setMoney(new ArrayList<>());
 
         List<String> treasures = new ArrayList<>();
-        Deque<Point> pointStack = new ArrayDeque<>();
 
         for (int line = 0; line < Constant.mapSize; line++) {
             //получаем все точки с сокровищами для линии line
             List<Point> points = Actions.getPoints(line);
-            LoggerUtil.log("Points with treasures: " + points.size());
+            LoggerUtil.log("Line: " + line + "; Points with treasures: " + points.size());
 
-            pointStack.addAll(points);
+            ConcurrentLinkedQueue<Point> pointStack = new ConcurrentLinkedQueue<>(points);
 
             //Пока стек с точками не пустой
             while (!pointStack.isEmpty()) {
@@ -39,13 +39,13 @@ public class Main {
 
                 //List - коллекция для последующего исследования (после раскопок), stack - используем для понимания в каких точках копаем
                 List<Point> digPoints = new ArrayList<>();
-                Deque<Point> digPointsStack = new ArrayDeque<>();
-                int digPointCount = client.getLicenses().stream()
+                ConcurrentLinkedQueue<Point> digPointsStack = new ConcurrentLinkedQueue<>();
+                int digCount = client.getLicenses().stream()
                         .reduce(0, (res, item) -> res + (item.getDigAllowed()-item.getDigUsed()), Integer::sum);
 
-                for (int i = 0; i < digPointCount; i++) {
+                for (int i = 0; i < digCount; i++) {
                     if (!pointStack.isEmpty()) {
-                        Point point = pointStack.pop();
+                        Point point = pointStack.poll();
                         digPoints.add(point);
                         digPointsStack.add(point);
                     }
@@ -55,9 +55,6 @@ public class Main {
                 List<DigWrapper> digs = Actions.dig(client.getLicenses(), digPointsStack);
 
                 for (DigWrapper dig: digs) {
-//                if (dig.getDigRequest().getLicenseID() >= 7 && dig.getDigRequest().getLicenseID() <= 10)
-//                System.out.println("!!! - Dig: " + dig);
-
                     //Если что-то выкопали (может и пустое)
                     if (dig.getTreasures() != null) {
                         int licId = dig.getDigRequest().getLicenseID();
@@ -66,9 +63,7 @@ public class Main {
                                 .filter(item -> item.getId() == licId)
                                 .findFirst()
                                 .get();
-//                    if (license.getId() >= 7 && license.getId() <= 10) System.out.println("lic before dig: " + license);
                         license.setDigUsed(license.getDigUsed() + 1);
-//                    if (license.getId() >= 7 && license.getId() <= 10) System.out.println("lic after dig: " + license);
 
                         //находим точку в списке и обновляем её
                         Point point = digPoints.stream()
@@ -92,8 +87,6 @@ public class Main {
                 List<Integer> money = Actions.cash(treasures);
                 client.getMoney().addAll(money);
             }
-
-
 
         }
 

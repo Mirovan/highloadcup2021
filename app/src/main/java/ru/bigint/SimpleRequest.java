@@ -56,6 +56,8 @@ public class SimpleRequest {
                         if (httpResponse.statusCode() == 200) {
                             MapperUtils<Explore> resultMapper = new MapperUtils<>(Explore.class);
                             responseObj = resultMapper.convertToObject(httpResponse.body());
+                        } else {
+                            LoggerUtil.log("Explore Error: " + httpResponse.body());
                         }
                     } else {
                         LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null");
@@ -107,6 +109,8 @@ public class SimpleRequest {
                         if (httpResponse.statusCode() == 200) {
                             MapperUtils<License> resultMapper = new MapperUtils<>(License.class);
                             responseObj = resultMapper.convertToObject(httpResponse.body());
+                        } else {
+                            LoggerUtil.log("License Error: " + httpResponse.body());
                         }
                     } else {
                         LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null");
@@ -160,6 +164,8 @@ public class SimpleRequest {
                             responseObj = resultMapper.convertToObject(httpResponse.body());
                         } else if (httpResponse.statusCode() == 404) {
                             responseObj = new String[]{};
+                        } else {
+                            LoggerUtil.log("Dig Error: " + httpResponse.body());
                         }
                     } else {
                         LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null");
@@ -272,6 +278,8 @@ public class SimpleRequest {
                         if (httpResponse.statusCode() == 200) {
                             MapperUtils<Integer[]> resultMapper = new MapperUtils<>(Integer[].class);
                             responseObj = resultMapper.convertToObject(httpResponse.body());
+                        } else {
+                            LoggerUtil.log("Cash Error: " + httpResponse.body());
                         }
                     } else {
                         LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null");

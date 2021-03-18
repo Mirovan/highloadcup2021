@@ -6,6 +6,7 @@ import ru.bigint.model.response.License;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -51,15 +52,17 @@ public class Actions {
     /**
      * Асинхронные раскопки
      */
-    public static List<DigWrapper> dig(List<License> licenses, Deque<Point> digPointStack) {
+    public static List<DigWrapper> dig(List<License> licenses, ConcurrentLinkedQueue<Point> digPointStack) {
         LoggerUtil.logStartTime();
 
         //Формируем список с объектами-запросами
         List<DigRequest> requestList = new ArrayList<>();
+        //Просматриваем все лицензии
         for (License license : licenses) {
+            //определяем сколько можем сделать раскопок в рамках этой лицензии
             for (int i = license.getDigUsed(); i < license.getDigAllowed(); i++) {
                 if (!digPointStack.isEmpty()) {
-                    Point point = digPointStack.pop();
+                    Point point = digPointStack.poll();
                     DigRequest digRequest = new DigRequest(license.getId(), point.getX(), point.getY(), point.getDepth()+1);
                     requestList.add(digRequest);
                 }
