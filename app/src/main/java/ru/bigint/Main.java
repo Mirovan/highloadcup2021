@@ -38,26 +38,27 @@ public class Main {
                 Actions.updateLicenses(client);
 
                 //List - коллекция для последующего исследования (после раскопок), stack - используем для понимания в каких точках копаем
-                List<Point> digPoints = new ArrayList<>();
-                ConcurrentLinkedQueue<Point> digPointsStack = new ConcurrentLinkedQueue<>();
-                int digCount = client.getLicenses().stream()
-                        .reduce(0, (res, item) -> res + (item.getDigAllowed()-item.getDigUsed()), Integer::sum);
-
-                for (int i = 0; i < digCount; i++) {
-                    if (!pointStack.isEmpty()) {
-                        Point point = pointStack.poll();
-                        digPoints.add(point);
-                        digPointsStack.add(point);
-                    }
-                }
+//                List<Point> digPoints = new ArrayList<>();
+//                ConcurrentLinkedQueue<Point> digPointsStack = new ConcurrentLinkedQueue<>();
+//                int digCount = client.getLicenses().stream()
+//                        .reduce(0, (res, item) -> res + (item.getDigAllowed()-item.getDigUsed()), Integer::sum);
+//
+//                for (int i = 0; i < digCount; i++) {
+//                    if (!pointStack.isEmpty()) {
+//                        Point point = pointStack.poll();
+//                        digPoints.add(point);
+//                        digPointsStack.add(point);
+//                    }
+//                }
 
                 //копаем
-                List<DigWrapper> digs = Actions.dig(client.getLicenses(), digPointsStack);
+//                List<DigWrapper> digs = Actions.dig(client.getLicenses(), digPointsStack);
+                List<DigWrapper> digs = Actions.dig(client.getLicenses(), pointStack);
 
                 for (DigWrapper dig: digs) {
                     //Если что-то выкопали (может и пустое)
-                    if (dig.getTreasures() != null) {
-                        int licId = dig.getDigRequest().getLicenseID();
+                    if (dig.getResponse() != null) {
+                        int licId = dig.getLicence().getId();
                         //Обновляем лицензию в общем списке
                         License license = client.getLicenses().stream()
                                 .filter(item -> item.getId() == licId)
@@ -66,13 +67,14 @@ public class Main {
                         license.setDigUsed(license.getDigUsed() + 1);
 
                         //находим точку в списке и обновляем её
-                        Point point = digPoints.stream()
-                                .filter(item -> item.getX() == dig.getDigRequest().getPosX()
-                                        && item.getY() == dig.getDigRequest().getPosY())
-                                .findFirst()
-                                .get();
+//                        Point point = digPoints.stream()
+//                                .filter(item -> item.getX() == dig.getDigRequest().getPosX()
+//                                        && item.getY() == dig.getDigRequest().getPosY())
+//                                .findFirst()
+//                                .get();
+                        Point point = dig.getPoint();
                         point.setDepth(point.getDepth() + 1);
-                        point.setTreasuresCount(point.getTreasuresCount() - dig.getTreasures().length);
+                        point.setTreasuresCount(point.getTreasuresCount() - dig.getResponse().length);
 
                         //Помещаем обратно точку в стек - если сокровища еще есть
                         if (point.getTreasuresCount() > 0) {
@@ -80,7 +82,7 @@ public class Main {
                         }
 
                         //Сохраняем в коллекцию сокровища
-                        treasures.addAll(Arrays.asList(dig.getTreasures()));
+                        treasures.addAll(Arrays.asList(dig.getResponse()));
                     }
                 }
 

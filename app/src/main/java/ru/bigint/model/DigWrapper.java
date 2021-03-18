@@ -1,39 +1,50 @@
 package ru.bigint.model;
 
-import ru.bigint.model.request.DigRequest;
+import ru.bigint.model.response.License;
 
 import java.util.Arrays;
 
 public class DigWrapper {
-    private DigRequest digRequest;
-    private String[] treasures;
-
-    public DigWrapper(DigRequest digRequest, String[] treasures) {
-        this.digRequest = digRequest;
-        this.treasures = treasures;
-    }
-
-    public DigRequest getDigRequest() {
-        return digRequest;
-    }
-
-    public void setDigRequest(DigRequest digRequest) {
-        this.digRequest = digRequest;
-    }
-
-    public String[] getTreasures() {
-        return treasures;
-    }
-
-    public void setTreasures(String[] treasures) {
-        this.treasures = treasures;
-    }
+    private Point point;
+    private License licence;
+    private String[] response;
 
     @Override
     public String toString() {
         return "DigWrapper{" +
-                "digRequest=" + digRequest +
-                ", treasures=" + Arrays.toString(treasures) +
+                "point=" + point +
+                ", licence=" + licence +
+                ", response=" + Arrays.toString(response) +
                 '}';
+    }
+
+    public Point getPoint() {
+        return point;
+    }
+
+    public void setPoint(Point point) {
+        this.point = point;
+    }
+
+    public License getLicence() {
+        return licence;
+    }
+
+    public void setLicence(License licence) {
+        this.licence = licence;
+    }
+
+    public String[] getResponse() {
+        return response;
+    }
+
+    public void setResponse(String[] response) {
+        this.response = response;
+    }
+
+    public DigWrapper(Point point, License licence, String[] response) {
+        this.point = point;
+        this.licence = licence;
+        this.response = response;
     }
 }

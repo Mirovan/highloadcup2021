@@ -3,7 +3,9 @@ package ru.bigint;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ru.bigint.model.CashWrapper;
+import ru.bigint.model.DigRequestWrapper;
 import ru.bigint.model.DigWrapper;
+import ru.bigint.model.Point;
 import ru.bigint.model.request.DigRequest;
 import ru.bigint.model.request.ExploreRequest;
 import ru.bigint.model.response.Explore;
@@ -189,9 +191,14 @@ public class SimpleRequest {
     }
 
 
-    public static DigWrapper dig(DigRequest requestObj, List<License> licenses) {
+    public static DigWrapper dig(DigRequestWrapper digRequestWrapper, List<License> licenses) {
         ActionEnum actionEnum = ActionEnum.DIG;
         String url = Constant.SERVER_URI + actionEnum.getRequest();
+
+        //Формирую запрос
+        Point point = digRequestWrapper.getDigPoint();
+        License license = digRequestWrapper.getLicense();
+        DigRequest requestObj = new DigRequest(license.getId(), point.getX(), point.getY(), point.getDepth() + 1);
 
         ObjectMapper objectMapper = new ObjectMapper();
         String requestBody = null;
@@ -239,7 +246,7 @@ public class SimpleRequest {
                             LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null");
                         }
 
-                        return new DigWrapper(requestObj, treasures);
+                        return new DigWrapper(point, license, treasures);
                     }).get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
@@ -247,7 +254,6 @@ public class SimpleRequest {
 
         return res;
     }
-
 
 
     public static CashWrapper cash(String requestObj) {

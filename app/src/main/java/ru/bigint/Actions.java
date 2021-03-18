@@ -56,15 +56,19 @@ public class Actions {
         LoggerUtil.logStartTime();
 
         //Формируем список с объектами-запросами
-        List<DigRequest> requestList = new ArrayList<>();
+        List<DigRequestWrapper> requestList = new ArrayList<>();
         //Просматриваем все лицензии
         for (License license : licenses) {
             //определяем сколько можем сделать раскопок в рамках этой лицензии
             for (int i = license.getDigUsed(); i < license.getDigAllowed(); i++) {
                 if (!digPointStack.isEmpty()) {
                     Point point = digPointStack.poll();
-                    DigRequest digRequest = new DigRequest(license.getId(), point.getX(), point.getY(), point.getDepth()+1);
-                    requestList.add(digRequest);
+
+                    DigRequestWrapper digRequestWrapper = new DigRequestWrapper(
+                            point,
+                            license
+                    );
+                    requestList.add(digRequestWrapper);
                 }
             }
         }
@@ -72,7 +76,7 @@ public class Actions {
         //список с асинхронными запросами
         List<CompletableFuture<DigWrapper>> listCf = new ArrayList<>();
         for (int i = 0; i < requestList.size(); i++) {
-            DigRequest requestObj = requestList.get(i);
+            DigRequestWrapper requestObj = requestList.get(i);
 
             CompletableFuture<DigWrapper> cf = new CompletableFuture<>();
 
