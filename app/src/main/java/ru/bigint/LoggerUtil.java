@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 public class LoggerUtil {
     private static long TIME;
 
-    private static ActionEnum[] LOGGER_LEVEL = {};
+    private static ActionEnum[] LOGGER_LEVEL = {ActionEnum.EXPLORE};
 
     public static void log(ActionEnum actionEnum, Object msg) {
         for (ActionEnum item: LOGGER_LEVEL) {
@@ -23,7 +23,7 @@ public class LoggerUtil {
 
     public static void logFinishTime(String msg) {
         long time = System.currentTimeMillis();
-        System.out.println( msg + " " + (float) (time - TIME)/(1000.0f) );
+//        System.out.println( msg + " " + (float) (time - TIME)/(1000.0f) );
     }
 
     public static void log(Object msg) {

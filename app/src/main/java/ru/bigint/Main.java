@@ -22,82 +22,79 @@ public class Main {
         client.setLicenses(new ArrayList<>());
         client.setMoney(new ArrayList<>());
 
-        //получаем все точки с сокровищами
-        List<Point> points = Actions.getPoints();
-        LoggerUtil.log("Points with treasures: " + points.size());
-
-//        License license = null;
-
-        Deque<Point> pointStack = new ArrayDeque<>();
-        pointStack.addAll(points);
-
-        int stop = 0;
-
         List<String> treasures = new ArrayList<>();
+        Deque<Point> pointStack = new ArrayDeque<>();
 
-        //Пока стек с точками не пустой
-        while (!pointStack.isEmpty()) {
-            //Обновляем лицензии
-            Actions.updateLicenses(client);
+        for (int line = 0; line < Constant.mapSize; line++) {
+            //получаем все точки с сокровищами для линии line
+            List<Point> points = Actions.getPoints(line);
+            LoggerUtil.log("Points with treasures: " + points.size());
 
-            //List - коллекция для последующего исследования (после раскопок), stack - используем для понимания в каких точках копаем
-            List<Point> digPoints = new ArrayList<>();
-            Deque<Point> digPointsStack = new ArrayDeque<>();
-            int digPointCount = client.getLicenses().stream()
-                    .reduce(0, (res, item) -> res + (item.getDigAllowed()-item.getDigUsed()), Integer::sum);
+            pointStack.addAll(points);
 
-            for (int i = 0; i < digPointCount; i++) {
-                if (!pointStack.isEmpty()) {
-                    Point point = pointStack.pop();
-                    digPoints.add(point);
-                    digPointsStack.add(point);
+            //Пока стек с точками не пустой
+            while (!pointStack.isEmpty()) {
+                //Обновляем лицензии
+                Actions.updateLicenses(client);
+
+                //List - коллекция для последующего исследования (после раскопок), stack - используем для понимания в каких точках копаем
+                List<Point> digPoints = new ArrayList<>();
+                Deque<Point> digPointsStack = new ArrayDeque<>();
+                int digPointCount = client.getLicenses().stream()
+                        .reduce(0, (res, item) -> res + (item.getDigAllowed()-item.getDigUsed()), Integer::sum);
+
+                for (int i = 0; i < digPointCount; i++) {
+                    if (!pointStack.isEmpty()) {
+                        Point point = pointStack.pop();
+                        digPoints.add(point);
+                        digPointsStack.add(point);
+                    }
                 }
-            }
 
-            //копаем
-            List<DigWrapper> digs = Actions.dig(client.getLicenses(), digPointsStack);
+                //копаем
+                List<DigWrapper> digs = Actions.dig(client.getLicenses(), digPointsStack);
 
-            for (DigWrapper dig: digs) {
+                for (DigWrapper dig: digs) {
 //                if (dig.getDigRequest().getLicenseID() >= 7 && dig.getDigRequest().getLicenseID() <= 10)
 //                System.out.println("!!! - Dig: " + dig);
 
-                //Если что-то выкопали (может и пустое)
-                if (dig.getTreasures() != null) {
-                    int licId = dig.getDigRequest().getLicenseID();
-                    //Обновляем лицензию в общем списке
-                    License license = client.getLicenses().stream()
-                            .filter(item -> item.getId() == licId)
-                            .findFirst()
-                            .get();
+                    //Если что-то выкопали (может и пустое)
+                    if (dig.getTreasures() != null) {
+                        int licId = dig.getDigRequest().getLicenseID();
+                        //Обновляем лицензию в общем списке
+                        License license = client.getLicenses().stream()
+                                .filter(item -> item.getId() == licId)
+                                .findFirst()
+                                .get();
 //                    if (license.getId() >= 7 && license.getId() <= 10) System.out.println("lic before dig: " + license);
-                    license.setDigUsed(license.getDigUsed() + 1);
+                        license.setDigUsed(license.getDigUsed() + 1);
 //                    if (license.getId() >= 7 && license.getId() <= 10) System.out.println("lic after dig: " + license);
 
-                    //находим точку в списке и обновляем её
-                    Point point = digPoints.stream()
-                            .filter(item -> item.getX() == dig.getDigRequest().getPosX()
-                                    && item.getY() == dig.getDigRequest().getPosY())
-                            .findFirst()
-                            .get();
-                    point.setDepth(point.getDepth() + 1);
-                    point.setTreasuresCount(point.getTreasuresCount() - dig.getTreasures().length);
+                        //находим точку в списке и обновляем её
+                        Point point = digPoints.stream()
+                                .filter(item -> item.getX() == dig.getDigRequest().getPosX()
+                                        && item.getY() == dig.getDigRequest().getPosY())
+                                .findFirst()
+                                .get();
+                        point.setDepth(point.getDepth() + 1);
+                        point.setTreasuresCount(point.getTreasuresCount() - dig.getTreasures().length);
 
-                    //Помещаем обратно точку в стек - если сокровища еще есть
-                    if (point.getTreasuresCount() > 0) {
-                        pointStack.add(point);
+                        //Помещаем обратно точку в стек - если сокровища еще есть
+                        if (point.getTreasuresCount() > 0) {
+                            pointStack.add(point);
+                        }
+
+                        //Сохраняем в коллекцию сокровища
+                        treasures.addAll(Arrays.asList(dig.getTreasures()));
                     }
-
-                    //Сохраняем в коллекцию сокровища
-                    treasures.addAll(Arrays.asList(dig.getTreasures()));
                 }
+
+                List<Integer> money = Actions.cash(treasures);
+                client.getMoney().addAll(money);
             }
 
-            List<Integer> money = Actions.cash(treasures);
-            client.getMoney().addAll(money);
 
-//            stop++;
-//            if (stop >= 4) break;
-//            System.out.println(" ####################### ");
+
         }
 
         LoggerUtil.log("FINISH");

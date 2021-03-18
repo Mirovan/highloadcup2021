@@ -22,15 +22,19 @@ public class Actions {
     /**
      * Возвращает список точек с сокровищами
      */
-    public static List<Point> getPoints() {
+    public static List<Point> getPoints(int line) {
         LoggerUtil.logStartTime();
 
-        //Формирую список N-запросов для всей карты
+        //Делим строку line на partSize-частей и для каждой этой части делаем бинарный поиск
+        int partSize = 100;
+
+        //Формирую список N-частей для запросов для всей карты
         List<CompletableFuture<List<Point>>> cfList = new ArrayList<>();
-        for (int x = 0; x < Constant.maxExploreX; x++) {
-            int finalX = x;
+        for (int part = 0; part < Constant.mapSize; part += partSize) {
             CompletableFuture<List<Point>> cf = new CompletableFuture<>();
-            cf.completeAsync(() -> AlgoUtils.binSearch(finalX, 1, Constant.mapSize), threadPoolExplore);
+            int left = part;
+            int right = Math.min(part + partSize, Constant.mapSize);
+            cf.completeAsync(() -> AlgoUtils.binSearch(line, left, right), threadPoolExplore);
             cfList.add(cf);
         }
 
