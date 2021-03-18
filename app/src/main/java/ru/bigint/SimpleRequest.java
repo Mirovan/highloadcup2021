@@ -109,6 +109,9 @@ public class SimpleRequest {
                         if (httpResponse.statusCode() == 200) {
                             MapperUtils<License> resultMapper = new MapperUtils<>(License.class);
                             responseObj = resultMapper.convertToObject(httpResponse.body());
+                        } else if (httpResponse.statusCode() == 502) {
+                            //RPC failed
+//                            LoggerUtil.log("License Error: " + httpResponse.body());
                         } else {
                             LoggerUtil.log("License Error: " + httpResponse.body());
                         }
@@ -278,6 +281,9 @@ public class SimpleRequest {
                         if (httpResponse.statusCode() == 200) {
                             MapperUtils<Integer[]> resultMapper = new MapperUtils<>(Integer[].class);
                             responseObj = resultMapper.convertToObject(httpResponse.body());
+                        } else if (httpResponse.statusCode() == 503) {
+                            //service unavailable
+//                            LoggerUtil.log("Cash Error: " + httpResponse.body());
                         } else {
                             LoggerUtil.log("Cash Error: " + httpResponse.body());
                         }
