@@ -47,7 +47,7 @@ public class Actions {
     /**
      * Асинхронные раскопки
      */
-    public static List<DigWrapper> dig(List<License> licenses, Stack<Point> digPointStack) {
+    public static List<DigWrapper> dig(List<License> licenses, Deque<Point> digPointStack) {
         LoggerUtil.logStartTime();
 
         //Формируем список с объектами-запросами
@@ -158,7 +158,7 @@ public class Actions {
             //ToDo: переделать на HashMap
             if (treasures!= null
                     && cashWrapper != null
-                    && cashWrapper.getRequest() != null
+                    && cashWrapper.getResponse() != null
                     && treasures.contains(cashWrapper.getRequest())) treasures.remove(cashWrapper.getRequest());
         }
 

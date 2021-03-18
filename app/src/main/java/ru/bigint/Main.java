@@ -5,17 +5,16 @@ import ru.bigint.model.DigWrapper;
 import ru.bigint.model.Point;
 import ru.bigint.model.response.License;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 public class Main {
 
     public static void main(String[] args) {
+        long time = System.currentTimeMillis();
         LoggerUtil.log("--- VERSION : " + Constant.version + " ---");
         Main main = new Main();
         main.runGame();
+        System.out.println( (float) (System.currentTimeMillis() - time) / 1000.0f );
     }
 
     private void runGame() {
@@ -29,7 +28,7 @@ public class Main {
 
 //        License license = null;
 
-        Stack<Point> pointStack = new Stack<>();
+        Deque<Point> pointStack = new ArrayDeque<>();
         pointStack.addAll(points);
 
         int stop = 0;
@@ -37,18 +36,18 @@ public class Main {
         List<String> treasures = new ArrayList<>();
 
         //Пока стек с точками не пустой
-        while (!pointStack.empty()) {
+        while (!pointStack.isEmpty()) {
             //Обновляем лицензии
             Actions.updateLicenses(client);
 
             //List - коллекция для последующего исследования (после раскопок), stack - используем для понимания в каких точках копаем
             List<Point> digPoints = new ArrayList<>();
-            Stack<Point> digPointsStack = new Stack<>();
+            Deque<Point> digPointsStack = new ArrayDeque<>();
             int digPointCount = client.getLicenses().stream()
                     .reduce(0, (res, item) -> res + (item.getDigAllowed()-item.getDigUsed()), Integer::sum);
 
             for (int i = 0; i < digPointCount; i++) {
-                if (!pointStack.empty()) {
+                if (!pointStack.isEmpty()) {
                     Point point = pointStack.pop();
                     digPoints.add(point);
                     digPointsStack.add(point);
@@ -89,14 +88,7 @@ public class Main {
                     }
 
                     //Сохраняем в коллекцию сокровища
-                    for (String treasure : dig.getTreasures()) {
-                        treasures.add(treasure);
-//                        Integer[] cash;
-//                        do {
-//                            cash = SimpleRequest.cash(treasure);
-//                        } while (cash == null);
-//                        client.getMoney().addAll(Arrays.asList(cash));
-                    }
+                    treasures.addAll(Arrays.asList(dig.getTreasures()));
                 }
             }
 
