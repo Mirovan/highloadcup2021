@@ -40,8 +40,6 @@ public class Main {
             //Пока стек с точками не пустой
             while (!pointStack.isEmpty()) {
 
-                try {
-
                     //Обновляем лицензии
                     CompletableFuture.runAsync(() -> {
                         Actions.updateLicenses(client);
@@ -49,7 +47,7 @@ public class Main {
 
 
                     //копаем
-                    List<String> treasures = CompletableFuture
+                    CompletableFuture
                             .supplyAsync(() -> Actions.dig(client.getLicenses(), pointStack), threadPool)
                             .thenApply(dig -> {
                                 List<String> res = null;
@@ -78,18 +76,18 @@ public class Main {
                                 }
                                 return res;
                             })
-                            .get();
+                            .thenAccept(treasures -> {
+                                List<Integer> money = Actions.cash(treasures);
+                                client.getMoney().addAll(money);
+                            });
 
 
-                    CompletableFuture.runAsync(() -> {
-                        List<Integer> money = Actions.cash(treasures);
-                        client.getMoney().addAll(money);
-//                Actions.cashWithoutResponse(treasures);
-                    });
+//                    CompletableFuture.runAsync(() -> {
+//                        List<Integer> money = Actions.cash(treasures);
+//                        client.getMoney().addAll(money);
+////                Actions.cashWithoutResponse(treasures);
+//                    });
 
-                } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace();
-                }
 
             }
 
