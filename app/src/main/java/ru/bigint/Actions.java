@@ -1,14 +1,13 @@
 package ru.bigint;
 
 import ru.bigint.model.*;
-import ru.bigint.model.request.DigRequest;
 import ru.bigint.model.response.License;
 
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -23,18 +22,18 @@ public class Actions {
     /**
      * Возвращает список точек с сокровищами
      */
-    public static List<Point> getPoints(int line) {
+    public static CopyOnWriteArraySet<Point> getPoints(int line) {
         LoggerUtil.logStartTime();
 
         //Делим строку line на partSize-частей и для каждой этой части делаем бинарный поиск
         int partSize = 100;
 
         //Формирую список N-частей для запросов для всей карты
-        List<CompletableFuture<List<Point>>> cfList = new ArrayList<>();
+        CopyOnWriteArraySet<CompletableFuture<List<Point>>> cfList = new CopyOnWriteArraySet<>();
         for (int part = 0; part < Constant.mapSize; part += partSize) {
             CompletableFuture<List<Point>> cf = new CompletableFuture<>();
             int left = part;
-            int right = Math.min(part + partSize, Constant.mapSize);
+            int right = Math.min(part + partSize - 1, Constant.mapSize);
             cf.completeAsync(() -> AlgoUtils.binSearch(line, left, right), threadPoolExplore);
             cfList.add(cf);
         }
@@ -45,7 +44,7 @@ public class Actions {
                 .collect(Collectors.toList());
 
         LoggerUtil.logFinishTime("Get Points time:");
-        return res;
+        return new CopyOnWriteArraySet(res);
     }
 
 

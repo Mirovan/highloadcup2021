@@ -73,7 +73,7 @@ public class SimpleRequest {
         try {
             res = cf.get();
         } catch (InterruptedException | ExecutionException e) {
-            LoggerUtil.log(actionEnum, e.getMessage());
+            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
         }
 
         return res;
@@ -129,7 +129,7 @@ public class SimpleRequest {
         try {
             res = cf.get();
         } catch (InterruptedException | ExecutionException e) {
-            LoggerUtil.log(actionEnum, e.getMessage());
+            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
         }
 
         return res;
@@ -184,7 +184,7 @@ public class SimpleRequest {
         try {
             res = cf.get();
         } catch (InterruptedException | ExecutionException e) {
-            LoggerUtil.log(actionEnum, e.getMessage());
+            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
         }
 
         return res;
@@ -227,12 +227,9 @@ public class SimpleRequest {
                                     .filter(item -> item.getId() == requestObj.getLicenseID())
                                     .findFirst()
                                     .get();
-                            //System.out.println(lic + "; " + requestObj.getLicenseID() + "; " + requestObj + "; Response Code: " + httpResponse.statusCode() + "; Body: " + httpResponse.body());
+
                             LoggerUtil.logRequestResponse(actionEnum, " lic=" + lic.toString() + "; requestObj=" + requestObj.toString(), httpResponse);
 
-//                            if (requestObj.getLicenseID() >= 100 && requestObj.getLicenseID() <= 110) {
-//                                System.out.println(lic + "; " + requestObj.getLicenseID() + "; " + requestObj + "; Response Code: " + httpResponse.statusCode() + "; Body: " + httpResponse.body());
-//                            }
                             if (httpResponse.statusCode() == 200) {
                                 MapperUtils<String[]> resultMapper = new MapperUtils<>(String[].class);
                                 treasures = resultMapper.convertToObject(httpResponse.body());
@@ -249,7 +246,7 @@ public class SimpleRequest {
                         return new DigWrapper(point, license, treasures);
                     }).get();
         } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
         }
 
         return res;
@@ -305,7 +302,7 @@ public class SimpleRequest {
         try {
             res = cf.get();
         } catch (InterruptedException | ExecutionException e) {
-            LoggerUtil.log(actionEnum, e.getMessage());
+            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
         }
 
         return res;

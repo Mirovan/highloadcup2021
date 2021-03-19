@@ -5,8 +5,11 @@ import ru.bigint.model.DigWrapper;
 import ru.bigint.model.Point;
 import ru.bigint.model.response.License;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 public class Main {
 
@@ -27,7 +30,7 @@ public class Main {
 
         for (int line = 0; line < Constant.mapSize; line++) {
             //получаем все точки с сокровищами для линии line
-            List<Point> points = Actions.getPoints(line);
+            CopyOnWriteArraySet<Point> points = Actions.getPoints(line);
             LoggerUtil.log("Line: " + line + "; Points with treasures: " + points.size());
 
             ConcurrentLinkedQueue<Point> pointStack = new ConcurrentLinkedQueue<>(points);
@@ -37,22 +40,7 @@ public class Main {
                 //Обновляем лицензии
                 Actions.updateLicenses(client);
 
-                //List - коллекция для последующего исследования (после раскопок), stack - используем для понимания в каких точках копаем
-//                List<Point> digPoints = new ArrayList<>();
-//                ConcurrentLinkedQueue<Point> digPointsStack = new ConcurrentLinkedQueue<>();
-//                int digCount = client.getLicenses().stream()
-//                        .reduce(0, (res, item) -> res + (item.getDigAllowed()-item.getDigUsed()), Integer::sum);
-//
-//                for (int i = 0; i < digCount; i++) {
-//                    if (!pointStack.isEmpty()) {
-//                        Point point = pointStack.poll();
-//                        digPoints.add(point);
-//                        digPointsStack.add(point);
-//                    }
-//                }
-
                 //копаем
-//                List<DigWrapper> digs = Actions.dig(client.getLicenses(), digPointsStack);
                 List<DigWrapper> digs = Actions.dig(client.getLicenses(), pointStack);
 
                 for (DigWrapper dig: digs) {
@@ -66,12 +54,7 @@ public class Main {
                                 .get();
                         license.setDigUsed(license.getDigUsed() + 1);
 
-                        //находим точку в списке и обновляем её
-//                        Point point = digPoints.stream()
-//                                .filter(item -> item.getX() == dig.getDigRequest().getPosX()
-//                                        && item.getY() == dig.getDigRequest().getPosY())
-//                                .findFirst()
-//                                .get();
+                        //обновляем точку
                         Point point = dig.getPoint();
                         point.setDepth(point.getDepth() + 1);
                         point.setTreasuresCount(point.getTreasuresCount() - dig.getResponse().length);

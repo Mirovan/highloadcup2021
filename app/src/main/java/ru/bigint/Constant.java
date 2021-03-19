@@ -7,7 +7,7 @@ public class Constant {
     public final static int mapSize = 3499;
 
     //Число потоков для раскопок
-    public final static int threadsCountDig = 30;
+    public final static int threadsCountDig = 40;
 
     //Число потоков для просмотра карты
     public final static int threadsCountExplore = 35;
