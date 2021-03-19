@@ -1,8 +1,10 @@
 package ru.bigint;
 
 import ru.bigint.model.*;
+import ru.bigint.model.response.Balance;
 import ru.bigint.model.response.License;
 
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -25,15 +27,12 @@ public class Actions {
     public static CopyOnWriteArraySet<Point> getPoints(int line) {
         LoggerUtil.logStartTime();
 
-        //Делим строку line на partSize-частей и для каждой этой части делаем бинарный поиск
-        int partSize = 100;
-
         //Формирую список N-частей для запросов для всей карты
         CopyOnWriteArraySet<CompletableFuture<List<Point>>> cfList = new CopyOnWriteArraySet<>();
-        for (int part = 0; part < Constant.mapSize; part += partSize) {
+        for (int part = 0; part < Constant.mapSize; part += Constant.explorePartSize) {
             CompletableFuture<List<Point>> cf = new CompletableFuture<>();
             int left = part;
-            int right = Math.min(part + partSize - 1, Constant.mapSize);
+            int right = Math.min(part + Constant.explorePartSize - 1, Constant.mapSize);
             cf.completeAsync(() -> AlgoUtils.binSearch(line, left, right), threadPoolExplore);
             cfList.add(cf);
         }
@@ -49,68 +48,22 @@ public class Actions {
 
 
     /**
-     * Асинхронные раскопки
-     */
-    public static List<DigWrapper> dig(List<License> licenses, ConcurrentLinkedQueue<Point> digPointStack) {
-        LoggerUtil.logStartTime();
-
-        //Формируем список с объектами-запросами
-        List<DigRequestWrapper> requestList = new ArrayList<>();
-        //Просматриваем все лицензии
-        for (License license : licenses) {
-            //определяем сколько можем сделать раскопок в рамках этой лицензии
-            for (int i = license.getDigUsed(); i < license.getDigAllowed(); i++) {
-                if (!digPointStack.isEmpty()) {
-                    Point point = digPointStack.poll();
-
-                    DigRequestWrapper digRequestWrapper = new DigRequestWrapper(
-                            point,
-                            license
-                    );
-                    requestList.add(digRequestWrapper);
-                }
-            }
-        }
-
-        //список с асинхронными запросами
-        List<CompletableFuture<DigWrapper>> listCf = new ArrayList<>();
-        for (int i = 0; i < requestList.size(); i++) {
-            DigRequestWrapper requestObj = requestList.get(i);
-
-            CompletableFuture<DigWrapper> cf = new CompletableFuture<>();
-
-            cf.completeAsync(() -> SimpleRequest.dig(requestObj, licenses), threadPoolDig);
-            listCf.add(cf);
-        }
-
-        List<DigWrapper> res = listCf.stream()
-                .map(CompletableFuture::join)
-                .collect(Collectors.toList());
-
-        LoggerUtil.logFinishTime("Dig time:");
-
-        return res;
-    }
-
-
-    /**
      * Получение и обновление лицензий
-     * */
+     */
     public static void updateLicenses(Client client) {
         LoggerUtil.logStartTime();
 
         //Убираем истекшие лицензии
-        List<License> licencesUpdate = new ArrayList<>();
-        for (License lic: client.getLicenses()) {
+        CopyOnWriteArrayList<License> licencesUpdate = new CopyOnWriteArrayList<>();
+        for (License lic : client.getLicenses()) {
             if (lic.getDigUsed() < lic.getDigAllowed()) {
                 licencesUpdate.add(lic);
             }
         }
         client.setLicenses(licencesUpdate);
 
-        //список с асинхронными запросами
-        List<CompletableFuture<License>> listCf = new ArrayList<>();
-        for (int i = client.getLicenses().size(); i < Constant.maxLicencesCount; i++) {
+        //Если число лицензий меньше лимита
+        if (client.getLicenses().size() < Constant.maxLicencesCount) {
             //Бесплатная лицензия
             Integer[] requestObj = new Integer[]{};
 
@@ -126,17 +79,42 @@ public class Actions {
 
             Integer[] finalRequestObj = requestObj;
             cf.completeAsync(() -> SimpleRequest.license(finalRequestObj), threadPoolLicense);
-            listCf.add(cf);
+            try {
+                License license = cf.get();
+                if (license != null) {
+                    client.getLicenses().add(license);
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                //e.printStackTrace();
+            }
+
         }
 
-        List<License> licensesNew = listCf.stream()
-                .map(CompletableFuture::join)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-
-        client.getLicenses().addAll(licensesNew);
-
         LoggerUtil.logFinishTime("Get/Update Licenses time:");
+    }
+
+
+
+    /**
+     * Асинхронные раскопки
+     */
+    public static DigWrapper dig(CopyOnWriteArrayList<License> licenses, ConcurrentLinkedQueue<Point> digPointStack) {
+        LoggerUtil.logStartTime();
+
+        DigWrapper res = null;
+        if (licenses.size() > 0) {
+            License license = licenses.get(0);
+            if (license.getDigUsed() < license.getDigAllowed()) {
+                Point point = digPointStack.poll();
+
+                DigRequestWrapper digRequestWrapper = new DigRequestWrapper(point, license);
+
+                res = SimpleRequest.dig(digRequestWrapper, licenses);
+            }
+        }
+        LoggerUtil.logFinishTime("Dig time:");
+
+        return res;
     }
 
 
@@ -144,7 +122,8 @@ public class Actions {
      * Обмен сокровищ на деньги
      *
      * @param treasures
-     * @return*/
+     * @return
+     */
     public static List<Integer> cash(List<String> treasures) {
         LoggerUtil.logStartTime();
 
@@ -164,9 +143,9 @@ public class Actions {
                 .collect(Collectors.toList());
 
         //Убираем из коллекции сокровищ то сокровище которое обменяли на деньги
-        for (CashWrapper cashWrapper: res) {
+        for (CashWrapper cashWrapper : res) {
             //ToDo: переделать на HashMap
-            if (treasures!= null
+            if (treasures != null
                     && cashWrapper != null
                     && cashWrapper.getResponse() != null
                     && treasures.contains(cashWrapper.getRequest())) treasures.remove(cashWrapper.getRequest());
@@ -179,5 +158,22 @@ public class Actions {
                 .flatMap(Stream::of)
                 .collect(Collectors.toList());
     }
+
+
+    public static Balance balance() {
+        return SimpleRequest.balance();
+    }
+
+
+//    public static void cashWithoutResponse(List<String> treasures) {
+//        for (int i = 0; i < treasures.size(); i++) {
+//            String requestObj = treasures.get(i);
+//
+//            CompletableFuture.runAsync(
+//                    () -> SimpleRequest.cash(requestObj),
+//                    threadPoolCash
+//            );
+//        }
+//    }
 
 }

@@ -2,33 +2,33 @@ package ru.bigint.model;
 
 import ru.bigint.model.response.License;
 
-import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Client {
-    private List<License> licenses;
-    private List<Integer> money;
+    private CopyOnWriteArrayList<License> licenses;
+    private CopyOnWriteArrayList<Integer> money;
 
     public Client() {
     }
 
-    public Client(List<License> licenses, List<Integer> money) {
+    public Client(CopyOnWriteArrayList<License> licenses, CopyOnWriteArrayList<Integer> money) {
         this.licenses = licenses;
         this.money = money;
     }
 
-    public List<License> getLicenses() {
+    public CopyOnWriteArrayList<License> getLicenses() {
         return licenses;
     }
 
-    public void setLicenses(List<License> licenses) {
+    public void setLicenses(CopyOnWriteArrayList<License> licenses) {
         this.licenses = licenses;
     }
 
-    public List<Integer> getMoney() {
+    public CopyOnWriteArrayList<Integer> getMoney() {
         return money;
     }
 
-    public void setMoney(List<Integer> money) {
+    public void setMoney(CopyOnWriteArrayList<Integer> money) {
         this.money = money;
     }
 

@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public class Balance {
     private int balance;
-    private int[] wallet;
+    private Integer[] wallet;
 
     public int getBalance() {
         return balance;
@@ -14,11 +14,11 @@ public class Balance {
         this.balance = balance;
     }
 
-    public int[] getWallet() {
+    public Integer[] getWallet() {
         return wallet;
     }
 
-    public void setWallet(int[] wallet) {
+    public void setWallet(Integer[] wallet) {
         this.wallet = wallet;
     }
 

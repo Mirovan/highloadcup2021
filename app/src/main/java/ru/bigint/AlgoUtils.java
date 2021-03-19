@@ -1,6 +1,6 @@
-package ru.bigint.model;
+package ru.bigint;
 
-import ru.bigint.SimpleRequest;
+import ru.bigint.model.Point;
 import ru.bigint.model.request.ExploreRequest;
 import ru.bigint.model.response.Explore;
 

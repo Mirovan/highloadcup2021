@@ -1,7 +1,7 @@
 package ru.bigint;
 
 public class Constant {
-    public final static String version = "task/stage2_012_parallel_explore";
+    public final static String version = "task/test_new_async_requests";
 
     //Общий размер карты
     public final static int mapSize = 3499;
@@ -11,6 +11,9 @@ public class Constant {
 
     //Число потоков для просмотра карты
     public final static int threadsCountExplore = 35;
+
+    //Для Explore - Делим строку line на partSize-частей и для каждой этой части делаем бинарный поиск
+    public final static int explorePartSize = 100;
 
     public final static int threadsCountLicense = 10;
 

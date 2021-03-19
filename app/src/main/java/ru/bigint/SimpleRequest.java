@@ -8,9 +8,11 @@ import ru.bigint.model.DigWrapper;
 import ru.bigint.model.Point;
 import ru.bigint.model.request.DigRequest;
 import ru.bigint.model.request.ExploreRequest;
+import ru.bigint.model.response.Balance;
 import ru.bigint.model.response.Explore;
 import ru.bigint.model.response.License;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -288,10 +290,10 @@ public class SimpleRequest {
                             //service unavailable
 //                            LoggerUtil.log("Cash Error: " + httpResponse.body());
                         } else {
-                            LoggerUtil.log("Cash Error: " + httpResponse.body());
+//                            LoggerUtil.log("Cash Error: " + httpResponse.body());
                         }
                     } else {
-                        LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null");
+//                        LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null");
                     }
 
                     return new CashWrapper(requestObj, responseObj);
@@ -302,10 +304,82 @@ public class SimpleRequest {
         try {
             res = cf.get();
         } catch (InterruptedException | ExecutionException e) {
-            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
+//            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
         }
 
         return res;
+    }
+
+
+//    public static void cashNoResponse(String requestObj) {
+//        ActionEnum actionEnum = ActionEnum.CASH;
+//
+//        String url = Constant.SERVER_URI + actionEnum.getRequest();
+//
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        String requestBody = null;
+//        try {
+//            requestBody = objectMapper.writeValueAsString(requestObj);
+//        } catch (JsonProcessingException e) {
+//            LoggerUtil.log(e.getMessage());
+//        }
+//
+//        HttpRequest httpRequest =
+//                HttpRequest.newBuilder()
+//                        .uri(URI.create(url))
+//                        .header("Content-Type", "application/json; charset=UTF-8")
+//                        .timeout(Duration.ofSeconds(2))
+//                        .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+//                        .build();
+//
+//        //Отправляем http-запрос
+//        CompletableFuture<HttpResponse<String>> cf = httpClient.
+//                .sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString());
+//
+//
+//        CashWrapper res = null;
+//        try {
+//            res = cf.get();
+//        } catch (InterruptedException | ExecutionException e) {
+//            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
+//        }
+//
+//        return res;
+//    }
+
+
+    /**
+     * Получение баланса
+     * */
+    public static Balance balance() {
+        ActionEnum actionEnum = ActionEnum.BALANCE;
+        String url = Constant.SERVER_URI + actionEnum.getRequest();
+
+        HttpRequest httpRequest =
+                HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .header("Content-Type", "application/json; charset=UTF-8")
+                        .timeout(Duration.ofSeconds(2))
+                        .GET()
+                        .build();
+
+        Balance balance = null;
+        try {
+            HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+            if (httpResponse != null) {
+                LoggerUtil.logRequestResponse(actionEnum, "", httpResponse);
+                if (httpResponse.statusCode() == 200) {
+                    MapperUtils<Balance> mapper = new MapperUtils<>(Balance.class);
+                    balance = mapper.convertToObject(httpResponse.body());
+                }
+            } else {
+                LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null");
+            }
+        } catch (IOException | InterruptedException e) {
+            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
+        }
+
+        return balance;
     }
 
 }
