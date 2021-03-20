@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 public class LoggerUtil {
     private static long TIME;
 
-    private static ActionEnum[] LOGGER_LEVEL = {ActionEnum.LICENSES};
+    private static ActionEnum[] LOGGER_LEVEL = {ActionEnum.LICENSES, ActionEnum.DIG};
 
     public static void log(ActionEnum actionEnum, Object msg) {
         for (ActionEnum item: LOGGER_LEVEL) {
@@ -43,7 +43,7 @@ public class LoggerUtil {
         }
 
         //ToDo: only errors
-//        if ( httpResponse.statusCode() != 200 ) {
+//        if ( httpResponse.statusCode() != 409 ) {
             log(actionEnum, "Request object: " + strObj + "; Response Code: " + httpResponse.statusCode() + "; Body: " + httpResponse.body());
 //        }
     }

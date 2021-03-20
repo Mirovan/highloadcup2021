@@ -2,10 +2,7 @@ package ru.bigint;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ru.bigint.model.CashWrapper;
-import ru.bigint.model.DigRequestWrapper;
-import ru.bigint.model.DigWrapper;
-import ru.bigint.model.Point;
+import ru.bigint.model.*;
 import ru.bigint.model.request.DigRequest;
 import ru.bigint.model.request.ExploreRequest;
 import ru.bigint.model.response.Balance;
@@ -21,6 +18,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 public class SimpleRequest {
 
@@ -82,7 +80,7 @@ public class SimpleRequest {
     }
 
 
-    public static License license(Integer[] requestObj) {
+    public static License license(Integer[] requestObj, Client client) {
         ActionEnum actionEnum = ActionEnum.LICENSES;
 
         String url = Constant.SERVER_URI + actionEnum.getRequest();
@@ -113,6 +111,10 @@ public class SimpleRequest {
                         if (httpResponse.statusCode() == 200) {
                             MapperUtils<License> resultMapper = new MapperUtils<>(License.class);
                             responseObj = resultMapper.convertToObject(httpResponse.body());
+                        } else if (httpResponse.statusCode() == 409) {
+                            //no more active licenses allowed
+                            String stOut = client.getLicenses().stream().map(item -> item.toString()).collect(Collectors.joining());
+                            LoggerUtil.log("License Error: " + httpResponse.body() + "; client.licenses=" + client.getLicenses().size() + "->>" + stOut);
                         } else if (httpResponse.statusCode() == 502) {
                             //RPC failed
 //                            LoggerUtil.log("License Error: " + httpResponse.body());
@@ -350,7 +352,7 @@ public class SimpleRequest {
 
     /**
      * Получение баланса
-     * */
+     */
     public static Balance balance() {
         ActionEnum actionEnum = ActionEnum.BALANCE;
         String url = Constant.SERVER_URI + actionEnum.getRequest();

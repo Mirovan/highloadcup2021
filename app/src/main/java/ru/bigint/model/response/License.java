@@ -1,40 +1,40 @@
 package ru.bigint.model.response;
 
 public class License {
-    private int id;
-    private int digAllowed;
-    private int digUsed;
+    private Integer id;
+    private Integer digAllowed;
+    private Integer digUsed;
 
     public License() {
     }
 
-    public License(int id, int digAllowed, int digUsed) {
+    public License(Integer id, Integer digAllowed, Integer digUsed) {
         this.id = id;
         this.digAllowed = digAllowed;
         this.digUsed = digUsed;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public int getDigAllowed() {
+    public Integer getDigAllowed() {
         return digAllowed;
     }
 
-    public void setDigAllowed(int digAllowed) {
+    public void setDigAllowed(Integer digAllowed) {
         this.digAllowed = digAllowed;
     }
 
-    public int getDigUsed() {
+    public Integer getDigUsed() {
         return digUsed;
     }
 
-    public void setDigUsed(int digUsed) {
+    public void setDigUsed(Integer digUsed) {
         this.digUsed = digUsed;
     }
 

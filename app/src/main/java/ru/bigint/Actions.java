@@ -54,39 +54,53 @@ public class Actions {
     public static void updateLicenses(Client client) {
         LoggerUtil.logStartTime();
 
-        //Убираем истекшие лицензии
+        CompletableFuture<License> cf = null;
+
+        //Деньги для бесплатной лицензия
+        Integer[] requestObj = new Integer[]{};
+
+        License license = new License();
+
         synchronized (lock) {
-            client.getLicenses().removeIf(item -> item.getDigUsed() < item.getDigAllowed());
+            //Убираем истекшие лицензии
+//            client.getLicenses().removeIf(item -> item.getLicense() != null && item.getLicense().getDigUsed() >= item.getLicense().getDigAllowed());
+            client.getLicenses().removeIf(item -> item != null && item.getId() != null && item.getDigUsed() >= item.getDigAllowed());
+
+//            System.out.println("1 = " + client.getLicenses().size());
+            //Если число лицензий меньше лимита - т.е. можно получить лицензию
+            if (client.getLicenses().size() < Constant.maxLicencesCount.intValue()) {
+                //Добавляем в список пустую лицензию
+                client.getLicenses().add(license);
+
+                //можем ли создать платную лицензию
+                if (client.getMoney().size() >= Constant.paidForLicense) {
+                    //сколько монет заплатим за платную лицензию
+                    requestObj = new Integer[Constant.paidForLicense];
+                    for (int j = 0; j < Constant.paidForLicense; j++) {
+                        requestObj[j] = client.getMoney().get(0);
+                        client.getMoney().remove(0);
+                    }
+                }
+
+                cf = new CompletableFuture<>();
+            }
         }
 
-        //Если число лицензий меньше лимита
-        if (client.getLicenses().size() < Constant.maxLicencesCount.intValue()) {
-            //Бесплатная лицензия
-            Integer[] requestObj = new Integer[]{};
-
-            if (client.getMoney().size() >= Constant.paidForLicense) {
-                requestObj = new Integer[Constant.paidForLicense];
-                for (int j = 0; j < Constant.paidForLicense; j++) {
-                    requestObj[j] = client.getMoney().get(0);
-                    client.getMoney().remove(0);
-                }
-            }
-
-            CompletableFuture<License> cf = new CompletableFuture<>();
-
+        if (cf != null) {
             Integer[] finalRequestObj = requestObj;
-            cf.completeAsync(() -> SimpleRequest.license(finalRequestObj), threadPoolLicense);
+            cf.completeAsync(() -> SimpleRequest.license(finalRequestObj, client), threadPoolLicense);
             try {
-                License license = cf.get();
-                if (license != null) {
-                    client.getLicenses().add(license);
+                License serverLicense = cf.get();
+                if (serverLicense == null) {
+                    client.getLicenses().remove(license);
+                } else {
+                    license = serverLicense;
                 }
+//                System.out.println("2 = " + client.getLicenses().size());
             } catch (InterruptedException | ExecutionException e) {
                 //e.printStackTrace();
             }
-
         }
-
 
         LoggerUtil.logFinishTime("Get/Update Licenses time:");
     }

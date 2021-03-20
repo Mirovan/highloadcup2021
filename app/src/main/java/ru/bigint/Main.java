@@ -77,15 +77,15 @@ public class Main {
                                 res = Arrays.asList(dig.getResponse());
                             }
                             return res;
-                        })
-                        .thenApply(treasures -> {
-                            List<Integer> res = null;
-                            if ( treasures != null && treasures.size() > 0) res = Actions.cash(treasures);
-                            return res;
-                        })
-                        .thenAccept(money -> {
-                            if (money != null) client.getMoney().addAll(money);
                         });
+//                        .thenApply(treasures -> {
+//                            List<Integer> res = null;
+//                            if ( treasures != null && treasures.size() > 0) res = Actions.cash(treasures);
+//                            return res;
+//                        })
+//                        .thenAccept(money -> {
+//                            if (money != null) client.getMoney().addAll(money);
+//                        });
 
 
 //                    CompletableFuture.runAsync(() -> {
