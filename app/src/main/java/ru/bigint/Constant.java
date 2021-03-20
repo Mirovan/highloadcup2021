@@ -1,5 +1,7 @@
 package ru.bigint;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class Constant {
     public final static String version = "task/test_new_async_requests";
 
@@ -20,7 +22,7 @@ public class Constant {
     public final static int threadsCountCash = 40;
 
     //Максимальное число лицензий (по условию может быть только 10 активных лицензий)
-    public final static int maxLicencesCount = 10;
+    public final static AtomicInteger maxLicencesCount = new AtomicInteger(10);
 
     //Число денег которые тратим на покупку лицензии
     public final static int paidForLicense = 1;

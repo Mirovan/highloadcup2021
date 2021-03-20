@@ -20,6 +20,7 @@ public class Actions {
     private static ExecutorService threadPoolLicense = Executors.newFixedThreadPool(Constant.threadsCountLicense);
     private static ExecutorService threadPoolCash = Executors.newFixedThreadPool(Constant.threadsCountCash);
 
+    static final Object lock = new Object();
 
     /**
      * Возвращает список точек с сокровищами
@@ -54,16 +55,12 @@ public class Actions {
         LoggerUtil.logStartTime();
 
         //Убираем истекшие лицензии
-        CopyOnWriteArrayList<License> licencesUpdate = new CopyOnWriteArrayList<>();
-        for (License lic : client.getLicenses()) {
-            if (lic.getDigUsed() < lic.getDigAllowed()) {
-                licencesUpdate.add(lic);
-            }
+        synchronized (lock) {
+            client.getLicenses().removeIf(item -> item.getDigUsed() < item.getDigAllowed());
         }
-        client.setLicenses(licencesUpdate);
 
         //Если число лицензий меньше лимита
-        if (client.getLicenses().size() < Constant.maxLicencesCount) {
+        if (client.getLicenses().size() < Constant.maxLicencesCount.intValue()) {
             //Бесплатная лицензия
             Integer[] requestObj = new Integer[]{};
 
@@ -90,9 +87,9 @@ public class Actions {
 
         }
 
+
         LoggerUtil.logFinishTime("Get/Update Licenses time:");
     }
-
 
 
     /**
@@ -143,13 +140,13 @@ public class Actions {
                 .collect(Collectors.toList());
 
         //Убираем из коллекции сокровищ то сокровище которое обменяли на деньги
-        for (CashWrapper cashWrapper : res) {
-            //ToDo: переделать на HashMap
-            if (treasures != null
-                    && cashWrapper != null
-                    && cashWrapper.getResponse() != null
-                    && treasures.contains(cashWrapper.getRequest())) treasures.remove(cashWrapper.getRequest());
-        }
+//        for (CashWrapper cashWrapper : res) {
+//            //ToDo: переделать на HashMap
+//            if (treasures != null
+//                    && cashWrapper != null
+//                    && cashWrapper.getResponse() != null
+//                    && treasures.contains(cashWrapper.getRequest())) treasures.remove(cashWrapper.getRequest());
+//        }
 
         LoggerUtil.logFinishTime("Cash time:");
         return res.stream()

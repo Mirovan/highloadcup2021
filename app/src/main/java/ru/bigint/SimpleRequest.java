@@ -117,7 +117,7 @@ public class SimpleRequest {
                             //RPC failed
 //                            LoggerUtil.log("License Error: " + httpResponse.body());
                         } else {
-                            LoggerUtil.log("License Error: " + httpResponse.body());
+//                            LoggerUtil.log("License Error: " + httpResponse.body());
                         }
                     } else {
                         LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null");
@@ -172,7 +172,7 @@ public class SimpleRequest {
                         } else if (httpResponse.statusCode() == 404) {
                             responseObj = new String[]{};
                         } else {
-                            LoggerUtil.log("Dig Error: " + httpResponse.body());
+//                            LoggerUtil.log("Dig Error: " + httpResponse.body());
                         }
                     } else {
                         LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null");
@@ -238,7 +238,7 @@ public class SimpleRequest {
                             } else if (httpResponse.statusCode() == 404 || httpResponse.statusCode() == 403) {
                                 treasures = new String[]{};
                             } else if (httpResponse.statusCode() == 422) {
-                                LoggerUtil.log("Dig Error: " + lic + "; " + requestObj.getLicenseID() + "; " + requestObj + "; Response Code: " + httpResponse.statusCode() + "; Body: " + httpResponse.body());
+//                                LoggerUtil.log("Dig Error: " + lic + "; " + requestObj.getLicenseID() + "; " + requestObj + "; Response Code: " + httpResponse.statusCode() + "; Body: " + httpResponse.body());
                                 treasures = new String[]{};
                             }
                         } else {

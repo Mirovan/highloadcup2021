@@ -14,6 +14,9 @@ public class Main {
 
     private static ExecutorService threadPool = Executors.newFixedThreadPool(10);
 
+    volatile Client client = new Client();
+
+
     public static void main(String[] args) {
         long time = System.currentTimeMillis();
         LoggerUtil.log("--- VERSION : " + Constant.version + " ---");
@@ -23,7 +26,6 @@ public class Main {
     }
 
     private void runGame() {
-        Client client = new Client();
         client.setLicenses(new CopyOnWriteArrayList<>());
         client.setMoney(new CopyOnWriteArrayList<>());
 
@@ -40,46 +42,50 @@ public class Main {
             //Пока стек с точками не пустой
             while (!pointStack.isEmpty()) {
 
-                    //Обновляем лицензии
-                    CompletableFuture.runAsync(() -> {
-                        Actions.updateLicenses(client);
-                    }, threadPool);
+                //Обновляем лицензии
+                CompletableFuture.runAsync(() -> {
+                    Actions.updateLicenses(client);
+                }, threadPool);
 
 
-                    //копаем
-                    CompletableFuture
-                            .supplyAsync(() -> Actions.dig(client.getLicenses(), pointStack), threadPool)
-                            .thenApply(dig -> {
-                                List<String> res = null;
-                                //Если что-то выкопали (может и пустое)
-                                if (dig != null && dig.getResponse() != null) {
-                                    int licId = dig.getLicence().getId();
-                                    //Обновляем лицензию в общем списке
-                                    License license = client.getLicenses().stream()
-                                            .filter(item -> item.getId() == licId)
-                                            .findFirst()
-                                            .get();
-                                    license.setDigUsed(license.getDigUsed() + 1);
+                //копаем
+                CompletableFuture
+                        .supplyAsync(() -> Actions.dig(client.getLicenses(), pointStack), threadPool)
+                        .thenApply(dig -> {
+                            List<String> res = null;
+                            //Если что-то выкопали (может и пустое)
+                            if (dig != null && dig.getResponse() != null) {
+                                int licId = dig.getLicence().getId();
+                                //Обновляем лицензию в общем списке
+                                License license = client.getLicenses().stream()
+                                        .filter(item -> item.getId() == licId)
+                                        .findFirst()
+                                        .get();
+                                license.setDigUsed(license.getDigUsed() + 1);
 
-                                    //обновляем точку
-                                    Point point = dig.getPoint();
-                                    point.setDepth(point.getDepth() + 1);
-                                    point.setTreasuresCount(point.getTreasuresCount() - dig.getResponse().length);
+                                //обновляем точку
+                                Point point = dig.getPoint();
+                                point.setDepth(point.getDepth() + 1);
+                                point.setTreasuresCount(point.getTreasuresCount() - dig.getResponse().length);
 
-                                    //Помещаем обратно точку в стек - если сокровища еще есть
-                                    if (point.getTreasuresCount() > 0) {
-                                        pointStack.add(point);
-                                    }
-
-                                    //Сохраняем в коллекцию сокровища
-                                    res = Arrays.asList(dig.getResponse());
+                                //Помещаем обратно точку в стек - если сокровища еще есть
+                                if (point.getTreasuresCount() > 0) {
+                                    pointStack.add(point);
                                 }
-                                return res;
-                            })
-                            .thenAccept(treasures -> {
-                                List<Integer> money = Actions.cash(treasures);
-                                client.getMoney().addAll(money);
-                            });
+
+                                //Сохраняем в коллекцию сокровища
+                                res = Arrays.asList(dig.getResponse());
+                            }
+                            return res;
+                        })
+                        .thenApply(treasures -> {
+                            List<Integer> res = null;
+                            if ( treasures != null && treasures.size() > 0) res = Actions.cash(treasures);
+                            return res;
+                        })
+                        .thenAccept(money -> {
+                            if (money != null) client.getMoney().addAll(money);
+                        });
 
 
 //                    CompletableFuture.runAsync(() -> {
