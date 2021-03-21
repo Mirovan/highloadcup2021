@@ -73,7 +73,7 @@ public class SimpleRequest {
         try {
             res = cf.get();
         } catch (InterruptedException | ExecutionException e) {
-            LoggerUtil.log(actionEnum, e.getMessage());
+            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
         }
 
         return res;
@@ -133,7 +133,7 @@ public class SimpleRequest {
         try {
             res = cf.get();
         } catch (InterruptedException | ExecutionException e) {
-            LoggerUtil.log(actionEnum, e.getMessage());
+            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
         }
 
         return res;
@@ -188,7 +188,7 @@ public class SimpleRequest {
         try {
             res = cf.get();
         } catch (InterruptedException | ExecutionException e) {
-            LoggerUtil.log(actionEnum, e.getMessage());
+            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
         }
 
         return res;
@@ -227,12 +227,17 @@ public class SimpleRequest {
                     .thenApply(httpResponse -> {
                         String[] treasures = null;
                         if (httpResponse != null) {
-                            License lic = licenses.stream()
-                                    .filter(item -> item.getId() == requestObj.getLicenseID())
-                                    .findFirst()
-                                    .get();
+//                            if (licenses.stream()
+//                                    .anyMatch(item -> item.getId() == requestObj.getLicenseID())) {
+//
+//                                License lic = licenses.stream()
+//                                        .filter(item -> item.getId() == requestObj.getLicenseID())
+//                                        .findFirst()
+//                                        .get();
+//                                LoggerUtil.logRequestResponse(actionEnum, " lic=" + lic.toString() + "; requestObj=" + requestObj.toString(), httpResponse);
+//                            }
 
-                            LoggerUtil.logRequestResponse(actionEnum, " lic=" + lic.toString() + "; requestObj=" + requestObj.toString(), httpResponse);
+                            LoggerUtil.logRequestResponse(actionEnum, "; requestObj=" + requestObj.toString(), httpResponse);
 
                             if (httpResponse.statusCode() == 200) {
                                 MapperUtils<String[]> resultMapper = new MapperUtils<>(String[].class);
@@ -250,7 +255,7 @@ public class SimpleRequest {
                         return new DigWrapper(point, license, treasures);
                     }).get();
         } catch (InterruptedException | ExecutionException e) {
-            LoggerUtil.log(actionEnum, e.getMessage());
+            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
         }
 
         return res;
@@ -306,7 +311,7 @@ public class SimpleRequest {
         try {
             res = cf.get();
         } catch (InterruptedException | ExecutionException e) {
-//            LoggerUtil.log(actionEnum, e.getMessage());
+//            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
         }
 
         return res;
@@ -343,7 +348,7 @@ public class SimpleRequest {
 //        try {
 //            res = cf.get();
 //        } catch (InterruptedException | ExecutionException e) {
-//            LoggerUtil.log(actionEnum, e.getMessage());
+//            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
 //        }
 //
 //        return res;
@@ -378,7 +383,7 @@ public class SimpleRequest {
                 LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null");
             }
         } catch (IOException | InterruptedException e) {
-            LoggerUtil.log(actionEnum, e.getMessage());
+            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
         }
 
         return balance;

@@ -25,7 +25,8 @@ public class Actions {
 //    private static ExecutorService threadPoolLicense = Executors.newFixedThreadPool(Constant.threadsCountLicense);
     private static ExecutorService threadPoolCash = Executors.newFixedThreadPool(Constant.threadsCountCash);
 
-//    static final Object lock = new Object();
+    static final Object lockLicense = new Object();
+    static final Object lockDig = new Object();
 
     private static HttpClient httpClient = HttpClient.newBuilder()
 //            .connectTimeout(Duration.ofSeconds(2))
@@ -66,7 +67,12 @@ public class Actions {
         Integer[] requestObj = new Integer[]{};
 
         License clientLicense = SimpleRequest.license(requestObj, client);
-        client.getLicenses().add(clientLicense);
+        synchronized (lockLicense) {
+            if (clientLicense != null) {
+//                System.out.println("Lic: " + clientLicense);
+                client.getLicenses().add(clientLicense);
+            }
+        }
 
 /*
         CompletableFuture<License> cf = null;
@@ -127,17 +133,31 @@ public class Actions {
         LoggerUtil.logStartTime();
 
         DigWrapper res = null;
-        if (licenses.size() > 0) {
-            License license = licenses.get(0);
-            if (license.getDigUsed() < license.getDigAllowed()) {
-                Point point = digPointStack.poll();
+        DigRequestWrapper digRequestWrapper = null;
 
-                DigRequestWrapper digRequestWrapper = new DigRequestWrapper(point, license);
+        synchronized (lockDig) {
+            if (licenses.size() > 0) {
+                License license = licenses.get(0);
+//                System.out.println("dig 1 - lic=" + licenses);
 
-                res = SimpleRequest.dig(digRequestWrapper, licenses);
+                if (license != null && license.getDigUsed() < license.getDigAllowed()) {
+                    Point point = digPointStack.poll();
+//                    System.out.println("dig 2 - point=" + point);
+
+                    digRequestWrapper = new DigRequestWrapper(point, license);
+
+//                    System.out.println("dig 3 - digRequestWrapper=" + digRequestWrapper);
+                }
             }
         }
+
+        if (digRequestWrapper != null) {
+            res = SimpleRequest.dig(digRequestWrapper, licenses);
+        }
+
         LoggerUtil.logFinishTime("Dig time:");
+
+        System.out.println("dig 4 - licSize=" + licenses.size() + "; dig=" + res);
 
         return res;
     }
