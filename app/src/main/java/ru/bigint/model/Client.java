@@ -5,23 +5,23 @@ import ru.bigint.model.response.License;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Client {
-    private CopyOnWriteArrayList<License> licenses;
+    private CopyOnWriteArrayList<LicenseWrapper> licenseWrapperList;
     private CopyOnWriteArrayList<Integer> money;
 
     public Client() {
     }
 
-    public Client(CopyOnWriteArrayList<License> licenses, CopyOnWriteArrayList<Integer> money) {
-        this.licenses = licenses;
+    public Client(CopyOnWriteArrayList<LicenseWrapper> licenseWrapperList, CopyOnWriteArrayList<Integer> money) {
+        this.licenseWrapperList = licenseWrapperList;
         this.money = money;
     }
 
-    public CopyOnWriteArrayList<License> getLicenses() {
-        return licenses;
+    public CopyOnWriteArrayList<LicenseWrapper> getLicenseWrapperList() {
+        return licenseWrapperList;
     }
 
-    public void setLicenses(CopyOnWriteArrayList<License> licenses) {
-        this.licenses = licenses;
+    public void setLicenseWrapperList(CopyOnWriteArrayList<LicenseWrapper> licenseWrapperList) {
+        this.licenseWrapperList = licenseWrapperList;
     }
 
     public CopyOnWriteArrayList<Integer> getMoney() {
@@ -35,7 +35,7 @@ public class Client {
     @Override
     public String toString() {
         return "Client{" +
-                "licenses=" + licenses +
+                "licenseWrapperList=" + licenseWrapperList +
                 ", money=" + money +
                 '}';
     }

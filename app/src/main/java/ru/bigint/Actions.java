@@ -4,17 +4,10 @@ import ru.bigint.model.*;
 import ru.bigint.model.response.Balance;
 import ru.bigint.model.response.License;
 
-import java.io.IOException;
-import java.net.URI;
 import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -70,7 +63,7 @@ public class Actions {
         synchronized (lockLicense) {
             if (clientLicense != null) {
 //                System.out.println("Lic: " + clientLicense);
-                client.getLicenses().add(clientLicense);
+                client.getLicenseWrapperList().add(new LicenseWrapper(clientLicense, 0));
             }
         }
 
@@ -129,35 +122,33 @@ public class Actions {
     /**
      * Асинхронные раскопки
      */
-    public static DigWrapper dig(CopyOnWriteArrayList<License> licenses, ConcurrentLinkedQueue<Point> digPointStack) {
+    public static DigWrapper dig(CopyOnWriteArrayList<LicenseWrapper> licenseWrapperList, ConcurrentLinkedQueue<Point> digPointStack) {
         LoggerUtil.logStartTime();
 
         DigWrapper res = null;
         DigRequestWrapper digRequestWrapper = null;
 
         synchronized (lockDig) {
-            if (licenses.size() > 0) {
-                License license = licenses.get(0);
-//                System.out.println("dig 1 - lic=" + licenses);
+            //Выбираем лицензию для раскопок
+            Optional<LicenseWrapper> licenseWrapperOpt = licenseWrapperList.stream()
+                    .filter(item -> item.getUseCount() < item.getLicense().getDigAllowed())
+                    .findFirst();
 
-                if (license != null && license.getDigUsed() < license.getDigAllowed()) {
-                    Point point = digPointStack.poll();
-//                    System.out.println("dig 2 - point=" + point);
-
-                    digRequestWrapper = new DigRequestWrapper(point, license);
-
-//                    System.out.println("dig 3 - digRequestWrapper=" + digRequestWrapper);
-                }
+            if (licenseWrapperOpt.isPresent()) {
+                LicenseWrapper licenseWrapper = licenseWrapperOpt.get();
+                licenseWrapper.setUseCount(licenseWrapper.getUseCount() + 1);
+                Point point = digPointStack.poll();
+                digRequestWrapper = new DigRequestWrapper(point, licenseWrapper.getLicense());
             }
         }
 
         if (digRequestWrapper != null) {
-            res = SimpleRequest.dig(digRequestWrapper, licenses);
+            res = SimpleRequest.dig(digRequestWrapper);
         }
 
         LoggerUtil.logFinishTime("Dig time:");
 
-        System.out.println("dig 4 - licSize=" + licenses.size() + "; dig=" + res);
+//        System.out.println("dig 4 - licSize=" + licenses.size() + "; dig=" + res);
 
         return res;
     }

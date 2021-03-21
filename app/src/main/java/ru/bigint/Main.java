@@ -2,6 +2,7 @@ package ru.bigint;
 
 import ru.bigint.model.Client;
 import ru.bigint.model.DigWrapper;
+import ru.bigint.model.LicenseWrapper;
 import ru.bigint.model.Point;
 import ru.bigint.model.response.License;
 
@@ -29,7 +30,7 @@ public class Main {
 
     private void runGame() {
         Client client = new Client();
-        client.setLicenses(new CopyOnWriteArrayList<>());
+        client.setLicenseWrapperList(new CopyOnWriteArrayList<>());
         client.setMoney(new CopyOnWriteArrayList<>());
 
         List<CompletableFuture<Void>> cfLicenseList = new ArrayList<>();
@@ -47,12 +48,12 @@ public class Main {
             while (!pointStack.isEmpty()) {
 
                 //Убираем истекшие лицензии
-                client.getLicenses().removeIf(item -> item != null
-                        && item.getId() != null
-                        && item.getDigUsed() >= item.getDigAllowed());
+                client.getLicenseWrapperList().removeIf(item -> item.getLicense() != null
+                        && item.getLicense().getId() != null
+                        && item.getLicense().getDigUsed() >= item.getLicense().getDigAllowed());
 
                 //Обновляем лицензии
-                if (cfLicenseList.size() < Constant.maxLicencesCount && client.getLicenses().size() < Constant.maxLicencesCount) {
+                if (cfLicenseList.size() + client.getLicenseWrapperList().size() < Constant.maxLicencesCount) {
                     CompletableFuture<Void> cf = CompletableFuture.runAsync(() -> Actions.updateLicenses(client), threadPoolLicense);
                     cfLicenseList.add(cf);
                 }
@@ -62,25 +63,31 @@ public class Main {
                 //копаем
                 if (cfTreasuresList.size() < Constant.threadsCountDig) {
                     CompletableFuture<List<String>> cf = CompletableFuture
-                            .supplyAsync(() -> Actions.dig(client.getLicenses(), pointStack), threadPoolDig)
+                            .supplyAsync(() -> Actions.dig(client.getLicenseWrapperList(), pointStack), threadPoolDig)
                             .thenApply(dig -> {
                                 List<String> res = null;
-                                //Если что-то выкопали (может и пустое)
-                                if (dig != null && dig.getResponse() != null) {
-                                    synchronized (lockDig) {
-                                        int licId = dig.getLicence().getId();
+                                if (dig != null) {
 
-                                        if (client.getLicenses().stream().anyMatch(item -> item.getId() == licId)) {
-                                            //Обновляем лицензию в общем списке
-                                            License license = client.getLicenses().stream()
-                                                    .filter(item -> item.getId() == licId)
+                                    //выкопать не удалось - лицензию не потратили
+                                    if (dig.getResponse() == null) {
+                                        synchronized (lockDig) {
+                                            client.getLicenseWrapperList().stream()
+                                                    .filter(item -> dig.getLicence() != null && item.getLicense().getId().equals(dig.getLicence().getId()))
                                                     .findFirst()
-                                                    .get();
-                                            license.setDigUsed(license.getDigUsed() + 1);
-
-//                                            System.out.println("22 - licId=" + licId + " lic=" + license);
+                                                    .ifPresent(licenseWrapper -> licenseWrapper.setUseCount(licenseWrapper.getUseCount() - 1));
                                         }
+                                    }
+                                    //Если что-то выкопали (может и пустое)
+                                    else {
+                                        synchronized (lockDig) {
+                                            int licId = dig.getLicence().getId();
 
+                                            //Обновляем лицензию в общем списке
+                                            client.getLicenseWrapperList().stream()
+                                                    .filter(item -> item.getLicense().getId().equals(licId))
+                                                    .findFirst()
+                                                    .ifPresent(item -> item.getLicense().setDigUsed(item.getLicense().getDigUsed() + 1));
+                                        }
 
                                         //обновляем точку
                                         Point point = dig.getPoint();
@@ -96,6 +103,7 @@ public class Main {
                                         res = Arrays.asList(dig.getResponse());
                                     }
                                 }
+
                                 return res;
                             });
                     cfTreasuresList.add(cf);

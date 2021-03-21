@@ -113,8 +113,8 @@ public class SimpleRequest {
                             responseObj = resultMapper.convertToObject(httpResponse.body());
                         } else if (httpResponse.statusCode() == 409) {
                             //no more active licenses allowed
-                            String stOut = client.getLicenses().stream().map(item -> item.toString()).collect(Collectors.joining());
-                            LoggerUtil.log("License Error: " + httpResponse.body() + "; client.licenses=" + client.getLicenses().size() + "->>" + stOut);
+//                            String stOut = client.getLicenses().stream().map(item -> item.toString()).collect(Collectors.joining());
+//                            LoggerUtil.log("License Error: " + httpResponse.body() + "; client.licenses=" + client.getLicenses().size() + "->>" + stOut);
                         } else if (httpResponse.statusCode() == 502) {
                             //RPC failed
 //                            LoggerUtil.log("License Error: " + httpResponse.body());
@@ -195,7 +195,7 @@ public class SimpleRequest {
     }
 
 
-    public static DigWrapper dig(DigRequestWrapper digRequestWrapper, List<License> licenses) {
+    public static DigWrapper dig(DigRequestWrapper digRequestWrapper) {
         ActionEnum actionEnum = ActionEnum.DIG;
         String url = Constant.SERVER_URI + actionEnum.getRequest();
 
