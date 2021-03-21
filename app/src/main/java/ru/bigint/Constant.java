@@ -9,20 +9,20 @@ public class Constant {
     public final static int mapSize = 3499;
 
     //Число потоков для раскопок
-    public final static int threadsCountDig = 30;
+    public final static int threadsCountDig = 10;
 
     //Число потоков для просмотра карты
-    public final static int threadsCountExplore = 35;
+    public final static int threadsCountExplore = 10;
 
     //Для Explore - Делим строку line на partSize-частей и для каждой этой части делаем бинарный поиск
     public final static int explorePartSize = 100;
 
     public final static int threadsCountLicense = 10;
 
-    public final static int threadsCountCash = 40;
+    public final static int threadsCountCash = 10;
 
     //Максимальное число лицензий (по условию может быть только 10 активных лицензий)
-    public final static AtomicInteger maxLicencesCount = new AtomicInteger(10);
+    public final static int maxLicencesCount = 10;
 
     //Число денег которые тратим на покупку лицензии
     public final static int paidForLicense = 1;

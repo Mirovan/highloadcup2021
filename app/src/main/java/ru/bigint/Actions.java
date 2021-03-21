@@ -4,7 +4,12 @@ import ru.bigint.model.*;
 import ru.bigint.model.response.Balance;
 import ru.bigint.model.response.License;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -16,11 +21,15 @@ import java.util.stream.Stream;
 public class Actions {
 
     private static ExecutorService threadPoolExplore = Executors.newFixedThreadPool(Constant.threadsCountExplore);
-    private static ExecutorService threadPoolDig = Executors.newFixedThreadPool(Constant.threadsCountDig);
-    private static ExecutorService threadPoolLicense = Executors.newFixedThreadPool(Constant.threadsCountLicense);
+    //    private static ExecutorService threadPoolDig = Executors.newFixedThreadPool(Constant.threadsCountDig);
+//    private static ExecutorService threadPoolLicense = Executors.newFixedThreadPool(Constant.threadsCountLicense);
     private static ExecutorService threadPoolCash = Executors.newFixedThreadPool(Constant.threadsCountCash);
 
-    static final Object lock = new Object();
+//    static final Object lock = new Object();
+
+    private static HttpClient httpClient = HttpClient.newBuilder()
+//            .connectTimeout(Duration.ofSeconds(2))
+            .build();
 
     /**
      * Возвращает список точек с сокровищами
@@ -54,6 +63,12 @@ public class Actions {
     public static void updateLicenses(Client client) {
         LoggerUtil.logStartTime();
 
+        Integer[] requestObj = new Integer[]{};
+
+        License clientLicense = SimpleRequest.license(requestObj, client);
+        client.getLicenses().add(clientLicense);
+
+/*
         CompletableFuture<License> cf = null;
 
         //Деньги для бесплатной лицензия
@@ -61,34 +76,32 @@ public class Actions {
 
         License license = new License();
 
-        synchronized (lock) {
-            //Убираем истекшие лицензии
-//            client.getLicenses().removeIf(item -> item.getLicense() != null && item.getLicense().getDigUsed() >= item.getLicense().getDigAllowed());
-            client.getLicenses().removeIf(item -> item != null && item.getId() != null && item.getDigUsed() >= item.getDigAllowed());
+        //Убираем истекшие лицензии
+        client.getLicenses().removeIf(item -> item != null
+                && item.getId() != null
+                && item.getDigUsed() >= item.getDigAllowed());
 
-//            System.out.println("1 = " + client.getLicenses().size());
-            //Если число лицензий меньше лимита - т.е. можно получить лицензию
-            if (client.getLicenses().size() < Constant.maxLicencesCount.intValue()) {
-                //Добавляем в список пустую лицензию
-                client.getLicenses().add(license);
+        //Если число лицензий меньше лимита - т.е. можно получить лицензию
+        if (client.getLicenses().size() < Constant.maxLicencesCount.intValue()) {
+            //Добавляем в список пустую лицензию
+            client.getLicenses().add(license);
 
-                //можем ли создать платную лицензию
-                if (client.getMoney().size() >= Constant.paidForLicense) {
-                    //сколько монет заплатим за платную лицензию
-                    requestObj = new Integer[Constant.paidForLicense];
-                    for (int j = 0; j < Constant.paidForLicense; j++) {
-                        requestObj[j] = client.getMoney().get(0);
-                        client.getMoney().remove(0);
-                    }
-                }
+            //можем ли создать платную лицензию
+//                if (client.getMoney().size() >= Constant.paidForLicense) {
+//                    //сколько монет заплатим за платную лицензию
+//                    requestObj = new Integer[Constant.paidForLicense];
+//                    for (int j = 0; j < Constant.paidForLicense; j++) {
+//                        requestObj[j] = client.getMoney().get(0);
+//                        client.getMoney().remove(0);
+//                    }
+//                }
 
-                cf = new CompletableFuture<>();
-            }
+            cf = new CompletableFuture<>();
         }
 
         if (cf != null) {
             Integer[] finalRequestObj = requestObj;
-            cf.completeAsync(() -> SimpleRequest.license(finalRequestObj, client), threadPoolLicense);
+            cf.completeAsync(() -> SimpleRequest.license(finalRequestObj, client));
             try {
                 License serverLicense = cf.get();
                 if (serverLicense == null) {
@@ -96,11 +109,12 @@ public class Actions {
                 } else {
                     license = serverLicense;
                 }
-//                System.out.println("2 = " + client.getLicenses().size());
             } catch (InterruptedException | ExecutionException e) {
-                //e.printStackTrace();
+                LoggerUtil.log(e.getMessage());
             }
         }
+
+ */
 
         LoggerUtil.logFinishTime("Get/Update Licenses time:");
     }

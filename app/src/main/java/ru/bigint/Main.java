@@ -5,16 +5,16 @@ import ru.bigint.model.DigWrapper;
 import ru.bigint.model.Point;
 import ru.bigint.model.response.License;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class Main {
 
-    private static ExecutorService threadPool = Executors.newFixedThreadPool(10);
-
-    volatile Client client = new Client();
+    //    private static ExecutorService threadPool = Executors.newFixedThreadPool(10);
+    private static ExecutorService threadPoolLicense = Executors.newFixedThreadPool(Constant.threadsCountLicense);
+    private static ExecutorService threadPoolDig = Executors.newFixedThreadPool(Constant.threadsCountDig);
 
 
     public static void main(String[] args) {
@@ -26,58 +26,68 @@ public class Main {
     }
 
     private void runGame() {
+        Client client = new Client();
         client.setLicenses(new CopyOnWriteArrayList<>());
         client.setMoney(new CopyOnWriteArrayList<>());
 
+        List<CompletableFuture<Void>> cfLicenseList = new ArrayList<>();
+
         for (int line = 0; line < Constant.mapSize; line++) {
-            //получаем все точки с сокровищами для линии line
+//        получаем все точки с сокровищами для линии line
             CopyOnWriteArraySet<Point> points = Actions.getPoints(line);
             LoggerUtil.log("Line: " + line + "; Points with treasures: " + points.size());
 
             ConcurrentLinkedQueue<Point> pointStack = new ConcurrentLinkedQueue<>(points);
-
-//            Balance balance = Actions.balance();
-//            client.setMoney( new LinkedList<>(Arrays.asList(balance.getWallet())) );
+            pointStack.add(new Point(0, 0, 0, 0));
 
             //Пока стек с точками не пустой
             while (!pointStack.isEmpty()) {
 
-                //Обновляем лицензии
-                CompletableFuture.runAsync(() -> {
-                    Actions.updateLicenses(client);
-                }, threadPool);
+                //Убираем истекшие лицензии
+                client.getLicenses().removeIf(item -> item != null
+                        && item.getId() != null
+                        && item.getDigUsed() >= item.getDigAllowed());
 
+                //Обновляем лицензии
+                if (cfLicenseList.size() < Constant.maxLicencesCount) {
+                    CompletableFuture<Void> cf = CompletableFuture.runAsync(() -> {
+                        Actions.updateLicenses(null);
+                    }, threadPoolLicense);
+                    cfLicenseList.add(cf);
+                }
+                //Если лицензия получена - убираем её из списка
+                cfLicenseList.removeIf(CompletableFuture::isDone);
 
                 //копаем
                 CompletableFuture
-                        .supplyAsync(() -> Actions.dig(client.getLicenses(), pointStack), threadPool)
-                        .thenApply(dig -> {
-                            List<String> res = null;
-                            //Если что-то выкопали (может и пустое)
-                            if (dig != null && dig.getResponse() != null) {
-                                int licId = dig.getLicence().getId();
-                                //Обновляем лицензию в общем списке
-                                License license = client.getLicenses().stream()
-                                        .filter(item -> item.getId() == licId)
-                                        .findFirst()
-                                        .get();
-                                license.setDigUsed(license.getDigUsed() + 1);
-
-                                //обновляем точку
-                                Point point = dig.getPoint();
-                                point.setDepth(point.getDepth() + 1);
-                                point.setTreasuresCount(point.getTreasuresCount() - dig.getResponse().length);
-
-                                //Помещаем обратно точку в стек - если сокровища еще есть
-                                if (point.getTreasuresCount() > 0) {
-                                    pointStack.add(point);
-                                }
-
-                                //Сохраняем в коллекцию сокровища
-                                res = Arrays.asList(dig.getResponse());
-                            }
-                            return res;
-                        });
+                        .supplyAsync(() -> Actions.dig(client.getLicenses(), pointStack), threadPoolDig);
+//                        .thenApply(dig -> {
+//                            List<String> res = null;
+//                            //Если что-то выкопали (может и пустое)
+//                            if (dig != null && dig.getResponse() != null) {
+//                                int licId = dig.getLicence().getId();
+//                                //Обновляем лицензию в общем списке
+//                                License license = client.getLicenses().stream()
+//                                        .filter(item -> item.getId() == licId)
+//                                        .findFirst()
+//                                        .get();
+//                                license.setDigUsed(license.getDigUsed() + 1);
+//
+//                                //обновляем точку
+//                                Point point = dig.getPoint();
+//                                point.setDepth(point.getDepth() + 1);
+//                                point.setTreasuresCount(point.getTreasuresCount() - dig.getResponse().length);
+//
+//                                //Помещаем обратно точку в стек - если сокровища еще есть
+//                                if (point.getTreasuresCount() > 0) {
+//                                    pointStack.add(point);
+//                                }
+//
+//                                //Сохраняем в коллекцию сокровища
+//                                res = Arrays.asList(dig.getResponse());
+//                            }
+//                            return res;
+//                        });
 //                        .thenApply(treasures -> {
 //                            List<Integer> res = null;
 //                            if ( treasures != null && treasures.size() > 0) res = Actions.cash(treasures);
