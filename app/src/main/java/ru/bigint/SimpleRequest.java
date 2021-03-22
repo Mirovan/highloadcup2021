@@ -214,6 +214,7 @@ public class SimpleRequest {
         try {
             requestBody = objectMapper.writeValueAsString(requestObj);
         } catch (JsonProcessingException e) {
+            e.printStackTrace();
 //                Logger.log(e.getMessage());
         }
 

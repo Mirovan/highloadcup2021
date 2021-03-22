@@ -45,6 +45,7 @@ public class Main {
 
         //Пока стек с точками не пустой
         while (!pointStack.isEmpty()) {
+            System.out.println("pointStackSize=" + pointStack.size() + "; licCount=" + client.getLicenseWrapperList().size() + "; licMoney=" + client.getMoney().size());
 
             //Убираем истекшие лицензии
             client.getLicenseWrapperList().removeIf(item -> item.getLicense() != null
@@ -112,21 +113,19 @@ public class Main {
             Iterator<CompletableFuture<List<String>>> tresIterator = cfTreasuresList.iterator();
             while (tresIterator.hasNext()) {
                 CompletableFuture<List<String>> cf = tresIterator.next();
-                if (cf != null && cf.isDone()) {
-                    try {
-                        List<String> treasures = cf.get();
+                try {
+                    List<String> treasures = cf.get();
 
-                        if (treasures != null && treasures.size() > 0) {
-                            CompletableFuture
-                                    .runAsync(() -> {
-                                        List<Integer> money = Actions.cash(treasures);
-                                        if (money != null) client.getMoney().addAll(money);
-                                    });
-                        }
-                        tresIterator.remove();
-                    } catch (InterruptedException | ExecutionException e) {
-                        e.printStackTrace();
+                    if (treasures != null && treasures.size() > 0) {
+                        CompletableFuture
+                                .runAsync(() -> {
+                                    List<Integer> money = Actions.cash(treasures);
+                                    if (money != null) client.getMoney().addAll(money);
+                                });
                     }
+                    tresIterator.remove();
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
                 }
             }
 
