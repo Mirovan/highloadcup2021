@@ -73,7 +73,9 @@ public class SimpleRequest {
         try {
             res = cf.get();
         } catch (InterruptedException | ExecutionException e) {
-            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
+            e.printStackTrace();
+
+//            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
         }
 
         return res;
@@ -133,7 +135,8 @@ public class SimpleRequest {
         try {
             res = cf.get();
         } catch (InterruptedException | ExecutionException e) {
-            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
+            e.printStackTrace();
+//            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
         }
 
         return res;
@@ -188,7 +191,9 @@ public class SimpleRequest {
         try {
             res = cf.get();
         } catch (InterruptedException | ExecutionException e) {
-            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
+            e.printStackTrace();
+
+//            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
         }
 
         return res;
@@ -209,6 +214,8 @@ public class SimpleRequest {
         try {
             requestBody = objectMapper.writeValueAsString(requestObj);
         } catch (JsonProcessingException e) {
+            e.printStackTrace();
+
 //                Logger.log(e.getMessage());
         }
 
@@ -255,7 +262,9 @@ public class SimpleRequest {
                         return new DigWrapper(point, license, treasures);
                     }).get();
         } catch (InterruptedException | ExecutionException e) {
-            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
+            e.printStackTrace();
+
+//            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
         }
 
         return res;
@@ -311,6 +320,8 @@ public class SimpleRequest {
         try {
             res = cf.get();
         } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+
 //            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
         }
 
@@ -383,7 +394,9 @@ public class SimpleRequest {
                 LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null");
             }
         } catch (IOException | InterruptedException e) {
-            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
+            e.printStackTrace();
+
+//            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
         }
 
         return balance;

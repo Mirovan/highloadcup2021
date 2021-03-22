@@ -136,42 +136,11 @@ public class Actions {
     /**
      * Обмен сокровищ на деньги
      *
-     * @param treasures
+     * @param treasure
      * @return
      */
-    public static List<Integer> cash(List<String> treasures) {
-        LoggerUtil.logStartTime();
-
-        //список с асинхронными запросами
-        List<CompletableFuture<CashWrapper>> listCf = new ArrayList<>();
-        for (int i = 0; i < treasures.size(); i++) {
-            String requestObj = treasures.get(i);
-
-            CompletableFuture<CashWrapper> cf = new CompletableFuture<>();
-
-            cf.completeAsync(() -> SimpleRequest.cash(requestObj), threadPoolCash);
-            listCf.add(cf);
-        }
-
-        List<CashWrapper> res = listCf.stream()
-                .map(CompletableFuture::join)
-                .collect(Collectors.toList());
-
-        //Убираем из коллекции сокровищ то сокровище которое обменяли на деньги
-//        for (CashWrapper cashWrapper : res) {
-//            //ToDo: переделать на HashMap
-//            if (treasures != null
-//                    && cashWrapper != null
-//                    && cashWrapper.getResponse() != null
-//                    && treasures.contains(cashWrapper.getRequest())) treasures.remove(cashWrapper.getRequest());
-//        }
-
-        LoggerUtil.logFinishTime("Cash time:");
-        return res.stream()
-                .filter(item -> item != null && item.getResponse() != null)
-                .map(CashWrapper::getResponse)
-                .flatMap(Stream::of)
-                .collect(Collectors.toList());
+    public static CashWrapper cash(String treasure) {
+        return SimpleRequest.cash(treasure);
     }
 
 
