@@ -43,7 +43,7 @@ public class Main {
         for (int line = 0; line < Constant.mapSize; line++) {
 //        получаем все точки с сокровищами для линии line
             CopyOnWriteArraySet<Point> points = Actions.getPoints(line);
-            LoggerUtil.log("Line: " + line + "; Points with treasures: " + points.size());
+//            LoggerUtil.log("Line: " + line + "; Points with treasures: " + points.size());
 
             ConcurrentLinkedQueue<Point> pointStack = new ConcurrentLinkedQueue<>(points);
             pointStack.add(new Point(0, 0, 0, 0));
