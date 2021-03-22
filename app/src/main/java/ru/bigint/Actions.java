@@ -60,27 +60,14 @@ public class Actions {
         Integer[] requestObj = new Integer[]{};
 
         //можем ли создать платную лицензию
-/*        synchronized (lockLicense) {
-            //если есть деньги на платную лицензию
-            if (client.getMoney().size() >= 0) {
-                int coinIndex = client.getMoney().size()-1;
-                requestObj = new Integer[]{client.getMoney().get(coinIndex)};
-                client.getMoney().remove(coinIndex);
-
-                //сколько монет заплатим за платную лицензию
-//                requestObj = new Integer[Constant.paidForLicense];
-//                for (int j = 0; j < Constant.paidForLicense; j++) {
-//                    requestObj[j] = client.getMoney().get(0);
-//                    client.getMoney().remove(0);
-//                }
-            }
-        }*/
-
         synchronized (lockLicense) {
-            if (client.getMoney().size() > 0) {
-                int coinIndex = client.getMoney().size()-1;
-                requestObj = new Integer[]{client.getMoney().get(coinIndex)};
-                client.getMoney().remove(coinIndex);
+            if (client.getMoney().size() > Constant.paidForLicense) {
+                //сколько монет заплатим за платную лицензию
+                requestObj = new Integer[Constant.paidForLicense];
+                for (int j = 0; j < Constant.paidForLicense; j++) {
+                    requestObj[j] = client.getMoney().get(0);
+                    client.getMoney().remove(0);
+                }
             }
         }
 
@@ -91,55 +78,6 @@ public class Actions {
                 client.getLicenseWrapperList().add(new LicenseWrapper(clientLicense, 0));
             }
         }
-
-
-/*
-        CompletableFuture<License> cf = null;
-
-        //Деньги для бесплатной лицензия
-        Integer[] requestObj = new Integer[]{};
-
-        License license = new License();
-
-        //Убираем истекшие лицензии
-        client.getLicenses().removeIf(item -> item != null
-                && item.getId() != null
-                && item.getDigUsed() >= item.getDigAllowed());
-
-        //Если число лицензий меньше лимита - т.е. можно получить лицензию
-        if (client.getLicenses().size() < Constant.maxLicencesCount.intValue()) {
-            //Добавляем в список пустую лицензию
-            client.getLicenses().add(license);
-
-            //можем ли создать платную лицензию
-//                if (client.getMoney().size() >= Constant.paidForLicense) {
-//                    //сколько монет заплатим за платную лицензию
-//                    requestObj = new Integer[Constant.paidForLicense];
-//                    for (int j = 0; j < Constant.paidForLicense; j++) {
-//                        requestObj[j] = client.getMoney().get(0);
-//                        client.getMoney().remove(0);
-//                    }
-//                }
-
-            cf = new CompletableFuture<>();
-        }
-
-        if (cf != null) {
-            Integer[] finalRequestObj = requestObj;
-            cf.completeAsync(() -> SimpleRequest.license(finalRequestObj, client));
-            try {
-                License serverLicense = cf.get();
-                if (serverLicense == null) {
-                    client.getLicenses().remove(license);
-                } else {
-                    license = serverLicense;
-                }
-            } catch (InterruptedException | ExecutionException e) {
-                LoggerUtil.log(e.getMessage());
-            }
-        }
-
- */
 
         LoggerUtil.logFinishTime("Get/Update Licenses time:");
     }

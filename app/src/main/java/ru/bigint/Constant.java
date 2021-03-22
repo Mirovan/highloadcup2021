@@ -25,7 +25,7 @@ public class Constant {
     public final static int maxLicencesCount = 10;
 
     //Число денег которые тратим на покупку лицензии
-    public final static int paidForLicense = 1;
+    public final static int paidForLicense = 3;
 
     //число платных лилцензий
     public final static int paidlicenseCount = 7;
