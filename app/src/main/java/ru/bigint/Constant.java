@@ -10,7 +10,7 @@ public class Constant {
     public final static int threadsCountDig = 20;
 
     //Число потоков для просмотра карты
-    public final static int threadsCountExplore = 20;
+    public final static int threadsCountExplore = 30;
 
     //Для Explore - Делим строку line на partSize-частей и для каждой этой части делаем бинарный поиск
     public final static int explorePartSize = 100;
