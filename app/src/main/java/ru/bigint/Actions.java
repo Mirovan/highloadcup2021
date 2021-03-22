@@ -7,7 +7,6 @@ import ru.bigint.model.response.License;
 import java.net.http.HttpClient;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -77,14 +76,18 @@ public class Actions {
 
         //можем ли создать платную лицензию
         synchronized (lockLicense) {
-            if (client.getMoney().size() > 0) {
-                int coinIndex = client.getMoney().size()-1;
-                requestObj = new Integer[]{client.getMoney().get(coinIndex)};
-                client.getMoney().remove(coinIndex);
+            try {
+                if (client.getMoney().size() > 0) {
+                    int coinIndex = client.getMoney().size() - 1;
+                    requestObj = new Integer[]{client.getMoney().get(coinIndex)};
+                    client.getMoney().remove(coinIndex);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
-        License clientLicense = SimpleRequest.license(requestObj, client);
+        License clientLicense = SimpleRequest.license(requestObj);
 
         synchronized (lockLicense) {
             if (clientLicense != null) {
@@ -136,12 +139,17 @@ public class Actions {
     /**
      * Обмен сокровищ на деньги
      *
-     * @param treasures
+     * @param treasure
      * @return
      */
-    public static List<Integer> cash(List<String> treasures) {
+    public static CashWrapper cash(String treasure) {
         LoggerUtil.logStartTime();
 
+        CashWrapper cashWrapper = SimpleRequest.cash(treasure);
+        return cashWrapper;
+
+
+/*
         //список с асинхронными запросами
         List<CompletableFuture<CashWrapper>> listCf = new ArrayList<>();
         for (int i = 0; i < treasures.size(); i++) {
@@ -171,7 +179,7 @@ public class Actions {
                 .filter(item -> item != null && item.getResponse() != null)
                 .map(CashWrapper::getResponse)
                 .flatMap(Stream::of)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList());*/
     }
 
 

@@ -2,7 +2,10 @@ package ru.bigint;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ru.bigint.model.*;
+import ru.bigint.model.CashWrapper;
+import ru.bigint.model.DigRequestWrapper;
+import ru.bigint.model.DigWrapper;
+import ru.bigint.model.Point;
 import ru.bigint.model.request.DigRequest;
 import ru.bigint.model.request.ExploreRequest;
 import ru.bigint.model.response.Balance;
@@ -15,10 +18,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 public class SimpleRequest {
 
@@ -73,14 +74,15 @@ public class SimpleRequest {
         try {
             res = cf.get();
         } catch (InterruptedException | ExecutionException e) {
-            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
+//            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
+            e.printStackTrace();
         }
 
         return res;
     }
 
 
-    public static License license(Integer[] requestObj, Client client) {
+    public static License license(Integer[] requestObj) {
         ActionEnum actionEnum = ActionEnum.LICENSES;
 
         String url = Constant.SERVER_URI + actionEnum.getRequest();
@@ -133,7 +135,8 @@ public class SimpleRequest {
         try {
             res = cf.get();
         } catch (InterruptedException | ExecutionException e) {
-            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
+//            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
+            e.printStackTrace();
         }
 
         return res;
@@ -188,7 +191,8 @@ public class SimpleRequest {
         try {
             res = cf.get();
         } catch (InterruptedException | ExecutionException e) {
-            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
+//            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
+            e.printStackTrace();
         }
 
         return res;
@@ -209,7 +213,7 @@ public class SimpleRequest {
         try {
             requestBody = objectMapper.writeValueAsString(requestObj);
         } catch (JsonProcessingException e) {
-//                Logger.log(e.getMessage());
+            LoggerUtil.log(e.getMessage());
         }
 
         HttpRequest httpRequest =
@@ -255,7 +259,8 @@ public class SimpleRequest {
                         return new DigWrapper(point, license, treasures);
                     }).get();
         } catch (InterruptedException | ExecutionException e) {
-            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
+            e.printStackTrace();
+//            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
         }
 
         return res;
@@ -312,6 +317,7 @@ public class SimpleRequest {
             res = cf.get();
         } catch (InterruptedException | ExecutionException e) {
 //            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
+            e.printStackTrace();
         }
 
         return res;
@@ -383,7 +389,8 @@ public class SimpleRequest {
                 LoggerUtil.log(actionEnum, "<<< Response: " + actionEnum + "; Response = null");
             }
         } catch (IOException | InterruptedException e) {
-            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
+//            LoggerUtil.log(actionEnum, e.getMessage().substring(0, 40));
+            e.printStackTrace();
         }
 
         return balance;

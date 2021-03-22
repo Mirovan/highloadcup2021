@@ -1,21 +1,19 @@
 package ru.bigint;
 
+import ru.bigint.model.CashWrapper;
 import ru.bigint.model.Client;
-import ru.bigint.model.DigWrapper;
-import ru.bigint.model.LicenseWrapper;
 import ru.bigint.model.Point;
-import ru.bigint.model.response.License;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 public class Main {
 
     //    private static ExecutorService threadPool = Executors.newFixedThreadPool(10);
     private static ExecutorService threadPoolLicense = Executors.newFixedThreadPool(Constant.threadsCountLicense);
     private static ExecutorService threadPoolDig = Executors.newFixedThreadPool(Constant.threadsCountDig);
+    private static ExecutorService threadPoolCash = Executors.newFixedThreadPool(Constant.threadsCountCash);
+
 
     static final Object lockDig = new Object();
 
@@ -38,7 +36,7 @@ public class Main {
         client.setMoney(new CopyOnWriteArrayList<>());
 
         List<CompletableFuture<Void>> cfLicenseList = new ArrayList<>();
-        List<CompletableFuture<List<String>>> cfTreasuresList = new ArrayList<>();
+        Queue<CompletableFuture<List<String>>> cfTreasuresList = new LinkedList<>();
 
         for (int line = 0; line < Constant.mapSize; line++) {
 //        получаем все точки с сокровищами для линии line
@@ -114,6 +112,29 @@ public class Main {
                 }
 
 
+                //Обмен сокровищ
+                if (cfTreasuresList.size() > 0) {
+                    try {
+                        List<String> treasures = cfTreasuresList.poll().get();
+
+                        treasures.stream().forEach(treasure -> {
+                            CompletableFuture
+                                    .runAsync(() -> {
+                                        if (treasure != null) {
+                                            CashWrapper cashWrapper = Actions.cash(treasure);
+                                            //Удалось обменять сокровище
+                                            if (cashWrapper != null && cashWrapper.getResponse() != null) {
+                                                client.getMoney().addAll(Arrays.asList(cashWrapper.getResponse()));
+                                            }
+                                        }
+                                    }, threadPoolCash);
+                        });
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+/*
                 Iterator<CompletableFuture<List<String>>> tresIterator = cfTreasuresList.iterator();
                 while (tresIterator.hasNext()) {
                     CompletableFuture<List<String>> cf = tresIterator.next();
@@ -134,7 +155,7 @@ public class Main {
                         }
                     }
                 }
-
+*/
 
 //                        .thenApply(treasures -> {
 //                            List<Integer> res = null;
