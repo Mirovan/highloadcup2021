@@ -116,15 +116,10 @@ public class Main {
                     if (cf != null && cf.isDone()) {
                         try {
                             List<String> treasures = cf.get();
-//                            System.out.println("1 - " + treasures + "; licSize=" + client.getLicenses().size());
 
                             if (treasures != null && treasures.size() > 0) {
-//                                System.out.println("2 - " + treasures.size());
-
                                 CompletableFuture
                                         .runAsync(() -> {
-//                                            System.out.println("3 - " + treasures);
-
                                             List<Integer> money = Actions.cash(treasures);
                                             if (money != null) client.getMoney().addAll(money);
                                         });

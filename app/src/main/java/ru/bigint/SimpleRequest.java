@@ -237,7 +237,7 @@ public class SimpleRequest {
 //                                LoggerUtil.logRequestResponse(actionEnum, " lic=" + lic.toString() + "; requestObj=" + requestObj.toString(), httpResponse);
 //                            }
 
-                            LoggerUtil.logRequestResponse(actionEnum, "; requestObj=" + requestObj.toString(), httpResponse);
+                            LoggerUtil.logRequestResponse(actionEnum, "License=" + digRequestWrapper.getLicense() + "; requestObj=" + requestObj.toString(), httpResponse);
 
                             if (httpResponse.statusCode() == 200) {
                                 MapperUtils<String[]> resultMapper = new MapperUtils<>(String[].class);

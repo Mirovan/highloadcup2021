@@ -59,10 +59,22 @@ public class Actions {
 
         Integer[] requestObj = new Integer[]{};
 
-        License clientLicense = SimpleRequest.license(requestObj, client);
         synchronized (lockLicense) {
+            //можем ли создать платную лицензию
+            if (client.getMoney().size() >= Constant.paidForLicense) {
+                //сколько монет заплатим за платную лицензию
+                int coinIndex = client.getMoney().get(client.getMoney().size()-1);
+                requestObj = new Integer[]{coinIndex};
+                client.getMoney().remove(coinIndex);
+
+//                requestObj = new Integer[Constant.paidForLicense];
+//                for (int j = 0; j < Constant.paidForLicense; j++) {
+//                    requestObj[j] = client.getMoney().get(0);
+//                    client.getMoney().remove(0);
+//                }
+            }
+            License clientLicense = SimpleRequest.license(requestObj, client);
             if (clientLicense != null) {
-//                System.out.println("Lic: " + clientLicense);
                 client.getLicenseWrapperList().add(new LicenseWrapper(clientLicense, 0));
             }
         }
@@ -138,7 +150,7 @@ public class Actions {
                 LicenseWrapper licenseWrapper = licenseWrapperOpt.get();
                 if (!digPointStack.isEmpty()) {
                     Point point = digPointStack.poll();
-                    if (licenseWrapper != null && point != null) {
+                    if (point != null) {
                         licenseWrapper.setUseCount(licenseWrapper.getUseCount() + 1);
                         digRequestWrapper = new DigRequestWrapper(point, licenseWrapper.getLicense());
                     }
@@ -147,15 +159,10 @@ public class Actions {
         }
 
         if (digRequestWrapper != null && digRequestWrapper.getDigPoint() != null) {
-//            if (digRequestWrapper.getDigPoint() == null) System.out.println("Dig point=null; " + digRequestWrapper);
-//            if (digRequestWrapper.getLicense() == null) System.out.println("Lic point=null; " + digRequestWrapper);
-
             res = SimpleRequest.dig(digRequestWrapper);
         }
 
         LoggerUtil.logFinishTime("Dig time:");
-
-//        System.out.println("dig 4 - licSize=" + licenses.size() + "; dig=" + res);
 
         return res;
     }
