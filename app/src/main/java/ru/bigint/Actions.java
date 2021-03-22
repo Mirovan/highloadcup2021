@@ -59,25 +59,39 @@ public class Actions {
 
         Integer[] requestObj = new Integer[]{};
 
-        synchronized (lockLicense) {
-            //можем ли создать платную лицензию
-            if (client.getMoney().size() >= Constant.paidForLicense) {
-                //сколько монет заплатим за платную лицензию
-                int coinIndex = client.getMoney().get(client.getMoney().size()-1);
-                requestObj = new Integer[]{coinIndex};
+        //можем ли создать платную лицензию
+/*        synchronized (lockLicense) {
+            //если есть деньги на платную лицензию
+            if (client.getMoney().size() >= 0) {
+                int coinIndex = client.getMoney().size()-1;
+                requestObj = new Integer[]{client.getMoney().get(coinIndex)};
                 client.getMoney().remove(coinIndex);
 
+                //сколько монет заплатим за платную лицензию
 //                requestObj = new Integer[Constant.paidForLicense];
 //                for (int j = 0; j < Constant.paidForLicense; j++) {
 //                    requestObj[j] = client.getMoney().get(0);
 //                    client.getMoney().remove(0);
 //                }
             }
-            License clientLicense = SimpleRequest.license(requestObj, client);
+        }*/
+
+        synchronized (lockLicense) {
+            if (client.getMoney().size() > 0) {
+                int coinIndex = client.getMoney().size()-1;
+                requestObj = new Integer[]{client.getMoney().get(coinIndex)};
+                client.getMoney().remove(coinIndex);
+            }
+        }
+
+        License clientLicense = SimpleRequest.license(requestObj, client);
+
+        synchronized (lockLicense) {
             if (clientLicense != null) {
                 client.getLicenseWrapperList().add(new LicenseWrapper(clientLicense, 0));
             }
         }
+
 
 /*
         CompletableFuture<License> cf = null;
