@@ -136,13 +136,20 @@ public class Actions {
 
             if (licenseWrapperOpt.isPresent()) {
                 LicenseWrapper licenseWrapper = licenseWrapperOpt.get();
-                licenseWrapper.setUseCount(licenseWrapper.getUseCount() + 1);
-                Point point = digPointStack.poll();
-                digRequestWrapper = new DigRequestWrapper(point, licenseWrapper.getLicense());
+                if (!digPointStack.isEmpty()) {
+                    Point point = digPointStack.poll();
+                    if (licenseWrapper != null && point != null) {
+                        licenseWrapper.setUseCount(licenseWrapper.getUseCount() + 1);
+                        digRequestWrapper = new DigRequestWrapper(point, licenseWrapper.getLicense());
+                    }
+                }
             }
         }
 
-        if (digRequestWrapper != null) {
+        if (digRequestWrapper != null && digRequestWrapper.getDigPoint() != null) {
+//            if (digRequestWrapper.getDigPoint() == null) System.out.println("Dig point=null; " + digRequestWrapper);
+//            if (digRequestWrapper.getLicense() == null) System.out.println("Lic point=null; " + digRequestWrapper);
+
             res = SimpleRequest.dig(digRequestWrapper);
         }
 
