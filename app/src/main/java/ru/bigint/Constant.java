@@ -1,9 +1,7 @@
 package ru.bigint;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 public class Constant {
-    public final static String version = "task/test_new_async_requests";
+    public final static String version = "task/stage2_012_new_async_requests";
 
     //Общий размер карты
     public final static int mapSize = 3499;

@@ -21,11 +21,15 @@ public class Main {
 
 
     public static void main(String[] args) {
-        long time = System.currentTimeMillis();
-        LoggerUtil.log("--- VERSION : " + Constant.version + " ---");
-        Main main = new Main();
-        main.runGame();
-        System.out.println((float) (System.currentTimeMillis() - time) / 1000.0f);
+        try {
+            long time = System.currentTimeMillis();
+            LoggerUtil.log("--- VERSION : " + Constant.version + " ---");
+            Main main = new Main();
+            main.runGame();
+            System.out.println((float) (System.currentTimeMillis() - time) / 1000.0f);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void runGame() {
