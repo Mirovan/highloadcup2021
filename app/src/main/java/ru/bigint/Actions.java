@@ -99,7 +99,7 @@ public class Actions {
     /**
      * Асинхронные раскопки
      */
-    public static DigWrapper dig(CopyOnWriteArrayList<LicenseWrapper> licenseWrapperList, ConcurrentLinkedQueue<Point> digPointStack) {
+    public static DigWrapper dig(CopyOnWriteArrayList<LicenseWrapper> licenseWrapperList, ConcurrentLinkedDeque<Point> digPointStack) {
         LoggerUtil.logStartTime();
 
         DigWrapper res = null;
