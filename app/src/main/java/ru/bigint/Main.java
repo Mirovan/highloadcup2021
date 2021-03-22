@@ -117,18 +117,20 @@ public class Main {
                     try {
                         List<String> treasures = cfTreasuresList.poll().get();
 
-                        treasures.stream().forEach(treasure -> {
-                            CompletableFuture
-                                    .runAsync(() -> {
-                                        if (treasure != null) {
-                                            CashWrapper cashWrapper = Actions.cash(treasure);
-                                            //Удалось обменять сокровище
-                                            if (cashWrapper != null && cashWrapper.getResponse() != null) {
-                                                client.getMoney().addAll(Arrays.asList(cashWrapper.getResponse()));
+                        if (treasures != null) {
+                            treasures.stream().forEach(treasure -> {
+                                CompletableFuture
+                                        .runAsync(() -> {
+                                            if (treasure != null) {
+                                                CashWrapper cashWrapper = Actions.cash(treasure);
+                                                //Удалось обменять сокровище
+                                                if (cashWrapper != null && cashWrapper.getResponse() != null) {
+                                                    client.getMoney().addAll(Arrays.asList(cashWrapper.getResponse()));
+                                                }
                                             }
-                                        }
-                                    }, threadPoolCash);
-                        });
+                                        }, threadPoolCash);
+                            });
+                        }
                     } catch (InterruptedException | ExecutionException e) {
                         e.printStackTrace();
                     }
