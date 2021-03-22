@@ -59,7 +59,6 @@ public class Actions {
 
         Integer[] requestObj = new Integer[]{};
 
-        //можем ли создать платную лицензию
 /*        synchronized (lockLicense) {
             //если есть деньги на платную лицензию
             if (client.getMoney().size() >= 0) {
@@ -76,13 +75,14 @@ public class Actions {
             }
         }*/
 
-//        synchronized (lockLicense) {
-//            if (client.getMoney().size() > 0) {
-//                int coinIndex = client.getMoney().size()-1;
-//                requestObj = new Integer[]{client.getMoney().get(coinIndex)};
-//                client.getMoney().remove(coinIndex);
-//            }
-//        }
+        //можем ли создать платную лицензию
+        synchronized (lockLicense) {
+            if (client.getMoney().size() > 0) {
+                int coinIndex = client.getMoney().size()-1;
+                requestObj = new Integer[]{client.getMoney().get(coinIndex)};
+                client.getMoney().remove(coinIndex);
+            }
+        }
 
         License clientLicense = SimpleRequest.license(requestObj, client);
 
