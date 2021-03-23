@@ -1,13 +1,13 @@
 package ru.bigint;
 
 public class Constant {
-    public final static String version = "task/stage2_012_new_async_requests";
+    public final static String version = "task/hardcode_001_solve";
 
     //Общий размер карты
     public final static int mapSize = 3499;
 
     //Число потоков для раскопок
-    public final static int threadsCountDig = 10;
+    public final static int threadsCountDig = 30;
 
     //Число потоков для просмотра карты
     public final static int threadsCountExplore = 10;
@@ -17,7 +17,7 @@ public class Constant {
 
     public final static int threadsCountLicense = 10;
 
-    public final static int threadsCountCash = 10;
+    public final static int threadsCountCash = 30;
 
     //Максимальное число лицензий (по условию может быть только 10 активных лицензий)
     public final static int maxLicencesCount = 10;
